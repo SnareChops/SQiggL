@@ -1,0 +1,3 @@
+interface IAction {
+	perform():string;
+}
