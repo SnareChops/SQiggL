@@ -1,7 +1,7 @@
 /// <reference path="ICondition.ts" />
 import {variables} from '../Main';
 export default class IsNotNull implements ICondition {
-	public static regex: RegExp = /\s*if\b\s+(.*?)\b\s*is\s*not\s*null\s*$/;
+	public static regex: RegExp = /is\s+not\s+null\s*/;
 	constructor(private variable: string){
 		
 	}

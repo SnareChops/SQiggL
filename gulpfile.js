@@ -20,7 +20,7 @@ var testTsProject = ts.createProject({
     typescript: require('typescript')
 });
 
-gulp.task('test-scripts', function() {
+gulp.task('test-scripts', ['build'], function() {
     var tsResult = gulp.src('tests/**/*.ts').pipe(ts(testTsProject));
     return tsResult.js.pipe(gulp.dest('tests'));
 });
