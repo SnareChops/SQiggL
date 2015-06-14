@@ -44,6 +44,9 @@ gulp.task('test-browserify', ['test-scripts'], function(){
         b.bundle().pipe(bundledStream);
         return bundledStream;
     });
+    return bundledStream
+    .pipe(source('tests.js'))
+    .pipe(gulp.dest('./tests/'));
 });
 
 gulp.task('test', ['test-browserify'], function(){
