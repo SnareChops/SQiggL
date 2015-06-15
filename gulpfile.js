@@ -18,6 +18,7 @@ var testTsProject = ts.createProject({
     target: 'ES5',
     module: 'commonjs',
     typescript: require('typescript')
+    // noEmitOnError: true
 });
 
 gulp.task('test-scripts', ['build'], function() {
@@ -27,9 +28,6 @@ gulp.task('test-scripts', ['build'], function() {
 
 gulp.task('test-browserify', ['test-scripts'], function(){
     var bundledStream = through();
-    bundledStream
-    .pipe(source('tests.js'))
-    .pipe(gulp.dest('./tests/'));
     
     globby(['./tests/**/*.js', '!./tests/tests.js'], function(err, entries){
         if(err){
@@ -70,10 +68,7 @@ gulp.task('build', function(){
 
 gulp.task('default', ['build'], function(){
     var bundledStream = through();
-    bundledStream
-    .pipe(source('SQiggL.js'))
-    .pipe(gulp.dest('./dist/'));
-    
+       
     globby(['./src/**/*.js'], function(err, entries){
         console.log(entries);
         if(err){
@@ -88,4 +83,7 @@ gulp.task('default', ['build'], function(){
         b.bundle().pipe(bundledStream);
         return bundledStream;
     });
+    return bundledStream
+    .pipe(source('SQiggL.js'))
+    .pipe(gulp.dest('./dist/'));
 });
