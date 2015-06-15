@@ -66,7 +66,7 @@
 			// Make this the default build command.
 			"isBuildCommand": true,
 			// Show the output window only if unrecognized errors occur.
-			"showOutput": "silent",
+			"showOutput": "always",
 			// Use the standard less compilation problem matcher.
 			"problemMatcher": "$lessCompile"
 		}
