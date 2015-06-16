@@ -1,6 +1,6 @@
 /// <reference path="../../typings/tsd.d.ts" />
 import If from '../../src/actions/If';
-import IsNotNull from '../../src/conditions/IsNotNull';
+import {IsNotNull} from '../../src/Conditions';
 
 describe("If", () => {
 	describe('regex', () => {

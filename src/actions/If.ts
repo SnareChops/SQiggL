@@ -14,17 +14,18 @@ export default class If implements IAction {
 		console.log('If statement: '+statement);
 		console.log('If inner: '+inner);
 		this.condition = this.parseCondition(statement, variables);
-		console.log(this.condition.result());
+		console.log(this.condition.perform());
 	}
 		
 	public parseCondition(statement: string, variables: IVariables){
-		for (var i = 0; i < this.conditions.length; i++) {
-			var match = statement.match(this.conditions[i].regex);
-			if(match.length > 0) return new this.conditions[i](match[1], variables);
+		for(var condition of this.conditions){
+			var match = statement.match(condition.regex);
+			if(match.length > 0) return new condition(match[1], variables);
 		}
+		return null;
 	}
 		
-	public perform():string{
-		return '';
+	public perform(): string{
+		return this.condition.perform() ? this.inner : '';
 	}
 }
