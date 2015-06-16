@@ -8,7 +8,7 @@ export default class IsNotNull implements ICondition {
 		console.log('IsNotNull variable value: '+this.variables[this.variable]);
 	}
 		
-	public result():boolean{
+	public perform():boolean{
 		console.log('IsNotNull result: '+this.variables[this.variable] != null);
 		return this.variables[this.variable] != null;
 	}

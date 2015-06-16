@@ -20,5 +20,6 @@ describe('Parser', () => {
 			variables: IVariables = {myVar: 'Dragon'};
 		beforeAll(() => parser = new Parser(sql, variables));
 		it('should return a list of commands', () => expect(parser.extract(sql, variables)[1] instanceof Command).toBe(true));
+		it('should contain the correct number of commands', () => expect(parser.extract(sql, variables).length).toEqual(3));
 	});
 });
