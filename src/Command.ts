@@ -1,11 +1,14 @@
 /// <reference path="actions/IAction.ts" />
 /// <reference path="IVariables.ts" />
 import {If} from './Actions';
+import CommandScope from './CommandScope';
 
 export default class Command {
 	public static regex: RegExp = /{{%(.*?)%}}(.*?)(?=(?:{{%|$))/g;
 	public action: IAction;
-	constructor(public statement: string, public inner: string, public variables: IVariables){
+	public scope: CommandScope = new CommandScope();
+	constructor(public statement: string, public inner: string, variables: IVariables){
+		this.scope.variables = variables;
 		console.log('Command statement: '+statement);
 		console.log('Command inner: '+inner);
 		this.extract(statement, inner, variables);

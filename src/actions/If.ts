@@ -1,6 +1,7 @@
 /// <reference path="IAction.ts" />
 /// <reference path="../conditions/ICondition.ts" />
 /// <reference path="../IVariables.ts" />
+import {Else, EndIf} from '../Actions';
 import {IsNotNull} from '../Conditions'
 
 export default class If implements IAction {
@@ -8,6 +9,7 @@ export default class If implements IAction {
 	public variable: any;
 	public conditions = [IsNotNull];
 	public condition: ICondition;
+	public dependents = [Else, EndIf]
 	constructor(public statement: string, public inner: string, public variables: IVariables){
 		console.log('If statement: '+statement);
 		console.log('If inner: '+inner);
