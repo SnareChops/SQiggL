@@ -1,5 +1,4 @@
-/// <reference path="IVariables.ts" />
-
+import {IVariables} from './IVariables';
 import Command from './Command';
 
 export default class CommandScope {

@@ -1,13 +1,13 @@
-/// <reference path="IVariables.ts" />
 import {If, Else, EndIf} from './Actions';
 import CommandScope from './CommandScope';
 import {VariableReplacer} from './Replacers';
 import {IAction} from './actions/IAction';
 import {IPerformResult} from './IPerformResult';
+import {IVariables} from './IVariables';
 
 export default class Command {
 	public static regex: RegExp = /{{%(.*?)%}}(.*?)(?=(?:{{%|$))/g;
-	public actions = [If, Else, EndIf];
+	public actions: any[] = [If, Else, EndIf];
 	public replacers = [VariableReplacer];
 	public action: IAction;
 	public scope: CommandScope = new CommandScope();
@@ -27,7 +27,7 @@ export default class Command {
 	}
 	
 	public perform(passed: boolean): IPerformResult {
-		var result = this.action.perform(passed);
+		var result: IPerformResult = this.action.perform(passed);
 		result.result += this.performDependents(result.passed);
 		for(var replacer of this.replacers){
 			console.log(this.scope.variables);

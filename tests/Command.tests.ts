@@ -1,6 +1,7 @@
 /// <reference path="../typings/tsd.d.ts" />
 import Command from '../src/Command';
 import {If} from '../src/Actions';
+import {IVariables} from '../src/IVariables';
 
 describe('Command', () => {
 	describe('regex', () => {
@@ -26,25 +27,27 @@ describe('Command', () => {
 	});
 	
 	describe('instance', () => {
-		var index = 5,
+		let index = 5,
 			statement = ' if something is not null ',
 			inner = ' FirstName = {{ something }} ',
 			variables: IVariables = {something: 'Dragon'},
-			command: Command;
-		beforeAll(() => command = new Command(index, statement, inner, variables));
+			command: Command,
+			length: number = `{{%${statement}%}}${inner}`.length; 
+		beforeAll(() => command = new Command(index, length, statement, inner, variables));
 		it('should store the index', () => expect(command.index).toEqual(5));
 		it('should store the statement', () => expect(command.statement).toEqual(statement));
 		it('should store the inner', () => expect(command.inner).toEqual(inner));
-		it('should store the variables', () => expect(command.variables).toEqual(variables));
+		it('should store the variables', () => expect(command.scope.variables).toEqual(variables));
 	});
 	
 	describe('expect', () => {
-		var index = 5,
+		let index = 5,
 			statement = ' if something is not null ',
 			inner = ' FirstName = {{ something }} ',
 			variables: IVariables = {something: 'Dragon'},
-			command: Command;
-		beforeAll(() => command = new Command(index, statement, inner, variables));
+			command: Command,
+			length: number = `{{%${statement}%}}${inner}`.length; 
+		beforeAll(() => command = new Command(index, length, statement, inner, variables));
 		it('should create the correct action', () => expect(command.extract(statement, inner, variables) instanceof If).toBe(true));
 	});
 });

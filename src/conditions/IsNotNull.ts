@@ -1,5 +1,5 @@
 /// <reference path="ICondition.ts" />
-/// <reference path="../IVariables.ts" />
+import {IVariables} from '../IVariables';
 
 export default class IsNotNull implements ICondition {
 	public static regex: RegExp = /(\w*)\s+is\s+not\s+null\s*/;

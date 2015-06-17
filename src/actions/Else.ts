@@ -1,7 +1,7 @@
-/// <reference path="../IVariables.ts" />
 import Command from '../Command';
 import {IAction} from './IAction';
 import {IPerformResult} from '../IPerformResult';
+import {IVariables} from '../IVariables';
 
 export default class Else implements IAction {
 	public static regex: RegExp = /^\s*else\b/;

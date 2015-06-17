@@ -1,6 +1,8 @@
 /// <reference path="../../typings/tsd.d.ts" />
 import If from '../../src/actions/If';
 import {IsNotNull} from '../../src/Conditions';
+import Command from '../../src/Command';
+import {IVariables} from '../../src/IVariables';
 
 describe("If", () => {
 	describe('regex', () => {
@@ -13,10 +15,20 @@ describe("If", () => {
 	});
 	
 	describe('instance', () => {
-		var ifIsNotNull = new If('if something is not null', "SET FirstName = 'Dragon'", {something: 'green'});
-		it('should store the statement', () => expect(ifIsNotNull.statement).toEqual('if something is not null'));
-		it('should store the inner', () => expect(ifIsNotNull.inner).toEqual("SET FirstName = 'Dragon'"));
-		it('should store the variables', () => expect(ifIsNotNull.variables).toEqual({something: 'green'}));
+		const index: number = 5, 
+			statement = ' if something is not null ',
+			inner = ' SET FirstName = {{something}} ',
+			length: number = `{{%${statement}%}}${inner}`.length,
+			variables: IVariables = {something: 'green'};
+		let	command: Command,
+			ifIsNotNull: If;
+		beforeAll(() => {
+			command = new Command(index, length, statement, inner, variables);
+			ifIsNotNull = new If(command, statement, inner, variables);
+		});
+		it('should store the statement', () => expect(ifIsNotNull.statement).toEqual(statement));
+		it('should store the inner', () => expect(ifIsNotNull.inner).toEqual(inner));
+		it('should store the variables', () => expect(ifIsNotNull.variables).toEqual(variables));
 		it('should correctly select the IsNotNull condition', () => expect(ifIsNotNull.parseCondition(ifIsNotNull.statement, ifIsNotNull.variables) instanceof IsNotNull).toBe(true));
 	});
 });

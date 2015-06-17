@@ -16,13 +16,13 @@ describe('IsNotNull', () => {
 		var isNotNull;
 		beforeAll(() => {
 			isNotNull = new IsNotNull('something', {something: 'green', blah: 'red'});
-		})
+		});
 		it('should store the variable', () => expect(isNotNull.variable).toEqual('something'));
 		it('should store the variables object', () => expect(isNotNull.variables).toEqual({something: 'green', blah: 'red'}));
-		it('should provide a correct result', () => expect(isNotNull.result()).toBe(true));
+		it('should provide a correct result', () => expect(isNotNull.perform()).toBe(true));
 		it('should also provide a correct result when variable is null', () => {
 			var otherIsNotNull = new IsNotNull('something', {nothing: 'green', blah: 'red'});
-			expect(otherIsNotNull.result()).toBe(false);
+			expect(otherIsNotNull.perform()).toBe(false);
 		});
 	});
 });

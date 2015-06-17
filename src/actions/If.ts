@@ -1,10 +1,10 @@
 /// <reference path="../conditions/ICondition.ts" />
-/// <reference path="../IVariables.ts" />
 import {Else, EndIf} from '../Actions';
 import {IsNotNull} from '../Conditions';
 import Command from '../Command';
 import {IAction} from './IAction';
 import {IPerformResult} from '../IPerformResult';
+import {IVariables} from '../IVariables';
 
 export default class If implements IAction {
 	public static regex: RegExp = /^\s*if\b/;
@@ -33,11 +33,4 @@ export default class If implements IAction {
 				? {result: this.inner + this.command.performScope(), passed: true} 
 				: {result: this.command.termination(), passed: false};
 	}
-	
-	// public dependent(action: IAction): boolean {
-	// 	for(var dependent of this.dependents){
-	// 		if(action instanceof dependent) return true;
-	// 	}
-	// 	return false;
-	// }
 }

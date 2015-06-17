@@ -1,4 +1,3 @@
-/// <reference path="IVariables.ts" />
 var Actions_1 = require('./Actions');
 var CommandScope_1 = require('./CommandScope');
 var Replacers_1 = require('./Replacers');

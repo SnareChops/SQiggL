@@ -1,7 +1,9 @@
-/// <reference path="IVariables.ts" />
 /// <reference path="Extensions.ts" />
 import Command from './Command';
-
+import {IVariables} from './IVariables';
+Array.prototype.last = function(){
+	return this[this.length-1];
+}
 export default class Parser {
 	public commands: Command[];
 	public stack: Command[];

@@ -1,5 +1,5 @@
 /// <reference path="IReplacer.ts" />
-/// <reference path="../IVariables.ts" />
+import {IVariables} from '../IVariables';
 
 export default class VariableReplacer {
 	public static regex: RegExp = /{{\s*(\w*)\s*}}/g;

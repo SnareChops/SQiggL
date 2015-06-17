@@ -1,4 +1,3 @@
-/// <reference path="IVariables.ts" />
 var Parser_1 = require('./Parser');
 function parse(sql, variables) {
     var parser = new Parser_1.default(sql, variables);
