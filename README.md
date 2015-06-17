@@ -18,6 +18,8 @@ A javascript version of SQiggL
 		not
 		equals
 		==
+	else
+	endif
 ```
 
 example: 
