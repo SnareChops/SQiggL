@@ -101,3 +101,37 @@ gulp.task('clean', function(){
         'dist/*.js'
     ]);
 });
+
+gulp.task('build-site', function(){
+    var tsResult = gulp.src(['./www/**/*.ts']).pipe(ts(mainTsProject));
+    return tsResult.js.pipe(gulp.dest('./www'));
+});
+
+gulp.task('browserify-site', ['build-site'], function(){
+    var bundledStream = through();
+       
+    globby(['./www/**/*.js'], function(err, entries){
+        if(err){
+            bundledStream.emit('error', err);
+            return;
+        }
+        var b = browserify({
+            entries: entries,
+            debug: true
+        });
+        
+        b.bundle().pipe(bundledStream);
+        return bundledStream;
+    });
+    return bundledStream
+    .pipe(source('app.js'))
+    .pipe(gulp.dest('./www/'));
+});
+
+gulp.task('site', ['browserify-site'], function(){
+    del([
+        'www/**/*.js',
+        '!www/app.js'
+    ]);
+});
+
