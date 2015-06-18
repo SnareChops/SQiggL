@@ -8,8 +8,6 @@ export default class Else implements IAction {
 	public terminator: boolean = false;
 	public dependents = [];
 	constructor(public command: Command, public statement: string, public inner: string, public variables: IVariables){
-		console.log('Else statement: '+statement);
-		console.log('Else inner: '+inner);
 	}
 	
 	public perform(prevPassed: boolean = false): IPerformResult{

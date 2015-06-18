@@ -9,7 +9,6 @@ export default class Parser {
 	public stack: Command[];
 	constructor(public sql: string, public variables: IVariables){
 		this.commands = this.extract(sql, variables);
-		console.log(variables);
 		this.variables = variables;
 	}
 	
@@ -19,11 +18,9 @@ export default class Parser {
 		while((match = Command.regex.exec(sql)) != null){
 			var found = new Command(match.index, match.input.length, match[1], match[2], variables);
 			if(stack.length > 0 && stack.last().dependent(found.action)) {
-				console.log('Creating a dependent command: '+found.action.constructor['name']);
 				stack.last().dependents.push(found);
 			}
 			else if (stack.length > 0 && !stack.last().action.terminator) {
-				console.log('Creating a sub command: '+found.action.constructor['name']);
 				stack.push(found);
 				stack.last().scope.commands.push(found);
 			}

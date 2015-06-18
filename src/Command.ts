@@ -14,8 +14,6 @@ export default class Command {
 	public dependents: Command[] = [];
 	constructor(public index: number, public length:number, public statement: string, public inner: string, variables: IVariables){
 		this.scope.variables = variables;
-		console.log('Command statement: '+statement);
-		console.log('Command inner: '+inner);
 		this.action = this.extract(statement, inner, variables);
 	}
 		
@@ -30,7 +28,6 @@ export default class Command {
 		var result: IPerformResult = this.action.perform(passed);
 		result.result += this.performDependents(result.passed);
 		for(var replacer of this.replacers){
-			console.log(this.scope.variables);
 			result.result = replacer.replace(result.result, this.scope.variables);
 		}
 		return result;
