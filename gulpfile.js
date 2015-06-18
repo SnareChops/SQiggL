@@ -4,10 +4,12 @@ var gulp = require('gulp'),
 	source = require('vinyl-source-stream'),
 	through = require('through2'),
 	globby = require('globby'),
-	karma = require('karma').server;
+	karma = require('karma').server,
+    jsdoc = require('gulp-jsdoc'),
+    del = require('del');
 	
 var mainTsProject = ts.createProject({
-    removeComments: true,
+    removeComments: false,
     target: 'ES5',
     module: 'commonjs',
     typescript: require('typescript')
@@ -61,7 +63,7 @@ gulp.task('ci', ['test-browserify'], function(){
     });
 });
 
-gulp.task('build', function(){
+gulp.task('build', ['clean'], function(){
     var tsResult = gulp.src(['./src/**/*.ts']).pipe(ts(mainTsProject));
     return tsResult.js.pipe(gulp.dest('./src'));
 });
@@ -70,7 +72,6 @@ gulp.task('default', ['build'], function(){
     var bundledStream = through();
        
     globby(['./src/**/*.js'], function(err, entries){
-        console.log(entries);
         if(err){
             bundledStream.emit('error', err);
             return;
@@ -86,4 +87,17 @@ gulp.task('default', ['build'], function(){
     return bundledStream
     .pipe(source('SQiggL.js'))
     .pipe(gulp.dest('./dist/'));
+});
+
+gulp.task('docs', ['build'], function(){
+    gulp.src('./src/**/*.js')
+    .pipe(jsdoc('./docs'));
+});
+
+gulp.task('clean', function(){
+    del([
+        'src/**/*.js',
+        'tests/**/*.js',
+        'dist/*.js'
+    ]);
 });

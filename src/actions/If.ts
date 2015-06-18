@@ -6,6 +6,24 @@ import {IAction} from './IAction';
 import {IPerformResult} from '../IPerformResult';
 import {IVariables} from '../IVariables';
 
+/**
+ * The If action
+ * @class
+ * @implements {@link IAction}
+ * @param {Command} command 			- Parent command of this action
+ * @param {string} statement 			- Statement that this should take action on
+ * @param {string} inner 				- Text that follows after this action until the next command
+ * @param {IVariables} variables		- Variables within the scope of this action  
+ * @property {Command} command 			- Parent command of this action
+ * @property {string} statement			- Statement that this should take action on
+ * @property {string} inner 			- Text that follows after this action until the next command
+ * @property {IVariables} variables		- Variables within the scope of this action  
+ * @property {boolean} terminator 		- Defines if this action is a terminator
+ * @property {IVariable} variable		- Variable that this should take action on depending on the result of the condition
+ * @property {ICondition[]} conditions	- Array of conditions that this action supports (if any)
+ * @property {ICondition} condition		- Condition that was found as a match for this action
+ * @property {IAction[]} dependents		- Array of actions that are dependent on this action's result
+ */
 export default class If implements IAction {
 	public static regex: RegExp = /^\s*if\b/;
 	public terminator: boolean = false;
@@ -14,12 +32,16 @@ export default class If implements IAction {
 	public condition: ICondition;
 	public dependents = [Else, EndIf];
 	constructor(public command: Command, public statement: string, public inner: string, public variables: IVariables){
-		console.log('If statement: '+statement);
-		console.log('If inner: '+inner);
 		this.condition = this.parseCondition(statement, variables);
-		console.log(this.condition.perform());
 	}
-		
+	/**
+	 * Try and locate a matching condition from the available conditions for this action. If no match is found, return null.
+	 * @method
+	 * @public
+	 * @param {string} statement		- Statement to check conditions against
+	 * @param {IVariables} variables	- List of variables within the scope of this action
+	 * @returns {ICondition | null}		- Condition that matches within the statement
+	 */
 	public parseCondition(statement: string, variables: IVariables){
 		for(var condition of this.conditions){
 			var match = statement.match(condition.regex);
@@ -27,7 +49,13 @@ export default class If implements IAction {
 		}
 		return null;
 	}
-		
+	/**
+	 * Perform the action and return the result.
+	 * @method
+	 * @public
+	 * @param {boolean} prevPassed	- If this action is a dependent of another action, did the previous action ran pass or fail.
+	 * @returns {@link IPerformResult}
+	 */
 	public perform(prevPassed: boolean = false): IPerformResult{
 		return this.condition.perform()	
 				? {result: this.inner + this.command.performScope(), passed: true} 
