@@ -1,23 +1,28 @@
 <!DOCTYPE html>
-<html>
-	<head ng-app="sqiggl">
+<html ng-app="sqiggl">
+    <head>
         <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/0.9.4/angular-material.min.css">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=RobotoDraft:300,400,500,700,400italic">
 		
         <script src="dist/SQiggL.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.15/angular-ui-router.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-animate.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-aria.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angular_material/0.9.4/angular-material.min.js"></script>
 	</head>
-	<body>
-	   <md-toolbar>
-           <span>SQiggL</span>
-           <span flex></span>
-           <md-button>Documentation</md-button>
-           <md-button>View Code</md-button>
-	   </md-toolbar>
-        
+    <body layout="column">
+	    <md-toolbar layout="row">
+            <div class="md-toolbar-tools">
+                <span>SQiggL</span>
+                <span flex></span>
+                <md-button>Documentation</md-button>
+                <md-button>View Code</md-button>
+            </div>
+        </md-toolbar>
+        <div layout="row">
+            <ui-view flex="80" offset="10" layout="column"></ui-view>
+        </div>
         <script src="www/app.js"></script>
 	</body>
 </html>

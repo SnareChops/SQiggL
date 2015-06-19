@@ -1,0 +1,28 @@
+<section>
+    <h2>Variables</h2>
+    <md-content>
+        <md-list>
+            <md-list-item ng-repeat="variable in home.variables" layout="row">
+                <md-input-container>
+                    <label>Key</label>
+                    <input type="text" ng-model="variable.key">    
+                </md-input-container>
+                <md-input-container>
+                    <label>Value</label>
+                    <input type="text" ng-model="variable.value">    
+                </md-input-container>
+                <md-button class="md-fab md-mini" ng-click="home.deleteVariable(variable)">X</md-button>
+            </md-list-item>
+        </md-list>
+    </md-content>
+    <md-button class="md-fab" ng-click="home.addVariable()">+</md-button>
+</section>
+<h2>Query</h2>
+<section layout="row">
+    <md-input-container flex>
+        <label>Try SQiggL</label>
+        <textarea ng-model="home.input" style="min-height:300px;"></textarea>
+    </md-input-container>
+    <md-content flex>{{home.output}}</md-content>
+</section>
+<md-button ng-click="home.parse()">Execute</md-button>
