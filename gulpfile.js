@@ -98,6 +98,12 @@ gulp.task('browserify', ['build'], function(){
     .pipe(gulp.dest('./dist/'));
 });
 
+gulp.task('clean:source', function(){
+    return del([
+        './src/**/*.js'
+    ]);
+});
+
 gulp.task('default', ['browserify'], function(){
     return del([
         './src/**/*.js'
@@ -115,7 +121,13 @@ gulp.task('docs-generate', ['browserify'], function(){
     .pipe(gulp.dest('./docs'));
 });
 
-gulp.task('docs', ['docs-generate']);
+gulp.task('post-docs-generate', ['docs-generate'], function(){
+    return del([
+        './src/**/*.js'
+    ]);
+});
+
+gulp.task('docs', ['post-docs-generate']);
 
 gulp.task('clean', function(){
     return del([
