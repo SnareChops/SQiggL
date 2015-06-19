@@ -7,6 +7,7 @@ Array.prototype.last = function(){
 export default class Parser {
 	public commands: Command[];
 	public stack: Command[];
+    public error: string;
 	constructor(public sql: string, public variables: IVariables){
 		this.commands = this.extract(sql, variables);
 		this.variables = variables;
@@ -35,6 +36,7 @@ export default class Parser {
 	
 	public parse(): string {
 		var query = '', index = 0;
+        if(this.commands.length === 0) return this.sql;
 		for(var command of this.commands){
 			query += this.sql.slice(index, command.index -1);
 			query += command.perform(false).result;

@@ -6,7 +6,9 @@ var gulp = require('gulp'),
 	globby = require('globby'),
 	karma = require('karma').server,
     jsdoc = require('gulp-jsdoc'),
-    del = require('del');
+    del = require('del'),
+    gulpJsdoc2md = require('gulp-jsdoc-to-markdown'),
+    rename = require('gulp-rename');
 	
 var mainTsProject = ts.createProject({
     removeComments: false,
@@ -49,15 +51,22 @@ gulp.task('test-browserify', ['test-scripts'], function(){
     .pipe(gulp.dest('./tests/'));
 });
 
-gulp.task('test', ['test-browserify'], function(){
-    karma.start({
+gulp.task('test-clean', ['test-browserify'], function(){
+    return del([
+        './tests/**/*.js',
+        '!./tests/tests.js'
+    ]);
+});
+
+gulp.task('test', ['test-clean'], function(){
+    return karma.start({
        configFile: __dirname + '/karma.conf.js',
        singleRun: true 
     });
 });
 
 gulp.task('ci', ['test-browserify'], function(){
-    karma.start({
+    return karma.start({
         configFile: __dirname + '/karma.ci.conf.js',
         singleRun: true
     });
@@ -68,7 +77,7 @@ gulp.task('build', ['clean'], function(){
     return tsResult.js.pipe(gulp.dest('./src'));
 });
 
-gulp.task('default', ['build'], function(){
+gulp.task('browserify', ['build'], function(){
     var bundledStream = through();
        
     globby(['./src/**/*.js'], function(err, entries){
@@ -89,20 +98,34 @@ gulp.task('default', ['build'], function(){
     .pipe(gulp.dest('./dist/'));
 });
 
-gulp.task('docs', ['build'], function(){
-    gulp.src('./src/**/*.js')
-    .pipe(jsdoc('./docs'));
+gulp.task('default', ['browserify'], function(){
+    return del([
+        './src/**/*.js'
+    ]);
 });
 
+gulp.task('docs-generate', ['browserify'], function(){
+    // return gulp.src('./src/**/*.js')
+    // .pipe(jsdoc('./docs'));
+    return gulp.src('./src/**/*.js')
+    .pipe(gulpJsdoc2md())
+    .pipe(rename(function(path){
+        path.extname = '.md';
+    }))
+    .pipe(gulp.dest('./docs'));
+});
+
+gulp.task('docs', ['docs-generate']);
+
 gulp.task('clean', function(){
-    del([
+    return del([
         'src/**/*.js',
         'tests/**/*.js',
         'dist/*.js'
     ]);
 });
 
-gulp.task('build-site', function(){
+gulp.task('build-site', ['default'], function(){
     var tsResult = gulp.src(['./www/**/*.ts']).pipe(ts(mainTsProject));
     return tsResult.js.pipe(gulp.dest('./www'));
 });
@@ -129,7 +152,7 @@ gulp.task('browserify-site', ['build-site'], function(){
 });
 
 gulp.task('site', ['browserify-site'], function(){
-    del([
+    return del([
         'www/**/*.js',
         '!www/app.js'
     ]);

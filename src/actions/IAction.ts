@@ -6,10 +6,12 @@ import {IPerformResult} from '../IPerformResult';
  * @interface
  * @property {boolean} terminator
  * @property {IAction[]} dependents
+ * @property {Command} command
  */
 export interface IAction {
 	terminator: boolean;
 	dependents: any[]; //IAction[]
+    command: Command;
 	/**
 	 * @method
 	 * @param {boolean} prevPassed

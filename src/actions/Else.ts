@@ -2,12 +2,14 @@ import Command from '../Command';
 import {IAction} from './IAction';
 import {IPerformResult} from '../IPerformResult';
 import {IVariables} from '../IVariables';
+import Errors from '../Errors';
 
 export default class Else implements IAction {
 	public static regex: RegExp = /^\s*else\b/;
 	public terminator: boolean = false;
 	public dependents = [];
 	constructor(public command: Command, public statement: string, public inner: string, public variables: IVariables){
+        if(!command) Errors.IncorrectStatement(this, statement);
 	}
 	
 	public perform(prevPassed: boolean = false): IPerformResult{
