@@ -28,9 +28,10 @@ export default class If implements IAction {
 	public static regex: RegExp = /^\s*if\b/;
 	public terminator: boolean = false;
 	public variable: any;
-	public conditions = [IsNotNull];
+	public static conditions = [IsNotNull];
 	public condition: ICondition;
-	public dependents = [Else, EndIf];
+	public static dependents = [Else, EndIf];
+    public supporter: Command;
 	constructor(public command: Command, public statement: string, public inner: string, public variables: IVariables){
 		this.condition = this.parseCondition(statement, variables);
 	}
@@ -43,12 +44,17 @@ export default class If implements IAction {
 	 * @returns {ICondition | null}		- Condition that matches within the statement
 	 */
 	public parseCondition(statement: string, variables: IVariables){
-		for(var condition of this.conditions){
+		for(var condition of If.conditions){
 			var match = statement.match(condition.regex);
 			if(match.length > 0) return new condition(match[1], variables);
 		}
 		return null;
 	}
+    
+    public validate():string{
+        return null;
+    }
+    
 	/**
 	 * Perform the action and return the result.
 	 * @method

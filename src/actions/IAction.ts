@@ -10,13 +10,14 @@ import {IPerformResult} from '../IPerformResult';
  */
 export interface IAction {
 	terminator: boolean;
-	dependents: any[]; //IAction[]
+	// dependents: any[]; //IAction[]
     command: Command;
+    supporter: Command;
 	/**
 	 * @method
 	 * @param {boolean} prevPassed
 	 * @returns {@link IPerformResult}
 	 */
 	perform(prevPassed?: boolean): IPerformResult;
-	
+    validate():string;
 }

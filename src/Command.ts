@@ -60,7 +60,7 @@ export default class Command {
 	}
 	
 	public dependent(action: IAction): boolean {
-		for(var dependent of this.action.dependents){
+		for(var dependent of this.action['prototype'].dependents){
 			if(action instanceof <any>dependent) return true;
 		}
 		return false;

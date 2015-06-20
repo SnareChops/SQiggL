@@ -19,6 +19,7 @@ export default class Parser {
 		while((match = Command.regex.exec(sql)) != null){
 			var found = new Command(match.index, match.input.length, match[1], match[2], variables);
 			if(stack.length > 0 && stack.last().dependent(found.action)) {
+                found.action.supporter = stack.last();
 				stack.last().dependents.push(found);
 			}
 			else if (stack.length > 0 && !stack.last().action.terminator) {
@@ -30,6 +31,7 @@ export default class Parser {
 				stack.push(found);
 				commands.push(found);
 			}
+            found.action.validate();
 		}
 		return commands;
 	}
