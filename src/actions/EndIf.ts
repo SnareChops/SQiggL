@@ -2,6 +2,7 @@ import Command from '../Command';
 import {IAction} from './IAction';
 import {IPerformResult} from '../IPerformResult';
 import {IVariables} from '../IVariables';
+import Errors from '../Errors';
 
 export default class EndIf implements IAction {
 	public static regex: RegExp = /^\s*endif\b/;
@@ -12,7 +13,7 @@ export default class EndIf implements IAction {
 	}
 	
     public validate(): string{
-        return null;
+        if(!this.supporter) return Errors.IncorrectStatement(this, this.statement);
     }
     
 	public perform(prevPassed: boolean = false): IPerformResult {

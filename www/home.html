@@ -25,4 +25,7 @@
     </md-input-container>
     <md-content flex>{{home.output}}</md-content>
 </section>
+<ul>
+    <li ng-repeat="error in home.errors"><span style="color: red;">{{error}}</span></li>
+</ul>
 <md-button ng-click="home.parse()">Execute</md-button>
