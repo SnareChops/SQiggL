@@ -2,7 +2,7 @@
 import {IVariables} from '../IVariables';
 
 export default class IsNotNull implements ICondition {
-	public static regex: RegExp = /(\w*)\s+is\s+not\s+null\s*/;
+	public static regex: RegExp = /(\w*)\s+is\s+not\s+null\s*/i;
 	constructor(public variable: string, public variables: IVariables){
 	}
 		

@@ -25,7 +25,7 @@ import {IVariables} from '../IVariables';
  * @property {IAction[]} dependents		- Array of actions that are dependent on this action's result
  */
 export default class If implements IAction {
-	public static regex: RegExp = /^\s*if\b/;
+	public static regex: RegExp = /^\s*if\b/i;
 	public terminator: boolean = false;
 	public variable: any;
 	public static conditions = [IsNotNull];
