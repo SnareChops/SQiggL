@@ -31,7 +31,8 @@ export default class Parser {
 				stack.push(found);
 				commands.push(found);
 			}
-            found.action.validate();
+            let error = found.action.validate();
+            if(error) return [];
 		}
 		return commands;
 	}

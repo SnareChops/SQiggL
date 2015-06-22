@@ -54,7 +54,8 @@ gulp.task('test-browserify', ['test-scripts'], function(){
 gulp.task('test-clean', ['test-browserify'], function(){
     return del([
         './tests/**/*.js',
-        '!./tests/tests.js'
+        '!./tests/tests.js',
+        './src/**/*.js'
     ]);
 });
 
