@@ -40,6 +40,8 @@
     "typescript": "^1.5.0-beta",
     "vinyl-source-stream": "^1.1.0",
     "gulp-jsdoc-to-markdown": "^1.1.1",
-    "gulp-rename": "^1.2.2"
+    "gulp-rename": "^1.2.2",
+    "gulp-webserver": "^0.9.1",
+    "gulp-to-json": "^1.0.1"
   }
 }

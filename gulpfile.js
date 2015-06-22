@@ -8,7 +8,9 @@ var gulp = require('gulp'),
     jsdoc = require('gulp-jsdoc'),
     del = require('del'),
     gulpJsdoc2md = require('gulp-jsdoc-to-markdown'),
-    rename = require('gulp-rename');
+    rename = require('gulp-rename'),
+    webserver = require('gulp-webserver'),
+    toJson = require('gulp-to-json');
 	
 var mainTsProject = ts.createProject({
     removeComments: false,
@@ -25,62 +27,57 @@ var testTsProject = ts.createProject({
     // noEmitOnError: true
 });
 
-gulp.task('test-scripts', ['build'], function() {
-    var tsResult = gulp.src('tests/**/*.ts').pipe(ts(testTsProject));
-    return tsResult.js.pipe(gulp.dest('tests'));
-});
+gulp.task('default', ['clean:tests']);
+gulp.task('test', ['karma:test']);
+gulp.task('ci', ['karma:ci']);
+gulp.task('site', ['serve:site']);
+gulp.task('docs', ['serve:docs']);
 
-gulp.task('test-browserify', ['test-scripts'], function(){
-    var bundledStream = through();
-    
-    globby(['./tests/**/*.js', '!./tests/tests.js'], function(err, entries){
-        if(err){
-            bundledStream.emit('error', err);
-            return;
-        }
-        var b = browserify({
-            entries: entries,
-            debug: true
-        });
-        
-        b.bundle().pipe(bundledStream);
-        return bundledStream;
-    });
-    return bundledStream
-    .pipe(source('tests.js'))
-    .pipe(gulp.dest('./tests/'));
-});
-
-gulp.task('test-clean', ['test-browserify'], function(){
+gulp.task('clean', function(){
     return del([
-        './tests/**/*.js',
-        '!./tests/tests.js',
-        './src/**/*.js'
+        'src/**/*.js',
+        'tests/**/*.js',
+        'dist/*.js',
+        'www/**/*.js',
+        '!www/lib/**',
+        'docs/**',
+        'www/docs.json'
     ]);
 });
 
-gulp.task('test', ['test-clean'], function(){
-    return karma.start({
-       configFile: __dirname + '/karma.conf.js',
-       singleRun: true 
-    });
-});
-
-gulp.task('ci', ['test-browserify'], function(){
-    return karma.start({
-        configFile: __dirname + '/karma.ci.conf.js',
-        singleRun: true
-    });
-});
-
-gulp.task('build', ['clean'], function(){
+gulp.task('build:source', ['clean'], function(){
     var tsResult = gulp.src(['./src/**/*.ts']).pipe(ts(mainTsProject));
     return tsResult.js.pipe(gulp.dest('./src'));
 });
 
-gulp.task('browserify', ['build'], function(){
-    var bundledStream = through();
-       
+gulp.task('build:site', ['build:source'], function(){
+    var tsResult = gulp.src(['./www/**/*.ts']).pipe(ts(mainTsProject));
+    return tsResult.js.pipe(gulp.dest('./www'));
+});
+
+gulp.task('build:tests', ['build:site'], function() {
+    var tsResult = gulp.src('tests/**/*.ts').pipe(ts(testTsProject));
+    return tsResult.js.pipe(gulp.dest('tests'));
+});
+
+gulp.task('docs:generate', ['build:tests'], function(){
+    return gulp.src('./src/**/*.js')
+    .pipe(gulpJsdoc2md())
+    .pipe(rename(function(path){
+        path.extname = '.md';
+    }))
+    .pipe(gulp.dest('./docs'));
+});
+
+gulp.task('docs:files', ['docs:generate'], function(){
+    return gulp.src('./docs/**/*.md')
+    .pipe(toJson({
+        filename: './www/docs.json'
+    }));
+});
+
+gulp.task('browserify:source', ['docs:files'], function(){
+    var bundledStream = through();    
     globby(['./src/**/*.js'], function(err, entries){
         if(err){
             bundledStream.emit('error', err);
@@ -99,53 +96,8 @@ gulp.task('browserify', ['build'], function(){
     .pipe(gulp.dest('./dist/'));
 });
 
-gulp.task('clean:source', function(){
-    return del([
-        './src/**/*.js'
-    ]);
-});
-
-gulp.task('default', ['browserify'], function(){
-    return del([
-        './src/**/*.js'
-    ]);
-});
-
-gulp.task('docs-generate', ['browserify'], function(){
-    // return gulp.src('./src/**/*.js')
-    // .pipe(jsdoc('./docs'));
-    return gulp.src('./src/**/*.js')
-    .pipe(gulpJsdoc2md())
-    .pipe(rename(function(path){
-        path.extname = '.md';
-    }))
-    .pipe(gulp.dest('./docs'));
-});
-
-gulp.task('post-docs-generate', ['docs-generate'], function(){
-    return del([
-        './src/**/*.js'
-    ]);
-});
-
-gulp.task('docs', ['post-docs-generate']);
-
-gulp.task('clean', function(){
-    return del([
-        'src/**/*.js',
-        'tests/**/*.js',
-        'dist/*.js'
-    ]);
-});
-
-gulp.task('build-site', ['default'], function(){
-    var tsResult = gulp.src(['./www/**/*.ts']).pipe(ts(mainTsProject));
-    return tsResult.js.pipe(gulp.dest('./www'));
-});
-
-gulp.task('browserify-site', ['build-site'], function(){
+gulp.task('browserify:site', ['browserify:source'], function(){
     var bundledStream = through();
-       
     globby(['./www/**/*.js'], function(err, entries){
         if(err){
             bundledStream.emit('error', err);
@@ -164,10 +116,74 @@ gulp.task('browserify-site', ['build-site'], function(){
     .pipe(gulp.dest('./www/'));
 });
 
-gulp.task('site', ['browserify-site'], function(){
+gulp.task('istanbul:source', ['browserify:site']);
+
+gulp.task('browserify:tests', ['istanbul:source'], function(){
+    var bundledStream = through();
+    globby(['./tests/**/*.js', '!./tests/tests.js'], function(err, entries){
+        if(err){
+            bundledStream.emit('error', err);
+            return;
+        }
+        var b = browserify({
+            entries: entries,
+            debug: true
+        });
+        
+        b.bundle().pipe(bundledStream);
+        return bundledStream;
+    });
+    return bundledStream
+    .pipe(source('tests.js'))
+    .pipe(gulp.dest('./tests/'));
+});
+
+gulp.task('clean:source', ['browserify:tests'], function(){
     return del([
-        'www/**/*.js',
-        '!www/app.js'
+        './src/**/*.js'
     ]);
 });
 
+gulp.task('clean:site', ['clean:source'], function(){
+    return del([
+        './www/**/*.js',
+        '!./www/app.js',
+        '!./www/lib/**'
+    ]);
+});
+
+gulp.task('clean:tests', ['clean:site'], function(){
+    return del([
+        './tests/**/*.js',
+        '!./tests/tests.js',
+    ]);
+});
+
+gulp.task('karma:test', ['clean:tests'], function(){
+    return karma.start({
+       configFile: __dirname + '/karma.conf.js',
+       singleRun: true 
+    });
+});
+
+gulp.task('karma:ci', ['clean:tests'], function(){
+    return karma.start({
+        configFile: __dirname + '/karma.ci.conf.js',
+        singleRun: true
+    });
+});
+
+gulp.task('serve:site', ['clean:tests'], function(){
+    gulp.src('./')
+    .pipe(webserver({
+        livereload: true,
+        open: true
+    }));
+});
+
+gulp.task('serve:docs', ['clean:tests'], function(){
+    gulp.src('./')
+    .pipe(webserver({
+        open: '/docs'
+    }));
+});

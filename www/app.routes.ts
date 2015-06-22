@@ -9,6 +9,12 @@ class Router {
             templateUrl: 'www/home.html',
             controller: 'HomeController',
             controllerAs: 'home'
+        })
+        .state('docs', {
+            url: '/docs',
+            templateUrl: 'www/docs.html',
+            controller: 'DocsController',
+            controllerAs: 'docs'
         });
     }
 }
