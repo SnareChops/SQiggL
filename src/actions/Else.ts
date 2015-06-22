@@ -5,7 +5,7 @@ import {IVariables} from '../IVariables';
 import Errors from '../Errors';
 
 export default class Else implements IAction {
-	public static regex: RegExp = /^\s*else\b/;
+	public static regex: RegExp = /^\s*else\b/i;
 	public terminator: boolean = false;
 	public static dependents = [];
     public supporter: Command;

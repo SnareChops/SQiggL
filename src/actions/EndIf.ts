@@ -5,7 +5,7 @@ import {IVariables} from '../IVariables';
 import Errors from '../Errors';
 
 export default class EndIf implements IAction {
-	public static regex: RegExp = /^\s*endif\b/;
+	public static regex: RegExp = /^\s*endif\b/i;
 	public terminator: boolean = true;
 	public static dependents = [];
     public supporter: Command;

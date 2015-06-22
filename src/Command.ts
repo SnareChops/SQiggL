@@ -6,7 +6,7 @@ import {IPerformResult} from './IPerformResult';
 import {IVariables} from './IVariables';
 
 export default class Command {
-	public static regex: RegExp = /{{%(.*?)%}}(.*?)(?=(?:{{%|$))/g;
+	public static regex: RegExp = /{{%(.*?)%}}([\s\S]*?)?(?=(?:{{%|$))/igm;
 	public actions: any[] = [If, Else, EndIf];
 	public replacers = [VariableReplacer];
 	public action: IAction;
