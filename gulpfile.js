@@ -72,7 +72,8 @@ gulp.task('docs:generate', ['build:tests'], function(){
 gulp.task('docs:files', ['docs:generate'], function(){
     return gulp.src('./docs/**/*.md')
     .pipe(toJson({
-        filename: './www/docs.json'
+        filename: './www/docs.json',
+        strip: /^.+\/?\\?sqiggl-js\/?\\?/i
     }));
 });
 
@@ -98,7 +99,7 @@ gulp.task('browserify:source', ['docs:files'], function(){
 
 gulp.task('browserify:site', ['browserify:source'], function(){
     var bundledStream = through();
-    globby(['./www/**/*.js'], function(err, entries){
+    globby(['./www/**/*.js', '!./www/lib/**'], function(err, entries){
         if(err){
             bundledStream.emit('error', err);
             return;
@@ -184,6 +185,6 @@ gulp.task('serve:site', ['clean:tests'], function(){
 gulp.task('serve:docs', ['clean:tests'], function(){
     gulp.src('./')
     .pipe(webserver({
-        open: '/docs'
+        open: '#/docs'
     }));
 });

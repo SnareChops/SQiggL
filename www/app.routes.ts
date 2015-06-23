@@ -14,7 +14,8 @@ class Router {
             url: '/docs',
             templateUrl: 'www/docs.html',
             controller: 'DocsController',
-            controllerAs: 'docs'
+            controllerAs: 'docs',
+            
         });
     }
 }

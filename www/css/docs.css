@@ -1,0 +1,49 @@
+.docs table {
+    display: block;
+    width: 100%;
+    overflow: auto;
+    word-break: normal;
+    word-break: keep-all;
+    margin-top:0;
+    margin-bottom: 16px;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.docs thead {
+    display: table-header-group;
+    vertical-align: middle;
+    border-color: inherit;
+}
+
+.docs table tr {
+    background-color: white;
+    border-top:1px solid #ccc;
+    display: table-row;
+    vertical-align: inherit;
+}
+
+.docs table th {
+    padding: 6px 13px;
+    border: 1px solid #ddd;
+    font-weight: bold;
+    display: table-cell;
+    vertical-align: inherit;
+}
+
+.docs table tbody {
+    display: table-row-group;
+    vertical-align: middle;
+    border-color: inherit;
+}
+
+.docs table tbody tr:nth-child(2n) {
+    background-color: #f8f8f8;
+}
+
+.docs table tbody tr td {
+    padding: 6px 13px;
+    border: 1px solid #ddd;
+    display: table-cell;
+    vertical-align: inherit;
+}
