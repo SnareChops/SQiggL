@@ -61,7 +61,7 @@ gulp.task('build:tests', ['build:site'], function() {
 });
 
 gulp.task('docs:generate', ['build:tests'], function(){
-    return gulp.src('./src/**/*.js')
+    return gulp.src(['./src/**/*.js', '!./src/Actions.js', '!./src/Conditions.js', '!./src/Replacers.js', '!./src/SQiggL.js'])
     .pipe(gulpJsdoc2md())
     .pipe(rename(function(path){
         path.extname = '.md';
@@ -185,6 +185,6 @@ gulp.task('serve:site', ['clean:tests'], function(){
 gulp.task('serve:docs', ['clean:tests'], function(){
     gulp.src('./')
     .pipe(webserver({
-        open: '#/docs'
+        open: '#/docs/'
     }));
 });

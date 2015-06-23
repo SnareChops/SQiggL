@@ -11,11 +11,10 @@ class Router {
             controllerAs: 'home'
         })
         .state('docs', {
-            url: '/docs',
+            url: '/docs/:item?',
             templateUrl: 'www/docs.html',
             controller: 'DocsController',
-            controllerAs: 'docs',
-            
+            controllerAs: 'docs'
         });
     }
 }

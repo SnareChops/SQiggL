@@ -5,5 +5,5 @@ class AppConfig {
     }
 }
 
-let Module = angular.module('sqiggl', ['ngMaterial', 'ui.router', 'hc.marked']).config(['markedProvider', AppConfig]);
+let Module = angular.module('sqiggl', ['ngMaterial', 'ui.router', 'hc.marked', 'angular.filter']).config(['markedProvider', AppConfig]);
 export {Module as default};

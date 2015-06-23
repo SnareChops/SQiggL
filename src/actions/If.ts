@@ -8,13 +8,14 @@ import {IVariables} from '../IVariables';
 
 /**
  * The If action
+ * @module If
  * @class
  * @implements {@link IAction}
- * @param {Command} command 			- Parent command of this action
+ * @param {Command} command 			- Command that contains this action
  * @param {string} statement 			- Statement that this should take action on
  * @param {string} inner 				- Text that follows after this action until the next command
  * @param {IVariables} variables		- Variables within the scope of this action  
- * @property {Command} command 			- Parent command of this action
+ * @property {Command} command 			- Command that contains this action
  * @property {string} statement			- Statement that this should take action on
  * @property {string} inner 			- Text that follows after this action until the next command
  * @property {IVariables} variables		- Variables within the scope of this action  
@@ -25,18 +26,34 @@ import {IVariables} from '../IVariables';
  * @property {IAction[]} dependents		- Array of actions that are dependent on this action's result
  */
 export default class If implements IAction {
-	public static regex: RegExp = /^\s*if\b/i;
+	/**
+     * @memberof If
+     * @static
+     * @property {RegExp} The regex matcher
+     */
+    public static regex: RegExp = /^\s*if\b/i;
+    /**
+     * @memberof If
+     * @static
+     * @property {ICondition[]} Array of conditions available to this action
+     */
+	public static conditions = [IsNotNull];
+    /**
+     * @memberof If
+     * @static
+     * @property {IAction[]} Array of dependent actions
+     */
+	public static dependents = [Else, EndIf];
 	public terminator: boolean = false;
 	public variable: any;
-	public static conditions = [IsNotNull];
 	public condition: ICondition;
-	public static dependents = [Else, EndIf];
     public supporter: Command;
 	constructor(public command: Command, public statement: string, public inner: string, public variables: IVariables){
 		this.condition = this.parseCondition(statement, variables);
 	}
 	/**
 	 * Try and locate a matching condition from the available conditions for this action. If no match is found, return null.
+     * @memberof If
 	 * @method
 	 * @public
 	 * @param {string} statement		- Statement to check conditions against
@@ -50,17 +67,23 @@ export default class If implements IAction {
 		}
 		return null;
 	}
-    
+    /**
+     * Checks for any known syntax errors regarding this action
+     * @memberof If
+     * @method
+     * @public
+     * @returns {string | null} The caught error if any
+     */
     public validate():string{
         return null;
     }
-    
 	/**
 	 * Perform the action and return the result.
+     * @memberof If
 	 * @method
 	 * @public
 	 * @param {boolean} prevPassed	- If this action is a dependent of another action, did the previous action ran pass or fail.
-	 * @returns {@link IPerformResult}
+	 * @returns {IPerformResult} {@link IPerformResult}
 	 */
 	public perform(prevPassed: boolean = false): IPerformResult{
 		return this.condition.perform()	
