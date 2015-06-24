@@ -5,6 +5,7 @@ import Command from '../Command';
 import {IAction} from './IAction';
 import {IPerformResult} from '../IPerformResult';
 import {IVariables} from '../IVariables';
+import {ICondition} from '../conditions/ICondition';
 
 /**
  * The If action

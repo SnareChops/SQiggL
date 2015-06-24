@@ -53,10 +53,13 @@
 }
 
 .docs .content-showing {
-    height: 200px;
-    transition: height linear 10s;
+    height: auto;
+    padding: 8px;
+    transition: all linear 2s;
 }
 
 .docs .content-hidden {
     height: 0;
+    padding: 0;
+    transition: all linear 2s;
 }

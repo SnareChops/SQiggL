@@ -1,6 +1,7 @@
 import Command from '../Command';
 import {IPerformResult} from '../IPerformResult';
 import {IVariables} from '../IVariables';
+import {ICondition} from '../conditions/ICondition';
 
 /**
  * The interface for all actions to adhere to

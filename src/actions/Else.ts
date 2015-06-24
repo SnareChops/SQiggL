@@ -3,6 +3,7 @@ import {IAction} from './IAction';
 import {IPerformResult} from '../IPerformResult';
 import {IVariables} from '../IVariables';
 import Errors from '../Errors';
+import {ICondition} from '../conditions/ICondition';
 
 /**
  * The Else action
