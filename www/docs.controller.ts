@@ -26,10 +26,5 @@ class DocsController {
             }, 500);
         });
     }
-    
-    public openDoc(doc, $event){
-        $event.target.next().slideToggle(1000);
-        doc.slideToggle(1000);
-    }
 }
 Module.controller('DocsController', ['$http', '$stateParams', DocsController]);

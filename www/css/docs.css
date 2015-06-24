@@ -47,3 +47,16 @@
     display: table-cell;
     vertical-align: inherit;
 }
+
+.docs .content {
+    transition: height linear 10s;
+}
+
+.docs .content-showing {
+    height: 200px;
+    transition: height linear 10s;
+}
+
+.docs .content-hidden {
+    height: 0;
+}

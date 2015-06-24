@@ -7,7 +7,7 @@
     <div ng-repeat="(key, value) in docs.docs | groupBy: 'parent'">
         <h2>{{key}}</h2>
         <div ng-repeat="doc in value">
-            <md-toolbar ng-click="doc.show = !doc.show; docs.openDoc(doc, $event);">
+            <md-toolbar ng-click="doc.show = !doc.show">
                 <div class="md-toolbar-tools">
                     <h2 class="md-flex">{{doc.name}}</h2>
                     <span flex></span>
