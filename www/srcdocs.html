@@ -1,0 +1,21 @@
+<md-toolbar class="md-warn">
+    <div class="md-toolbar-tools">
+        <h2>This is the documetation for the SQiggL source code. If you are searching for the documentation of how to <em>use</em> SQiggL then check out the <a ui-sref="docs">Usage Documentation</a> for docs of that nature.</h2>
+    </div>
+</md-toolbar>
+<section class="srcdocs">
+    <div ng-repeat="(key, value) in docs.docs | groupBy: 'parent'">
+        <h2>{{key}}</h2>
+        <div ng-repeat="doc in value">
+            <md-toolbar ng-click="doc.show = !doc.show">
+                <div class="md-toolbar-tools">
+                    <h2 class="md-flex">{{doc.name}}</h2>
+                    <span flex></span>
+                    <h2 ng-if="!doc.show"><i class="fa fa-chevron-down"></i></h2>
+                    <h2 ng-if="doc.show"><i class="fa fa-chevron-up"></i></h2>
+                </div>
+            </md-toolbar>
+            <md-content layout-padding marked ng-include="doc.url" ng-show="doc.show"></md-content>
+        </div>
+    </div>
+</section>

@@ -15,6 +15,12 @@ class Router {
             templateUrl: 'www/docs.html',
             controller: 'DocsController',
             controllerAs: 'docs'
+        })
+        .state('srcdocs', {
+            url: '/srcdocs/:item?',
+            templateUrl: 'www/srcdocs.html',
+            controller: 'SrcDocsController',
+            controllerAs: 'docs'
         });
     }
 }

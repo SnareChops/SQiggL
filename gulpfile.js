@@ -185,6 +185,6 @@ gulp.task('serve:site', ['clean:tests'], function(){
 gulp.task('serve:docs', ['clean:tests'], function(){
     gulp.src('./')
     .pipe(webserver({
-        open: '#/docs/'
+        open: '#/srcdocs/'
     }));
 });

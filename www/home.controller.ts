@@ -16,13 +16,16 @@ class HomeController {
     public output: string = 'Enter your query to the left and press Execute';
     public variables: IVariable[] = [{key: "example", value: "dragon"}];
     public errors: string[] = [];
-    constructor(){
+    public firebaseArray: AngularFireArray;
+    constructor(public $firebaseArray){
         //Patch console.error to show errors to screen as well.
         let originalConsoleError = console.error;
         console.error = (error, array) => {
             this.errors.push(error);
             originalConsoleError.call(console, error, array);
         };
+        
+        this.firebaseArray = $firebaseArray(new Firebase('https://sqiggl.firebaseio.com/queries'));
     }
     
     public parse() {
@@ -31,7 +34,13 @@ class HomeController {
         for(let variable of this.variables){
             variables[variable.key] = variable.value;
         }
-        this.output = SQiggL.parse(this.input, variables);
+        try{
+            this.output = SQiggL.parse(this.input, variables);
+            this.reportQuery(this.input, this.output, this.errors);
+        }
+        catch (error) {
+            this.reportQuery(this.input, this.output, error);
+        }
     }
     
     public addVariable(){
@@ -41,5 +50,10 @@ class HomeController {
     public deleteVariable(variable: IVariable){
         this.variables['remove'](variable);
     }
+    
+    public reportQuery(query, output, errors){
+        this.firebaseArray.$add({query: query, output: output, errors: errors});
+    }
+    
 }
-Module.controller('HomeController', [HomeController]);
+Module.controller('HomeController', ['$firebaseArray', HomeController]);
