@@ -1,6 +1,6 @@
 /// <reference path="../conditions/ICondition.ts" />
 import {Else, EndIf} from '../Actions';
-import {IsNotNull} from '../Conditions';
+import {IsNotNull, IsNull} from '../Conditions';
 import Command from '../Command';
 import {IAction} from './IAction';
 import {IPerformResult} from '../IPerformResult';
@@ -38,7 +38,7 @@ export default class If implements IAction {
      * @static
      * @property {ICondition[]} Array of conditions available to this action
      */
-	public static conditions = [IsNotNull];
+	public static conditions = [IsNotNull, IsNull];
     /**
      * @memberof If
      * @static
@@ -64,7 +64,7 @@ export default class If implements IAction {
 	public parseCondition(statement: string, variables: IVariables){
 		for(var condition of If.conditions){
 			var match = statement.match(condition.regex);
-			if(match.length > 0) return new condition(match[1], variables);
+			if(match && match.length > 0) return new condition(match[1], variables);
 		}
 		return null;
 	}

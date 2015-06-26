@@ -13,6 +13,7 @@
   "docs/actions/If.md",
   "docs/conditions/ICondition.md",
   "docs/conditions/IsNotNull.md",
+  "docs/conditions/IsNull.md",
   "docs/replacers/IReplacer.md",
   "docs/replacers/VariableReplacer.md"
 ]

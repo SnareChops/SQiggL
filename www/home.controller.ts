@@ -40,6 +40,7 @@ class HomeController {
         }
         catch (error) {
             this.reportQuery(this.input, this.output, error);
+            throw error;
         }
     }
     
