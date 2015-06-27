@@ -18,7 +18,7 @@ export default class GreaterThan implements ICondition {
      * @property {RegExp} The regex matcher
      */
 	public static regex: RegExp = /(\w+)\s+>\s+(\d+)/i;
-	constructor(public variable: string, public variables: IVariables, public comparator: string){}
+	constructor(public variable: string, public variables: IVariables, public comparative: string){}
     /**
      * @memberof GreaterThan
      * @method
@@ -26,6 +26,6 @@ export default class GreaterThan implements ICondition {
      * @returns {boolean} Outcome of applying the condition to the variable
      */
 	public perform():boolean{
-		return parseInt(this.variables[this.variable]) > parseInt(this.comparator);
+		return parseInt(this.variables[this.variable]) > parseInt(this.comparative);
 	}
 }

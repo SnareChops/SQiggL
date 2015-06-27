@@ -18,7 +18,7 @@ export default class IsNull implements ICondition {
      * @property {RegExp} The regex matcher
      */
      public static regex: RegExp = /(\w*)\s+is\s+null\s*/i;
-     constructor(public variable: string, public variables: IVariables){}
+     constructor(public variable: string, public variables: IVariables, public comparative: string){}
      /**
       * @memberof IsNull
       * @method
