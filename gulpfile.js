@@ -10,7 +10,8 @@ var gulp = require('gulp'),
     gulpJsdoc2md = require('gulp-jsdoc-to-markdown'),
     rename = require('gulp-rename'),
     webserver = require('gulp-webserver'),
-    toJson = require('gulp-to-json');
+    toJson = require('gulp-to-json'),
+    istanbul = require('gulp-istanbul');
 	
 var mainTsProject = ts.createProject({
     removeComments: false,
@@ -117,7 +118,11 @@ gulp.task('browserify:site', ['browserify:source'], function(){
     .pipe(gulp.dest('./www/'));
 });
 
-gulp.task('istanbul:source', ['browserify:site']);
+gulp.task('istanbul:source', ['browserify:site']);//, function (){
+    // return gulp.src(['./src/**/*.js', '!./src/bundle.js'])
+    // .pipe(istanbul())
+    // .pipe(istanbul.hookRequire());
+// });
 
 gulp.task('browserify:tests', ['istanbul:source'], function(){
     var bundledStream = through();

@@ -28,20 +28,21 @@
     "globby": "^2.0.0",
     "gulp": "^3.9.0",
     "gulp-jsdoc": "^0.1.4",
+    "gulp-jsdoc-to-markdown": "^1.1.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-to-json": "^1.0.1",
     "gulp-typescript": "^2.7.6",
+    "gulp-webserver": "^0.9.1",
     "jasmine-core": "^2.3.4",
     "karma": "^0.12.36",
     "karma-chrome-launcher": "^0.1.12",
     "karma-coverage": "^0.4.2",
     "karma-jasmine": "^0.3.5",
+    "karma-js-coverage": "^0.4.0",
     "karma-phantomjs-launcher": "^0.2.0",
     "phantomjs": "^1.9.17",
     "through2": "^2.0.0",
     "typescript": "^1.5.0-beta",
-    "vinyl-source-stream": "^1.1.0",
-    "gulp-jsdoc-to-markdown": "^1.1.1",
-    "gulp-rename": "^1.2.2",
-    "gulp-webserver": "^0.9.1",
-    "gulp-to-json": "^1.0.1"
+    "vinyl-source-stream": "^1.1.0"
   }
 }
