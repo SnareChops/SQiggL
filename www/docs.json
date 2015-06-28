@@ -11,8 +11,6 @@
   "docs/actions/EndIf.md",
   "docs/actions/IAction.md",
   "docs/actions/If.md",
-  "docs/replacers/IReplacer.md",
-  "docs/replacers/VariableReplacer.md",
   "docs/conditions/Equal.md",
   "docs/conditions/GreaterThan.md",
   "docs/conditions/GreaterThanOrEqual.md",
@@ -20,5 +18,7 @@
   "docs/conditions/IsNotNull.md",
   "docs/conditions/IsNull.md",
   "docs/conditions/LessThan.md",
-  "docs/conditions/LessThanOrEqual.md"
+  "docs/conditions/LessThanOrEqual.md",
+  "docs/replacers/IReplacer.md",
+  "docs/replacers/VariableReplacer.md"
 ]
