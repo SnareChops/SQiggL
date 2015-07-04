@@ -1,5 +1,5 @@
-import {IReplacer} from './IReplacer';
-import {IVariables} from '../IVariables';
+import IReplacer from './IReplacer';
+import IVariables from '../IVariables';
 
 /**
  * The variable replacer for embedded SQiggL variables

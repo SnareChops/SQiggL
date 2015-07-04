@@ -1,4 +1,4 @@
-import {IVariables} from './IVariables';
+import IVariables from './IVariables';
 import Command from './Command';
 /**
  * The Command Scope object

@@ -1,5 +1,5 @@
-import {ICondition} from '../conditions/ICondition';
-import {IVariables} from '../IVariables';
+import ICondition from '../conditions/ICondition';
+import IVariables from '../IVariables';
 
 /**
  * The Is Not Null condition

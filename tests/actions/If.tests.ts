@@ -2,7 +2,7 @@
 import If from '../../src/actions/If';
 import {IsNotNull} from '../../src/Conditions';
 import Command from '../../src/Command';
-import {IVariables} from '../../src/IVariables';
+import IVariables from '../../src/IVariables';
 
 describe("If", () => {
 	describe('regex', () => {

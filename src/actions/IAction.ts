@@ -1,7 +1,7 @@
 import Command from '../Command';
-import {IPerformResult} from '../IPerformResult';
-import {IVariables} from '../IVariables';
-import {ICondition} from '../conditions/ICondition';
+import IPerformResult from '../IPerformResult';
+import IVariables from '../IVariables';
+import ICondition from '../conditions/ICondition';
 
 /**
  * The interface for all actions to adhere to
@@ -20,7 +20,7 @@ import {ICondition} from '../conditions/ICondition';
  * @property {ICondition} condition		- Condition that was found as a match for this action
  * @property {IAction[]} dependents		- Array of actions that are dependent on this action's result
  */
-export interface IAction {
+interface IAction {
     // static regex: RegExp;
     // static conditions: ICondition[];
 	// static dependents: IAction[];
@@ -41,3 +41,4 @@ export interface IAction {
     validate():string;
 	perform(prevPassed?: boolean): IPerformResult;
 }
+export default IAction;

@@ -1,9 +1,9 @@
 import {If, Else, EndIf} from './Actions';
 import CommandScope from './CommandScope';
 import {VariableReplacer} from './Replacers';
-import {IAction} from './actions/IAction';
-import {IPerformResult} from './IPerformResult';
-import {IVariables} from './IVariables';
+import IAction from './actions/IAction';
+import IPerformResult from './IPerformResult';
+import IVariables from './IVariables';
 /**
  * Command object responsible for handling all actions, conditions, and variables within it's section of the query
  * @module Command

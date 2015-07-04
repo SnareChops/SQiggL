@@ -2,10 +2,10 @@
 import {Else, EndIf} from '../Actions';
 import {IsNotNull, IsNull, GreaterThan, LessThan, GreaterThanOrEqual, LessThanOrEqual, Equal} from '../Conditions';
 import Command from '../Command';
-import {IAction} from './IAction';
-import {IPerformResult} from '../IPerformResult';
-import {IVariables} from '../IVariables';
-import {ICondition} from '../conditions/ICondition';
+import IAction from './IAction';
+import IPerformResult from '../IPerformResult';
+import IVariables from '../IVariables';
+import ICondition from '../conditions/ICondition';
 
 /**
  * The If action
@@ -64,7 +64,7 @@ export default class If implements IAction {
 	public parseCondition(statement: string, variables: IVariables){
 		for(var condition of If.conditions){
 			var match = statement.match(condition.regex);
-			if(match && match.length > 0) return new condition(match[1], variables, match[2]);
+			if(match && match.length > 0) return new condition(match[1], variables, match[4], match[2], match[3]);
 		}
 		return null;
 	}

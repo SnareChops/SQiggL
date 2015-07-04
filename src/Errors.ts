@@ -1,4 +1,4 @@
-import {IAction} from 'actions/IAction';
+import IAction from 'actions/IAction';
 /**
  * Module of error checkers
  * @module Errors

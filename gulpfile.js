@@ -61,7 +61,7 @@ gulp.task('build:source', function(){
     });
     return stream
     .pipe(source('SQiggL.js'))
-    .on('error', function(error){console.error(error.toString());})
+    .on('error', function(error){console.log(error.toString()); this.emit('end');})
     .pipe(gulp.dest('./dist/'));
 });
 
@@ -79,7 +79,7 @@ gulp.task('build:site', function(){
     });
     return stream
     .pipe(source('app.js'))
-    .on('error', function(error){console.error(error.toString());})
+    .on('error', function(error){console.log(error.toString()); this.emit('end');})
     .pipe(gulp.dest('./www/'));
 });
 
@@ -97,7 +97,7 @@ gulp.task('build:tests', ['build:source'], function(){
     });
     return stream
     .pipe(source('tests.js'))
-    .on('error', function(error){console.error(error.toString());})
+    .on('error', function(error){console.log(error.toString()); this.emit('end');})
     .pipe(gulp.dest('./tests/'));
 });
 
@@ -115,7 +115,7 @@ gulp.task('docs', function(){
     }));
 });
 
-gulp.task('watch', function(){
+gulp.task('watch', ['build:source', 'docs', 'build:site', 'build:tests'], function(){
     gulp.watch('./src/**/*.ts', ['build:source', 'docs'])
     .on('change', function(event){
         console.log('File '+event.path+' was '+event.type+', rebuilding...');

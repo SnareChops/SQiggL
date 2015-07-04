@@ -1,7 +1,7 @@
 /// <reference path="../../typings/tsd.d.ts" />
 import EndIf from '../../src/actions/EndIf';
 import Command from '../../src/Command';
-import {IVariables} from '../../src/IVariables';
+import IVariables from '../../src/IVariables';
 
 describe("EndIf", () => {
 	describe('regex', () => {

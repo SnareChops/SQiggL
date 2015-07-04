@@ -1,9 +1,9 @@
 import Command from '../Command';
-import {IAction} from './IAction';
-import {IPerformResult} from '../IPerformResult';
-import {IVariables} from '../IVariables';
+import IAction from './IAction';
+import IPerformResult from '../IPerformResult';
+import IVariables from '../IVariables';
 import Errors from '../Errors';
-import {ICondition} from '../conditions/ICondition';
+import ICondition from '../conditions/ICondition';
 
 /**
  * The Else action

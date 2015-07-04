@@ -1,7 +1,7 @@
 /// <reference path="../typings/tsd.d.ts" />
 import Command from '../src/Command';
 import {If} from '../src/Actions';
-import {IVariables} from '../src/IVariables';
+import IVariables from '../src/IVariables';
 
 describe('Command', () => {
 	describe('regex', () => {

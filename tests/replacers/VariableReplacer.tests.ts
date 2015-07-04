@@ -1,6 +1,6 @@
 /// <reference path="../../typings/tsd.d.ts" />
 import VariableReplacer from '../../src/replacers/VariableReplacer';
-import {IVariables} from '../../src/IVariables';
+import IVariables from '../../src/IVariables';
 
 describe('VariableReplacer', () => {
 	describe('regex', () => {

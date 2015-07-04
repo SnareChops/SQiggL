@@ -1,5 +1,5 @@
 /// <reference path="../typings/tsd.d.ts" />
-import {IVariables} from '../src/IVariables';
+import IVariables from '../src/IVariables';
 import Parser from '../src/Parser';
 import Command from '../src/Command';
 

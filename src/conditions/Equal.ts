@@ -1,5 +1,7 @@
-import {ICondition} from '../conditions/ICondition';
-import {IVariables} from '../IVariables';
+import ICondition from './ICondition';
+import Condition from './Condition';
+import IVariables from '../IVariables';
+import {IModifier, Not} from '../Modifiers';
 
 /**
  * The == condition
@@ -11,14 +13,19 @@ import {IVariables} from '../IVariables';
  * @property {string} variable      - Variable to test condition against
  * @property {IVariables} variables - Variables within the scope of this condition
  */
-export default class Equal implements ICondition {
+export default class Equal extends Condition implements ICondition {
     /**
      * @memberof Equal
      * @static
      * @property {RegExp} The regex matcher
      */
+    public static modifiers = [Not];
 	public static regex: RegExp = /(\w+)\s+==\s+(\d+)/i;
-	constructor(public variable: string, public variables: IVariables, public comparative: string){}
+    public modifiers: IModifier[] = [];
+	constructor(public variable: string, public variables: IVariables, public comparative: string, mod1: string, mod2: string){
+        super();
+        this.modifiers = super.extractModifiers(this, mod1, mod2);
+    }
     /**
      * @memberof Equal
      * @method

@@ -15,7 +15,7 @@
   * _instance_
     * [.perform()](#GreaterThan+perform) ⇒ <code>boolean</code>
   * _static_
-    * [.regex](#GreaterThan.regex)
+    * [.modifiers](#GreaterThan.modifiers)
 
 <a name="new_GreaterThan_new"></a>
 ### new GreaterThan(variable, variables)
@@ -32,8 +32,8 @@ The > condition
 **Kind**: instance method of <code>[GreaterThan](#GreaterThan)</code>  
 **Returns**: <code>boolean</code> - Outcome of applying the condition to the variable  
 **Access:** public  
-<a name="GreaterThan.regex"></a>
-### GreaterThan.regex
+<a name="GreaterThan.modifiers"></a>
+### GreaterThan.modifiers
 **Kind**: static property of <code>[GreaterThan](#GreaterThan)</code>  
 **Properties**
 

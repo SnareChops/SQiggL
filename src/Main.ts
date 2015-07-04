@@ -1,5 +1,5 @@
 import Parser from './Parser';
-import {IVariables} from './IVariables';
+import IVariables from './IVariables';
 /**
  * The starting point of the entire SQiggL parser
  * @function
