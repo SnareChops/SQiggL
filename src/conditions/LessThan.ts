@@ -1,5 +1,7 @@
-import ICondition from '../conditions/ICondition';
+import ICondition from './ICondition';
 import IVariables from '../IVariables';
+import Condition from './Condition';
+import {IModifier, Not, OrEqual} from '../Modifiers';
 
 /**
  * The < condition
@@ -11,14 +13,19 @@ import IVariables from '../IVariables';
  * @property {string} variable      - Variable to test condition against
  * @property {IVariables} variables - Variables within the scope of this condition
  */
-export default class LessThan implements ICondition {
+export default class LessThan extends Condition implements ICondition {
     /**
      * @memberof LessThan
      * @static
      * @property {RegExp} The regex matcher
      */
-	public static regex: RegExp = /(\w+)\s+<\s+(\d+)/i;
-	constructor(public variable: string, public variables: IVariables, public comparative: string){}
+    public static modifiers = [Not, OrEqual];
+	public static regex: RegExp = new RegExp(`(\\w+)\\s+((?:${LessThan.mods(LessThan)}))<((?:${LessThan.mods(LessThan)}))\\s+(\\d+)`, 'i');
+    public modifiers: IModifier[] = [];
+	constructor(public variable: string, public variables: IVariables, public comparative: string, mod1: string, mod2: string){
+        super();
+        this.modifiers = this.extractModifiers(this, mod1, mod2);
+    }
     /**
      * @memberof LessThan
      * @method
@@ -26,6 +33,8 @@ export default class LessThan implements ICondition {
      * @returns {boolean} Outcome of applying the condition to the variable
      */
 	public perform():boolean{
-		return parseInt(this.variables[this.variable]) < parseInt(this.comparative);
+		let result = parseInt(this.variables[this.variable]) < parseInt(this.comparative);
+        result = this.performModifiers(this.modifiers, result, this.variable, this.variables, this.comparative);
+        return result;
 	}
 }

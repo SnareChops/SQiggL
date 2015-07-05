@@ -1,7 +1,7 @@
 import ICondition from './ICondition';
 import Condition from './Condition'
 import IVariables from '../IVariables';
-import {IModifier, Not} from '../Modifiers';
+import {IModifier, Not, OrEqual} from '../Modifiers';
 
 /**
  * The > condition
@@ -19,8 +19,8 @@ export default class GreaterThan extends Condition implements ICondition {
      * @static
      * @property {RegExp} The regex matcher
      */
-    public static modifiers = [Not];
-	public static regex: RegExp = new RegExp(`(\\w+)\\s+((?:${GreaterThan.mods(GreaterThan)}|\\s*))>((?:${GreaterThan.mods(GreaterThan)}\\w*)\\s+(\\d+)`, 'i');
+    public static modifiers = [Not, OrEqual];
+	public static regex: RegExp = new RegExp(`(\\w+)\\s+((?:${GreaterThan.mods(GreaterThan)}|\\s*))>((?:${GreaterThan.mods(GreaterThan)}\\w*))\\s+(\\d+)`, 'i');
     public modifiers: IModifier[] = [];
 	constructor(public variable: string, public variables: IVariables, public comparative: string, mod1: string, mod2: string){
         super();
@@ -34,8 +34,7 @@ export default class GreaterThan extends Condition implements ICondition {
      */
 	public perform():boolean{
         let result = parseInt(this.variables[this.variable]) > parseInt(this.comparative);
-        if(this.modifiers.length > 0) result = this.modifiers[0].perform(result, this.variable, this.variables, this.comparative);
-        if(this.modifiers.length > 1) result = this.modifiers[1].perform(result, this.variable, this.variables, this.comparative);
+        result = this.performModifiers(this.modifiers, result, this.variable, this.variables, this.comparative);
         return result; 
 	}
 }

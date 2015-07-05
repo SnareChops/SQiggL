@@ -17,14 +17,16 @@ describe('GreaterThan', () => {
 	describe('instance', () => {
 		var lt;
 		beforeAll(() => {
-			lt = new LessThan('something', {something: '9', blah: 'red'}, '12');
+			lt = new LessThan('something', {something: '9', blah: 'red'}, '12', '!', '=');
 		});
 		it('should store the variable', () => expect(lt.variable).toEqual('something'));
 		it('should store the variables object', () => expect(lt.variables).toEqual({something: '9', blah: 'red'}));
         it('should store the comparative', () => expect(lt.comparative).toEqual('12'));
+        it('should store the first modifier', () => expect(lt.modifier[0]).toEqual('!'));
+        it('should store the second modifier', () => expect(lt.modifier[1]).toEqual('='));
 		it('should provide a correct result', () => expect(lt.perform()).toBe(true));
 		it('should also provide a correct result when variable is not greater then', () => {
-			var otherlt = new LessThan('something', {something: '14', blah: 'red'}, '12');
+			var otherlt = new LessThan('something', {something: '14', blah: 'red'}, '12', null, null);
 			expect(otherlt.perform()).toBe(false);
 		});
 	});

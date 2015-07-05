@@ -15,7 +15,7 @@
   * _instance_
     * [.perform()](#Equal+perform) ⇒ <code>boolean</code>
   * _static_
-    * [.regex](#Equal.regex)
+    * [.modifiers](#Equal.modifiers)
 
 <a name="new_Equal_new"></a>
 ### new Equal(variable, variables)
@@ -32,8 +32,8 @@ The == condition
 **Kind**: instance method of <code>[Equal](#Equal)</code>  
 **Returns**: <code>boolean</code> - Outcome of applying the condition to the variable  
 **Access:** public  
-<a name="Equal.regex"></a>
-### Equal.regex
+<a name="Equal.modifiers"></a>
+### Equal.modifiers
 **Kind**: static property of <code>[Equal](#Equal)</code>  
 **Properties**
 

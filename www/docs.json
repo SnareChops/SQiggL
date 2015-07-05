@@ -11,14 +11,15 @@
   "docs/Errors.md",
   "docs/actions/EndIf.md",
   "docs/actions/Else.md",
+  "docs/modifiers/IModifier.md",
+  "docs/modifiers/Not.md",
+  "docs/modifiers/OrEqual.md",
+  "docs/Modifiers.md",
+  "docs/conditions/Condition.md",
   "docs/conditions/IsNotNull.md",
   "docs/conditions/IsNull.md",
-  "docs/modifiers/Not.md",
-  "docs/Modifiers.md",
   "docs/conditions/GreaterThan.md",
   "docs/conditions/LessThan.md",
-  "docs/conditions/GreaterThanOrEqual.md",
-  "docs/conditions/LessThanOrEqual.md",
   "docs/conditions/Equal.md",
   "docs/Conditions.md",
   "docs/actions/If.md",
@@ -27,5 +28,6 @@
   "docs/Parser.md",
   "docs/Main.md",
   "docs/SQiggL.md",
-  "docs/modifiers/IModifier.md"
+  "docs/conditions/GreaterThanOrEqual.md",
+  "docs/conditions/LessThanOrEqual.md"
 ]

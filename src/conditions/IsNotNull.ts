@@ -1,5 +1,7 @@
-import ICondition from '../conditions/ICondition';
+import ICondition from './ICondition';
 import IVariables from '../IVariables';
+import {IModifier} from '../Modifiers';
+import Condition from './Condition';
 
 /**
  * The Is Not Null condition
@@ -11,14 +13,19 @@ import IVariables from '../IVariables';
  * @property {string} variable      - Variable to test condition against
  * @property {IVariables} variables - Variables within the scope of this condition
  */
-export default class IsNotNull implements ICondition {
+export default class IsNotNull extends Condition implements ICondition {
     /**
      * @memberof IsNotNull
      * @static
      * @property {RegExp} The regex matcher
      */
+    public static modifiers = [];
 	public static regex: RegExp = /(\w+)\s+is\s+not\s+null\s*/i;
-	constructor(public variable: string, public variables: IVariables, public comparative: string){}
+    public modifiers: IModifier[] = [];
+	constructor(public variable: string, public variables: IVariables, public comparative: string, mod1: string, mod2: string){
+        super();
+        this.modifiers = super.extractModifiers(this, mod1, mod2);
+    }
     /**
      * @memberof IsNotNull
      * @method

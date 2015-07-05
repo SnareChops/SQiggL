@@ -17,14 +17,16 @@ describe('Equal', () => {
 	describe('instance', () => {
 		var eq;
 		beforeAll(() => {
-			eq = new Equal('something', {something: 'Dragon', blah: 'red'}, 'Dragon');
+			eq = new Equal('something', {something: 'Dragon', blah: 'red'}, 'Dragon', '!', 'not');
 		});
 		it('should store the variable', () => expect(eq.variable).toEqual('something'));
 		it('should store the variables object', () => expect(eq.variables).toEqual({something: 'Dragon', blah: 'red'}));
         it('should store the comparative', () => expect(eq.comparative).toEqual('Dragon'));
+        it('should store the first modifier', () => expect(eq.modifiers[0]).toEqual('!'));
+        it('should store the second modifier', () => expect(eq.modifiers[1]).toEqual('not'));
 		it('should provide a correct result', () => expect(eq.perform()).toBe(true));
 		it('should also provide a correct result when variable is not greater then', () => {
-			var othereq = new Equal('something', {something: 'Elephant', blah: 'red'}, '12');
+			var othereq = new Equal('something', {something: 'Elephant', blah: 'red'}, '12', null, null);
 			expect(othereq.perform()).toBe(false);
 		});
 	});

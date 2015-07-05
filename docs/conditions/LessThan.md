@@ -15,7 +15,7 @@
   * _instance_
     * [.perform()](#LessThan+perform) ⇒ <code>boolean</code>
   * _static_
-    * [.regex](#LessThan.regex)
+    * [.modifiers](#LessThan.modifiers)
 
 <a name="new_LessThan_new"></a>
 ### new LessThan(variable, variables)
@@ -32,8 +32,8 @@ The < condition
 **Kind**: instance method of <code>[LessThan](#LessThan)</code>  
 **Returns**: <code>boolean</code> - Outcome of applying the condition to the variable  
 **Access:** public  
-<a name="LessThan.regex"></a>
-### LessThan.regex
+<a name="LessThan.modifiers"></a>
+### LessThan.modifiers
 **Kind**: static property of <code>[LessThan](#LessThan)</code>  
 **Properties**
 

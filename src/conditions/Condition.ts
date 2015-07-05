@@ -1,3 +1,5 @@
+import {IModifier} from '../Modifiers';
+import IVariables from '../IVariables';
 
 export default class Condition {
     public static mods(klass){
@@ -16,5 +18,11 @@ export default class Condition {
             }
         }
         return array;
+    }
+    public performModifiers(modifiers: IModifier[], result: boolean, variable: string, variables: IVariables, comparative: string): boolean{
+        for(let mod of modifiers){
+            result = mod.perform(result, variable, variables, comparative);
+        }
+        return result;
     }
 }

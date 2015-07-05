@@ -15,7 +15,7 @@
   * _instance_
     * [.perform()](#IsNull+perform) ⇒ <code>boolean</code>
   * _static_
-    * [.regex](#IsNull.regex)
+    * [.modifiers](#IsNull.modifiers)
 
 <a name="new_IsNull_new"></a>
 ### new IsNull(variable, variables)
@@ -32,8 +32,8 @@ The Is Null condition
 **Kind**: instance method of <code>[IsNull](#IsNull)</code>  
 **Returns**: <code>boolean</code> - Outcome of applying the condition to the variable  
 **Access:** public  
-<a name="IsNull.regex"></a>
-### IsNull.regex
+<a name="IsNull.modifiers"></a>
+### IsNull.modifiers
 **Kind**: static property of <code>[IsNull](#IsNull)</code>  
 **Properties**
 

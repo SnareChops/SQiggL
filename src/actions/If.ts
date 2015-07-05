@@ -1,6 +1,6 @@
 /// <reference path="../conditions/ICondition.ts" />
 import {Else, EndIf} from '../Actions';
-import {IsNotNull, IsNull, GreaterThan, LessThan, GreaterThanOrEqual, LessThanOrEqual, Equal} from '../Conditions';
+import {IsNotNull, IsNull, GreaterThan, LessThan, Equal} from '../Conditions';
 import Command from '../Command';
 import IAction from './IAction';
 import IPerformResult from '../IPerformResult';
@@ -38,7 +38,7 @@ export default class If implements IAction {
      * @static
      * @property {ICondition[]} Array of conditions available to this action
      */
-	public static conditions = [IsNotNull, IsNull, GreaterThan, LessThan, GreaterThanOrEqual, LessThanOrEqual, Equal];
+	public static conditions = [IsNotNull, IsNull, GreaterThan, LessThan, Equal];
     /**
      * @memberof If
      * @static
