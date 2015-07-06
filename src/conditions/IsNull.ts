@@ -24,7 +24,7 @@ export default class IsNull extends Condition implements ICondition {
      public modifiers: IModifier[] = [];
      constructor(public variable: string, public variables: IVariables, public comparative: string, mod1: string, mod2: string){
          super();
-         this.modifiers = super.extractModifiers(this, mod1, mod2);
+         this.modifiers = super.extractModifiers(IsNull, mod1, mod2);
      }
      /**
       * @memberof IsNull

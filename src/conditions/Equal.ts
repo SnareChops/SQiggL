@@ -1,7 +1,7 @@
 import ICondition from './ICondition';
 import Condition from './Condition';
 import IVariables from '../IVariables';
-import {IModifier, Not} from '../Modifiers';
+import {IModifier, Not, OrEqual} from '../Modifiers';
 
 /**
  * The == condition
@@ -19,12 +19,12 @@ export default class Equal extends Condition implements ICondition {
      * @static
      * @property {RegExp} The regex matcher
      */
-    public static modifiers = [Not];
-	public static regex: RegExp = new RegExp(`(\\w+)\\s+((?:${Equal.mods(Equal)}|\\s*))==((?:${Equal.mods(Equal)}|\\s*))\\s+(\\d+)`, 'i');
+    public static modifiers = [Not, OrEqual];
+	public static regex: RegExp = new RegExp(`(\\w+)\\s+((?:${Equal.mods(Equal)}|\\s*))=((?:${Equal.mods(Equal)}|\\s*))\\s+(\\d+)`, 'i');
     public modifiers: IModifier[] = [];
 	constructor(public variable: string, public variables: IVariables, public comparative: string, mod1: string, mod2: string){
         super();
-        this.modifiers = super.extractModifiers(this, mod1, mod2);
+        this.modifiers = this.extractModifiers(Equal, mod1, mod2);
     }
     /**
      * @memberof Equal
@@ -33,6 +33,8 @@ export default class Equal extends Condition implements ICondition {
      * @returns {boolean} Outcome of applying the condition to the variable
      */
 	public perform():boolean{
-		return this.variables[this.variable] === this.comparative;
+        let result = this.variables[this.variable] === this.comparative;
+        result = this.performModifiers(this.modifiers, result, this.variable, this.variables, this.comparative);
+        return result;
 	}
 }

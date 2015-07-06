@@ -116,7 +116,7 @@ gulp.task('docs', function(){
 });
 
 gulp.task('watch', ['build:source', 'docs', 'build:site', 'build:tests'], function(){
-    gulp.watch('./src/**/*.ts', ['build:source', 'docs'])
+    gulp.watch('./src/**/*.ts', ['build:source', 'docs', 'build:tests'])
     .on('change', function(event){
         console.log('File '+event.path+' was '+event.type+', rebuilding...');
     });
@@ -128,7 +128,7 @@ gulp.task('watch', ['build:source', 'docs', 'build:site', 'build:tests'], functi
     .on('change', function(event){
         console.log('File '+event.path+' was '+event.type+', rebuilding...');
     });
-    gulp.watch('./tests/tests.js', ['karma:test'])
+    //gulp.watch('./tests/tests.js', ['karma:test'])
 });
 
 gulp.task('istanbul:source', ['browserify:site']);//, function (){
@@ -140,7 +140,7 @@ gulp.task('istanbul:source', ['browserify:site']);//, function (){
 gulp.task('karma:test', function(){
     return karma.start({
        configFile: __dirname + '/karma.conf.js',
-       singleRun: false 
+       singleRun: true 
     });
 });
 

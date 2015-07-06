@@ -20,11 +20,11 @@ export default class GreaterThan extends Condition implements ICondition {
      * @property {RegExp} The regex matcher
      */
     public static modifiers = [Not, OrEqual];
-	public static regex: RegExp = new RegExp(`(\\w+)\\s+((?:${GreaterThan.mods(GreaterThan)}|\\s*))>((?:${GreaterThan.mods(GreaterThan)}\\w*))\\s+(\\d+)`, 'i');
+	public static regex: RegExp = new RegExp(`(\\w+)\\s+((?:${GreaterThan.mods(GreaterThan)}|\\s*))>((?:${GreaterThan.mods(GreaterThan)}|\\s*))\\s+(\\d+)`, 'i');
     public modifiers: IModifier[] = [];
 	constructor(public variable: string, public variables: IVariables, public comparative: string, mod1: string, mod2: string){
         super();
-        this.modifiers = super.extractModifiers(this, mod1, mod2);
+        this.modifiers = super.extractModifiers(GreaterThan, mod1, mod2);
     }
     /**
      * @memberof GreaterThan

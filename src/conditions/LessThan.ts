@@ -20,11 +20,11 @@ export default class LessThan extends Condition implements ICondition {
      * @property {RegExp} The regex matcher
      */
     public static modifiers = [Not, OrEqual];
-	public static regex: RegExp = new RegExp(`(\\w+)\\s+((?:${LessThan.mods(LessThan)}))<((?:${LessThan.mods(LessThan)}))\\s+(\\d+)`, 'i');
+	public static regex: RegExp = new RegExp(`(\\w+)\\s+((?:${LessThan.mods(LessThan)}|\\s*))<((?:${LessThan.mods(LessThan)}|\\s*))\\s+(\\d+)`, 'i');
     public modifiers: IModifier[] = [];
 	constructor(public variable: string, public variables: IVariables, public comparative: string, mod1: string, mod2: string){
         super();
-        this.modifiers = this.extractModifiers(this, mod1, mod2);
+        this.modifiers = this.extractModifiers(LessThan, mod1, mod2);
     }
     /**
      * @memberof LessThan
