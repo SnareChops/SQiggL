@@ -23,8 +23,9 @@ export default class Condition {
     }
     public performModifiers(modifiers: IModifier[], result: boolean, variable: string, variables: IVariables, comparative: string): boolean{
         if(modifiers.length === 0) return result;
-        for(let mod of modifiers){
-            result = mod.perform(result, variable, variables, comparative);
+        let i;
+        for(i=modifiers.length - 1;i>-1;i--){
+            result = modifiers[i].perform(result, variable, variables, comparative);
         }
         return result;
     }
