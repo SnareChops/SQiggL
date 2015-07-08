@@ -6,25 +6,40 @@ A javascript version of SQiggL
 
 ##Milestone 0.1 features:
 
+`if, else, endif`
+
+| operator | rule |
+------------------
+| is not null | |  
+| is null | |
+| > | greater than |
+| < | less than |
+| >= | greater than or equal to |
+| <= | less than or equal to |
+| !> | not greater than |
+| !< | not less than |
+| != | not equal to |
+| = | equal to (both "==" and "===" are synonyms for convenience) |
+
+examples: 
 ```
-	if
-		is not null
-		is null
-		>
-		<
-		>=
-		<=
-		!
-		not
-		equals
-		==
-	else
-	endif
+UPDATE Something 
+SET {{% if myVar is not null %}} 
+    FirstName = {{ myVar }} 
+{{% else %}}
+    FirstName = 'Default' 
+{{% end %}}
+WHERE ID = 1
 ```
 
-example: 
 ```
-UPDATE Something SET {{% if myVar is not null %}} FirstName = {{ myVar }} {{% else %}} FirstName = 'Default' {{% end %}} WHERE ID = 1 
+UPDATE Something 
+SET {{% if myVar > 12 %}} 
+    Value = {{ myVar }} 
+{{% else %}}
+    Value = {{ minimum }} 
+{{% end %}}
+WHERE ID = 1
 ```
 
 ##Milestone 0.2 features:
