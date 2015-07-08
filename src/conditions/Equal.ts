@@ -20,7 +20,7 @@ export default class Equal extends Condition implements ICondition {
      * @property {RegExp} The regex matcher
      */
     public static modifiers = [Not, OrEqual];
-	public static regex: RegExp = new RegExp(`(\\w+)\\s+((?:${Equal.mods(Equal)}|\\s*))=((?:${Equal.mods(Equal)}|\\s*))\\s+(\\d+)`, 'i');
+	public static regex: RegExp = new RegExp(`(\\w+)\\s+((?:${Equal.mods(Equal)}|\\s*))=((?:${Equal.mods(Equal)}|\\s*))\\s+(\\d+|["']\\w+["'])`, 'i');
     public modifiers: IModifier[] = [];
 	constructor(public variable: string, public variables: IVariables, public comparative: string, mod1: string, mod2: string){
         super();
