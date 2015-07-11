@@ -1,5 +1,6 @@
 import {IModifier} from '../Modifiers';
 import IVariables from '../IVariables';
+import '../Extensions';
 
 export default class Condition {
     public static mods(klass){
@@ -16,7 +17,7 @@ export default class Condition {
                 if(mod2 && identifier.test(mod2)) {
                     array[!mod1 ? 0 : 1] = mod;
                 }
-                if(array.length === count) return array;
+                if(array.length === count && array.isFull()) return array;
             }
         }
         return array;

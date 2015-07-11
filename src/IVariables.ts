@@ -1,4 +1,4 @@
 interface IVariables {
-	[key: string]: string;
+	[key: string]: any;
 }
 export default IVariables;

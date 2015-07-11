@@ -27,7 +27,5 @@
   "docs/Extensions.md",
   "docs/Parser.md",
   "docs/Main.md",
-  "docs/SQiggL.md",
-  "docs/conditions/GreaterThanOrEqual.md",
-  "docs/conditions/LessThanOrEqual.md"
+  "docs/SQiggL.md"
 ]
