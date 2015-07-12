@@ -41,20 +41,20 @@ Action | This is the main keyword for "doing" something | `if, else, endif, unle
 Condition | These are the operators that perform a comparison | `=, >, <, len>, abc>, ...`
 Modifier | This is an operator that modifies the result of a condition | `!, =, not, ...`
 
-_"=" is both a condition and a modifier depending on which position it is in, For example `>=` is a modifier, `!=` is a condition. This is because `>` is the condition in the first example and `=` is a modifier that then checks if the result is equal when `>` is false. Also it is good to note that modifiers are executed after the condition and then from right to left. Please see the [SQiggL site](https://snarechops.github.io/SQiggL-js/#/docs) for a more detailed explanation_
+_`=` is both a condition and a modifier depending on which position it is in, For example `>=` is a modifier, `!=` is a condition. This is because `>` is the condition in the first example and `=` is a modifier that then checks if the result is equal when `>` is false. Also it is good to note that modifiers are executed after the condition and then from right to left. Please see the [SQiggL site](https://snarechops.github.io/SQiggL-js/#/docs/) for a more detailed explanation_
 
 ##Current Features 
 
 _If you have not yet read the terminology section above, please do so. SQiggL does not use the standard set of terms for programming languages and there is a fundamental difference in the way the language is parsed that causes this. I feel it is an improvement and allows for some really neat features, that said, it may be a little confusing at first_
 
-SQiggL currently support the following actions: `if, else, endif`
+SQiggL currently supports the following actions: `if, else, endif`
 
 The following conditions are supported:
 
 condition | rule
 ---------|-----
-is not null |  
-is null |
+is not null | is not null
+is null | is null
 `>` | greater than
 `<` | less than
 `>=` | greater than or equal to
@@ -66,7 +66,7 @@ is null |
 `!=` | not equal to (also "!==" is supported)
 `=` | equal to (both "==" and "===" are synonyms for convenience)
 
-_Note: More condition/modifier combinations exist, and are pretty cool, but very uncommon in modern languages. You can find out more about them on the [SQiggL site](https://snarechops.github.io/SQiggL-js/#/docs)_
+_Note: More condition/modifier combinations exist, and are pretty cool, but very uncommon in modern languages. You can find out more about them on the [SQiggL site](https://snarechops.github.io/SQiggL-js/#/docs/)_
 
 Also variables can be replaced in queries using `{{ }}`
 ```SET Something = '{{ myVar }}'```
@@ -94,7 +94,7 @@ SET {{% if myVar > 12 %}}
 WHERE ID = 1
 ```
 
-This is just a taste of what SQiggL can do, there is a more detailed usage guide on the [SQiggL site](https://snarechops.github.io/SQiggL-js/#/docs)
+This is just a taste of what SQiggL can do, there is a more detailed usage guide on the [SQiggL site](https://snarechops.github.io/SQiggL-js/#/docs/)
 
 ##Milestone 0.2 features:
 
@@ -126,7 +126,7 @@ new thing | rule
 ----------|-----
 `and` | Only true if all conditions pass
 `&&` | Same as `and`
-`or` | True is any of the conditions pass
+`or` | True if any of the conditions pass
 `||` | Same as `or`
 
 ##Milestone 0.5 features:
@@ -135,4 +135,4 @@ This update will add turnary statements to the language `if myVar > 12 then myVa
 
 #Extensible
 
-SQiggL is an extensible language, in the future you will be able to add in new actions, conditions, modifiers, and other core features. Once the official release drops there will be plugin instructions here explaining how.
+SQiggL is an extensible language, in the future you will be able to add in new actions, conditions, modifiers, and other core features. Once the official 1.0 release drops there will be plugin instructions here explaining how.
