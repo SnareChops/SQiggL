@@ -7,17 +7,23 @@ A javascript version of SQiggL
 ##Getting Started:
 
 First install SQiggL with
+
 ```npm install sqiggl```
 
 Next `require` it in your node application using
+
 ```var SQiggL = require('sqiggl').default;```
 
 Supply a query to be parsed and any variables
+
 ```var result = SQiggL.parse("UPDATE Names {{% if example is not null %}} SET Name = '{{example}}' {{% else %}} SET Name = 'Cow' {{% endif %}} WHERE Name = 'Awesome'", {example: 'Dragon'});```
+
 _Note: All variables must be strings, this is a limitation of the current version and will be resolved in the next version. For example: `{num: '12'}` will behave as expected, `{num: 12}` will not_ 
 
 Finally log your result, or use it in a database request
+
 ```console.log(result);```
+
 _Note: SQiggL does NOT protect against SQL injection. Passing a dangerous string into a SQiggL variable will result in an unsafe query. NEVER trust user input, use SQiggL with caution!_
 
 ##Terminology
