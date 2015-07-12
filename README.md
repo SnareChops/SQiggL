@@ -4,22 +4,24 @@
 
 A javascript version of SQiggL
 
+`npm install sqiggl`
+
 ##Milestone 0.1 features:
 
 `if, else, endif`
 
-| operator | rule |
-------------------
-| is not null | |  
-| is null | |
-| > | greater than |
-| < | less than |
-| >= | greater than or equal to |
-| <= | less than or equal to |
-| !> | not greater than |
-| !< | not less than |
-| != | not equal to |
-| = | equal to (both "==" and "===" are synonyms for convenience) |
+operator | rule
+---------|-----
+is not null |  
+is null |
+> | greater than
+< | less than
+>= | greater than or equal to
+<= | less than or equal to
+!> | not greater than
+!< | not less than
+!= | not equal to
+= | equal to (both "==" and "===" are synonyms for convenience)
 
 examples: 
 ```
