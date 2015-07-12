@@ -26,6 +26,13 @@ export default class GreaterThan extends Condition implements ICondition {
         super();
         this.modifiers = super.extractModifiers(GreaterThan, mod1, mod2);
     }
+    
+    public static extract(statement: string, variables: IVariables){
+        let match = statement.match(GreaterThan.regex);
+        if(match && match.length > 0) return new GreaterThan(match[1], variables, match[4], match[2], match[3]);
+        return null;
+    }
+    
     /**
      * @memberof GreaterThan
      * @method

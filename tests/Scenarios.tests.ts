@@ -3,6 +3,37 @@ import {parse} from '../src/Main';
 
 describe('The scenario', () => {
     describe('if action', () => {
+        
+        describe('is null condition', () => {
+            let query = `UPDATE Names {{% if example is null %}} SET Name = 'Cow' {{% else %}} SET Name = '{{example}}' {{% endif %}} WHERE Name = 'Awesome'`;
+            it('should provide a correct result if true', () => {
+                expect(parse(query, {penny: '12'})).toEqual(`UPDATE Names SET Name = 'Cow'  WHERE Name = 'Awesome'`);
+            });
+            it('should provide a correct result if false', () => {
+                expect(parse(query, {example: '12'})).toEqual(`UPDATE Names SET Name = '12'  WHERE Name = 'Awesome'`);
+            });
+        });
+        
+        describe('is not null condition', () => {
+            let query = `UPDATE Names {{% if example is not null %}} SET Name = '{{example}}' {{% else %}} SET Name = 'Cow' {{% endif %}} WHERE Name = 'Awesome'`;
+            it('should provide a correct result if true', () => {
+                expect(parse(query, {example: '12'})).toEqual(`UPDATE Names SET Name = '12'  WHERE Name = 'Awesome'`);
+            });
+            it('should provide a correct result if false', () => {
+                expect(parse(query, {penny: '14'})).toEqual(`UPDATE Names SET Name = 'Cow'  WHERE Name = 'Awesome'`);
+            });
+        });
+        
+        describe('is not null condition', () => {
+            let query = `UPDATE Names {{% if example is !null %}} SET Name = '{{example}}' {{% else %}} SET Name = 'Cow' {{% endif %}} WHERE Name = 'Awesome'`;
+            it('should provide a correct result if true', () => {
+                expect(parse(query, {example: '12'})).toEqual(`UPDATE Names SET Name = '12'  WHERE Name = 'Awesome'`);
+            });
+            it('should provide a correct result if false', () => {
+                expect(parse(query, {penny: '14'})).toEqual(`UPDATE Names SET Name = 'Cow'  WHERE Name = 'Awesome'`);
+            });
+        });
+        
         describe('= condition', () => {
             let query = `UPDATE Names {{% if example = 12 %}} SET Name = '{{example}}' {{% else %}} SET Name = 'Cow' {{% endif %}} WHERE Name = 'Awesome'`;
             it('should provide a correct result if true', () => {

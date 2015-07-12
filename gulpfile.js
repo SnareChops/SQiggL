@@ -30,7 +30,7 @@ var testTsProject = ts.createProject({
     // noEmitOnError: true
 });
 
-gulp.task('default', ['build:site', 'build:tests']);
+gulp.task('default', ['build:site', 'build:tests', 'build:source:node', 'build:source:browser']);
 gulp.task('test', ['karma:test']);
 gulp.task('ci', ['karma:ci']);
 gulp.task('site', ['serve:site']);
@@ -47,7 +47,13 @@ gulp.task('clean', function(){
     ]);
 });
 
-gulp.task('build:source', function(){
+gulp.task('build:source:node', function(){
+    var tsResult = gulp.src(['./src/**/*.ts'])
+    .pipe(ts(mainTsProject));
+    return tsResult.js.pipe(gulp.dest('./dist/node/'));
+})
+
+gulp.task('build:source:browser', function(){
     var stream = through();
     globby(['./src/**/*.ts'], function(err, entries){
         if(err){
@@ -60,7 +66,7 @@ gulp.task('build:source', function(){
         .pipe(stream);
     });
     return stream
-    .pipe(source('SQiggL.js'))
+    .pipe(source('SQiggL.browser.js'))
     .on('error', function(error){console.log(error.toString()); this.emit('end');})
     .pipe(gulp.dest('./dist/'));
 });
@@ -83,7 +89,7 @@ gulp.task('build:site', function(){
     .pipe(gulp.dest('./www/'));
 });
 
-gulp.task('build:tests', ['build:source'], function(){
+gulp.task('build:tests', function(){
     var stream = through();
     globby(['./tests/**/*.ts'], function(err, entries){
         if(err){
@@ -115,8 +121,8 @@ gulp.task('docs', function(){
     }));
 });
 
-gulp.task('watch', ['build:source', 'docs', 'build:site', 'build:tests'], function(){
-    gulp.watch('./src/**/*.ts', ['build:source', 'docs', 'build:tests'])
+gulp.task('watch', ['build:source:node', 'build:source:browser', 'docs', 'build:site', 'build:tests'], function(){
+    gulp.watch('./src/**/*.ts', ['build:source:node', 'build:source:browser', 'docs', 'build:tests'])
     .on('change', function(event){
         console.log('File '+event.path+' was '+event.type+', rebuilding...');
     });

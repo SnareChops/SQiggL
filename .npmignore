@@ -1,0 +1,12 @@
+.settings
+src
+tests
+typings
+www
+.travis.yml
+circle.yml
+gulpfile.js
+index.html
+karma.ci.conf.js
+karma.conf.js
+tsd.json

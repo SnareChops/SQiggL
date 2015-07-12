@@ -1,6 +1,6 @@
 import ICondition from './ICondition';
 import IVariables from '../IVariables';
-import {IModifier} from '../Modifiers';
+import {IModifier, Not} from '../Modifiers';
 import Condition from './Condition';
 
 /**
@@ -19,13 +19,20 @@ export default class IsNull extends Condition implements ICondition {
      * @static
      * @property {RegExp} The regex matcher
      */
-     public static modifiers = [];
-     public static regex: RegExp = /(\w*)\s+is\s+null\s*/i;
+     public static modifiers = [Not];
+     public static regex: RegExp = new RegExp(`(\\w+)\\s+is\\s+((?:${IsNull.mods(IsNull)}|\\s*))null\\s*`, 'i');
      public modifiers: IModifier[] = [];
      constructor(public variable: string, public variables: IVariables, public comparative: string, mod1: string, mod2: string){
          super();
          this.modifiers = super.extractModifiers(IsNull, mod1, mod2);
      }
+     
+     public static extract(statement: string, variables: IVariables){
+         let match = statement.match(IsNull.regex);
+         if(match && match.length > 0) return new IsNull(match[1], variables, null, match[2], null);
+         return null;
+     }
+     
      /**
       * @memberof IsNull
       * @method
@@ -33,6 +40,8 @@ export default class IsNull extends Condition implements ICondition {
       * @returns {boolean} Outcome of applying the condition to the variable
       */
       public perform():boolean{
-          return this.variables[this.variable] == null;
+          let result = this.variables[this.variable] == null;
+          result = this.performModifiers(this.modifiers, result, this.variable, this.variables, this.comparative);
+          return result;
       }
 }

@@ -1,6 +1,5 @@
 export {default as ICondition} from './conditions/ICondition';
 export {default as Condition} from './conditions/Condition';
-export {default as IsNotNull} from './conditions/IsNotNull';
 export {default as IsNull} from './conditions/IsNull';
 export {default as GreaterThan} from './conditions/GreaterThan';
 export {default as LessThan} from './conditions/LessThan';

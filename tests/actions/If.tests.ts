@@ -1,6 +1,6 @@
 /// <reference path="../../typings/tsd.d.ts" />
 import If from '../../src/actions/If';
-import {IsNotNull} from '../../src/Conditions';
+import {IsNull} from '../../src/Conditions';
 import Command from '../../src/Command';
 import IVariables from '../../src/IVariables';
 
@@ -16,7 +16,7 @@ describe("If", () => {
 	
 	describe('instance', () => {
 		const index: number = 5, 
-			statement = ' if something is not null ',
+			statement = ' if something is null ',
 			inner = ' SET FirstName = {{something}} ',
 			length: number = `{{%${statement}%}}${inner}`.length,
 			variables: IVariables = {something: 'green'};
@@ -29,6 +29,6 @@ describe("If", () => {
 		it('should store the statement', () => expect(ifIsNotNull.statement).toEqual(statement));
 		it('should store the inner', () => expect(ifIsNotNull.inner).toEqual(inner));
 		it('should store the variables', () => expect(ifIsNotNull.variables).toEqual(variables));
-		it('should correctly select the IsNotNull condition', () => expect(ifIsNotNull.parseCondition(ifIsNotNull.statement, ifIsNotNull.variables) instanceof IsNotNull).toBe(true));
+		it('should correctly select the IsNull condition', () => expect(ifIsNotNull.extractCondition(ifIsNotNull.statement, ifIsNotNull.variables) instanceof IsNull).toBe(true));
 	});
 });

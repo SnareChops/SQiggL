@@ -26,6 +26,13 @@ export default class LessThan extends Condition implements ICondition {
         super();
         this.modifiers = this.extractModifiers(LessThan, mod1, mod2);
     }
+    
+    public static extract(statement: string, variables: IVariables){
+        let match = statement.match(LessThan.regex);
+        if(match && match.length > 0) return new LessThan(match[1], variables, match[4], match[2], match[3]);
+        return null;
+    }
+    
     /**
      * @memberof LessThan
      * @method

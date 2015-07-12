@@ -26,6 +26,13 @@ export default class Equal extends Condition implements ICondition {
         super();
         this.modifiers = this.extractModifiers(Equal, mod1, mod2);
     }
+    
+    public static extract(statement: string, variables: IVariables){
+        let match = statement.match(Equal.regex);
+        if(match && match.length > 0) return new Equal(match[1], variables, match[4], match[2], match[3]);
+        return null;
+    }
+    
     /**
      * @memberof Equal
      * @method

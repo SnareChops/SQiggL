@@ -1,6 +1,6 @@
 /// <reference path="../conditions/ICondition.ts" />
 import {Else, EndIf} from '../Actions';
-import {IsNotNull, IsNull, GreaterThan, LessThan, Equal} from '../Conditions';
+import {IsNull, GreaterThan, LessThan, Equal} from '../Conditions';
 import Command from '../Command';
 import IAction from './IAction';
 import IPerformResult from '../IPerformResult';
@@ -38,7 +38,7 @@ export default class If implements IAction {
      * @static
      * @property {ICondition[]} Array of conditions available to this action
      */
-	public static conditions = [IsNotNull, IsNull, GreaterThan, LessThan, Equal];
+	public static conditions = [IsNull, GreaterThan, LessThan, Equal];
     /**
      * @memberof If
      * @static
@@ -50,7 +50,7 @@ export default class If implements IAction {
 	public condition: ICondition;
     public supporter: Command;
 	constructor(public command: Command, public statement: string, public inner: string, public variables: IVariables){
-		this.condition = this.parseCondition(statement, variables);
+		this.condition = this.extractCondition(statement, variables);
 	}
 	/**
 	 * Try and locate a matching condition from the available conditions for this action. If no match is found, return null.
@@ -61,10 +61,12 @@ export default class If implements IAction {
 	 * @param {IVariables} variables	- List of variables within the scope of this action
 	 * @returns {ICondition | null}		- Condition that matches within the statement
 	 */
-	public parseCondition(statement: string, variables: IVariables){
+	public extractCondition(statement: string, variables: IVariables){
 		for(var condition of If.conditions){
-			var match = statement.match(condition.regex);
-			if(match && match.length > 0) return new condition(match[1], variables, match[4], match[2], match[3]);
+            let match = condition.extract(statement, variables);
+            if(match) return match;
+			// var match = statement.match(condition.regex);
+			// if(match && match.length > 0) return new condition(match[1], variables, match[4], match[2], match[3]);
 		}
 		return null;
 	}

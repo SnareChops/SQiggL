@@ -4,5 +4,5 @@ let SQiggL = {
     version: '0.1.0',
     //extend: Extend
 };
-if(window) window['SQiggL'] = SQiggL;
+if(typeof window !== 'undefined') window['SQiggL'] = SQiggL;
 export default SQiggL;

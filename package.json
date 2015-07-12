@@ -1,8 +1,8 @@
 {
-  "name": "SQiggL-js",
-  "version": "0.0.0",
+  "name": "sqiggl",
+  "version": "0.0.1",
   "description": "",
-  "main": "SQiggL.js",
+  "main": "dist/node/SQiggL.js",
   "scripts": {
     "test": "gulp ci"
   },
