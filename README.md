@@ -41,7 +41,7 @@ Action | This is the main keyword for "doing" something | `if, else, endif, unle
 Condition | These are the operators that perform a comparison | `=, >, <, len>, abc>, ...`
 Modifier | This is an operator that modifies the result of a condition | `!, =, not, ...`
 
-_`=` is both a condition and a modifier depending on which position it is in, For example `>=` is a modifier, `!=` is a condition. This is because `>` is the condition in the first example and `=` is a modifier that then checks if the result is equal when `>` is false. Also it is good to note that modifiers are executed after the condition and then from right to left. Please see the [SQiggL site](https://snarechops.github.io/SQiggL-js/#/docs/) for a more detailed explanation_
+_`=` is both a condition and a modifier depending on which position it is in, For example `>=` is a modifier, `!=` is a condition. This is because `>` is the condition in the first example and `=` is a modifier that then checks if the result is equal when `>` is false. Also it is good to note that modifiers are executed after the condition and then from right to left. Please see the [SQiggL site](https://snarechops.github.io/SQiggL.io/#/docs/) for a more detailed explanation_
 
 ##Current Features 
 
@@ -66,7 +66,7 @@ is null | is null
 `!=` | not equal to (also "!==" is supported)
 `=` | equal to (both "==" and "===" are synonyms for convenience)
 
-_Note: More condition/modifier combinations exist, and are pretty cool, but very uncommon in modern languages. You can find out more about them on the [SQiggL site](https://snarechops.github.io/SQiggL-js/#/docs/)_
+_Note: More condition/modifier combinations exist, and are pretty cool, but very uncommon in modern languages. You can find out more about them on the [SQiggL site](https://snarechops.github.io/SQiggL.io/#/docs/)_
 
 Also variables can be replaced in queries using `{{ }}`
 ```SET Something = '{{ myVar }}'```
@@ -94,7 +94,7 @@ SET {{% if myVar > 12 %}}
 WHERE ID = 1
 ```
 
-This is just a taste of what SQiggL can do, there is a more detailed usage guide on the [SQiggL site](https://snarechops.github.io/SQiggL-js/#/docs/)
+This is just a taste of what SQiggL can do, there is a more detailed usage guide on the [SQiggL site](https://snarechops.github.io/SQiggL.io/#/docs/)
 
 ##Milestone 0.2 features:
 
