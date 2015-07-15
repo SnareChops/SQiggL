@@ -1,5 +1,5 @@
-<a name="IsNull"></a>
-## IsNull
+<a name="Between"></a>
+## Between
 **Kind**: global class  
 **Implements:** <code>ICondition</code>  
 **Properties**
@@ -10,15 +10,15 @@
 | variables | <code>IVariables</code> | Variables within the scope of this condition |
 
 
-* [IsNull](#IsNull)
-  * [new IsNull(variable, variables)](#new_IsNull_new)
+* [Between](#Between)
+  * [new Between(variable, variables)](#new_Between_new)
   * _instance_
-    * [.perform()](#IsNull+perform) ⇒ <code>boolean</code>
+    * [.perform()](#Between+perform) ⇒ <code>boolean</code>
   * _static_
-    * [.regex](#IsNull.regex)
+    * [.regex](#Between.regex)
 
-<a name="new_IsNull_new"></a>
-### new IsNull(variable, variables)
+<a name="new_Between_new"></a>
+### new Between(variable, variables)
 The Is Null condition
 
 
@@ -27,14 +27,14 @@ The Is Null condition
 | variable | <code>string</code> | Variable to test condition against |
 | variables | <code>IVariables</code> | Variables within the scope of this condition |
 
-<a name="IsNull+perform"></a>
-### isNull.perform() ⇒ <code>boolean</code>
-**Kind**: instance method of <code>[IsNull](#IsNull)</code>  
+<a name="Between+perform"></a>
+### between.perform() ⇒ <code>boolean</code>
+**Kind**: instance method of <code>[Between](#Between)</code>  
 **Returns**: <code>boolean</code> - Outcome of applying the condition to the variable  
 **Access:** public  
-<a name="IsNull.regex"></a>
-### IsNull.regex
-**Kind**: static property of <code>[IsNull](#IsNull)</code>  
+<a name="Between.regex"></a>
+### Between.regex
+**Kind**: static property of <code>[Between](#Between)</code>  
 **Properties**
 
 | Name | Type | Description |

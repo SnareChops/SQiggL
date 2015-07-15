@@ -27,5 +27,10 @@
   "docs/Parser.md",
   "docs/Main.md",
   "docs/SQiggL.md",
-  "docs/conditions/LengthGreaterThan.md"
+  "docs/conditions/AlphabeticallyGreaterThan.md",
+  "docs/conditions/AlphabeticallyLessThan.md",
+  "docs/conditions/Between.md",
+  "docs/conditions/IsNaN.md",
+  "docs/conditions/LengthGreaterThan.md",
+  "docs/conditions/LengthLessThan.md"
 ]
