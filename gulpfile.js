@@ -13,7 +13,8 @@ var gulp = require('gulp'),
     toJson = require('gulp-to-json'),
     istanbul = require('gulp-istanbul'),
     tsify = require('tsify'),
-    watchify = require('watchify');
+    watchify = require('watchify'),
+    typedoc = require('gulp-typedoc');
 	
 var mainTsProject = ts.createProject({
     removeComments: false,
@@ -28,6 +29,17 @@ var testTsProject = ts.createProject({
     module: 'commonjs',
     typescript: require('typescript')
     // noEmitOnError: true
+});
+
+gulp.task('typedoc', function(){
+    return gulp.src(['./src/**/*.ts'])
+    .pipe(typedoc({
+        module: 'commonjs',
+        out: './docs',
+        name: 'sqiggl-js',
+        target: 'es5',
+        includeDeclarations: true
+    }));
 });
 
 gulp.task('default', ['build:site', 'build:tests', 'build:source:node', 'build:source:browser']);

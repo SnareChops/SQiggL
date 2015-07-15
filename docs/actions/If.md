@@ -20,7 +20,7 @@
 * [If](#If)
   * [new If(command, statement, inner, variables)](#new_If_new)
   * _instance_
-    * [.parseCondition(statement, variables)](#If+parseCondition) ⇒ <code>ICondition</code> &#124; <code>null</code>
+    * [.extractCondition(statement, variables)](#If+extractCondition) ⇒ <code>ICondition</code> &#124; <code>null</code>
     * [.validate()](#If+validate) ⇒ <code>string</code> &#124; <code>null</code>
     * [.perform(prevPassed)](#If+perform) ⇒ <code>IPerformResult</code>
   * _static_
@@ -40,8 +40,8 @@ The If action
 | inner | <code>string</code> | Text that follows after this action until the next command |
 | variables | <code>IVariables</code> | Variables within the scope of this action |
 
-<a name="If+parseCondition"></a>
-### if.parseCondition(statement, variables) ⇒ <code>ICondition</code> &#124; <code>null</code>
+<a name="If+extractCondition"></a>
+### if.extractCondition(statement, variables) ⇒ <code>ICondition</code> &#124; <code>null</code>
 Try and locate a matching condition from the available conditions for this action. If no match is found, return null.
 
 **Kind**: instance method of <code>[If](#If)</code>  

@@ -15,8 +15,8 @@
   "docs/modifiers/Not.md",
   "docs/modifiers/OrEqual.md",
   "docs/Modifiers.md",
+  "docs/Extensions.md",
   "docs/conditions/Condition.md",
-  "docs/conditions/IsNotNull.md",
   "docs/conditions/IsNull.md",
   "docs/conditions/GreaterThan.md",
   "docs/conditions/LessThan.md",
@@ -24,8 +24,8 @@
   "docs/Conditions.md",
   "docs/actions/If.md",
   "docs/Actions.md",
-  "docs/Extensions.md",
   "docs/Parser.md",
   "docs/Main.md",
-  "docs/SQiggL.md"
+  "docs/SQiggL.md",
+  "docs/conditions/LengthGreaterThan.md"
 ]
