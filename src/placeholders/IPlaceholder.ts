@@ -1,7 +1,7 @@
-import IModifier from '../modifiers/IModifier';
+import {Modifier} from '../Modifiers';
 interface IPlaceholder {
     name: string;
     locator: RegExp;
-    replacement: (item?:IModifier[]) => string;
+    replacement: (item?:Modifier[]) => string;
 }
 export default IPlaceholder;

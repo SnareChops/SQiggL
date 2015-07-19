@@ -1,8 +1,6 @@
-import {If, Else, EndIf} from './Actions';
+import {Action, If, Else, EndIf} from './Actions';
 import CommandScope from './CommandScope';
 import {VariableReplacer} from './Replacers';
-import IAction from './actions/IAction';
-import IPerformResult from './IPerformResult';
 import IVariables from './IVariables';
 /**
  * Command object responsible for handling all actions, conditions, and variables within it's section of the query
@@ -32,7 +30,7 @@ export default class Command {
 	public static regex: RegExp = /{{%(.*?)%}}([\s\S]*?)?(?=(?:{{%|$))/gm;
 	public actions: any[] = [If, Else, EndIf];
 	public replacers = [VariableReplacer];
-	public action: IAction;
+	public action: Action;
 	public scope: CommandScope = new CommandScope();
 	public dependents: Command[] = [];
 	constructor(public index: number, public length:number, public statement: string, public inner: string, variables: IVariables){
@@ -49,7 +47,7 @@ export default class Command {
      * @param {IVariables} variables    - Variables within the scope of this command
      * @returns {IAction | null}        - The matching action or null if no action was found
      */	
-	public extract(statement: string, inner: string, variables: IVariables): IAction{
+	public extract(statement: string, inner: string, variables: IVariables): Action{
 		for(var action of this.actions){
 			if(action.regex.test(this.statement)) return new action(this, statement, inner, variables);
 		}

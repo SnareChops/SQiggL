@@ -1,4 +1,5 @@
 import IModifierDefinition from './modifiers/IModifierDefinition';
+import Modifier from './modifiers/Modifier';
 import IVariables from './IVariables';
 
 let NotDefinition: IModifierDefinition = {
@@ -12,3 +13,6 @@ let OrEqualDefinition: IModifierDefinition = {
     rule: (pass: boolean, variable: string, comparative: string | string[], variables: IVariables): boolean => pass || variables[variable] === comparative
 }
 export let OrEqual = new Modifier(OrEqualDefinition);
+
+export {default as IModifierDefinition} from './modifiers/IModifierDefinition';
+export {default as Modifier} from './modifiers/Modifier'; 

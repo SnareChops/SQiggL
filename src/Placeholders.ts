@@ -1,4 +1,4 @@
-import IPlaceholder from './IPlaceholderDefinition';
+import IPlaceholder from './placeholders/IPlaceholder';
 export let Placeholders: IPlaceholder[] = [
     {
         name: 'variable',
