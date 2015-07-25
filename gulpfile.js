@@ -73,7 +73,7 @@ gulp.task('build:source:browser', function(){
             return;
         }
         return browserify({debug: true, entries: entries, cache: {}, packageCache: {}})
-        .plugin('tsify')
+        .plugin('tsify', {target: 'es5'})
         .bundle()
         .pipe(stream);
     });
@@ -91,7 +91,7 @@ gulp.task('build:site', function(){
             return;
         }
         return browserify({debug: true, entries: entries, cache: {}, packageCache: {}})
-        .plugin('tsify')
+        .plugin('tsify', {target: 'es5'})
         .bundle()
         .pipe(stream);
     });
@@ -109,7 +109,7 @@ gulp.task('build:tests', function(){
             return;
         }
         return browserify({debug: true, entries: entries, cache: {}, packageCache: {}})
-        .plugin('tsify')
+        .plugin('tsify', {target: 'es5'})
         .bundle()
         .pipe(stream);
     });

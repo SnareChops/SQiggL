@@ -5,6 +5,7 @@ export default class Modifier {
     public identifiers: RegExp[];
     public rule: (pass: boolean, variable: string, comparative: string | string[], variables: IVariables) => boolean;
     constructor(private definition:IModifierDefinition){
+        if(!definition) throw 'Attempted to instatiate modifier without a definition';
         this.identifiers = definition.identifiers;
         this.rule = definition.rule
     }

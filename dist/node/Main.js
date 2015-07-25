@@ -1,4 +1,4 @@
-var Parser_1 = require('./Parser');
+var Parsers_1 = require('./Parsers');
 /**
  * The starting point of the entire SQiggL parser
  * @function
@@ -7,7 +7,7 @@ var Parser_1 = require('./Parser');
  * @return {string}                 - The fully parsed SQL query
  */
 function parse(sql, variables) {
-    var parser = new Parser_1.default(sql, variables);
-    return parser.parse();
+    Parsers_1.SQiggLParser.parse(sql, variables);
+    return Parsers_1.SQiggLParser.perform();
 }
 exports.parse = parse;

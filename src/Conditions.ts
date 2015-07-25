@@ -28,7 +28,7 @@ let IsNullDefinition: IConditionDefinition = {
     items: ['variable', [Not]],
     rule: (variable: string, comparative: string, variables: IVariables): boolean => variables[variable] == null
 }
-export let IsNull = new Condition(IsNull);
+export let IsNull = new Condition(IsNullDefinition);
 
 let AlphabeticallyGreaterThanDefinition: IConditionDefinition = {
     template: '(v) (m)abc>(m) (c)',

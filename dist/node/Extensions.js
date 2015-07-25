@@ -7,3 +7,6 @@ Array.prototype.isFull = function () {
             return false;
     }
 };
+Array.prototype.contains = function (T) {
+    return this.some(function (x) { return x === T; });
+};

@@ -1,4 +1,5 @@
 import IPlaceholder from './placeholders/IPlaceholder';
+import {Modifier} from './Modifiers';
 export let Placeholders: IPlaceholder[] = [
     {
         name: 'variable',
@@ -13,7 +14,7 @@ export let Placeholders: IPlaceholder[] = [
     {
         name: 'modifier',
         locator: /\(m\)/i,
-        replacement: (item) => `((?:${item.map(modifier => modifier.identifiers.map(identifier => identifier.source).join('|')).join('|')}|\\s*))`
+        replacement: (item?: Modifier[]) => `((?:${item.map(modifier => modifier.identifiers.map(identifier => identifier.source).join('|')).join('|')}|\\s*))`
     }
 ];
 export default function Placeholder(name: string){

@@ -1,4 +1,4 @@
-import Parser from './Parser';
+import {SQiggLParser} from './Parsers';
 import IVariables from './IVariables';
 /**
  * The starting point of the entire SQiggL parser
@@ -8,6 +8,6 @@ import IVariables from './IVariables';
  * @return {string}                 - The fully parsed SQL query
  */
 export function parse(sql: string, variables?: IVariables): string{
-	var parser = new Parser(sql, variables);
-	return parser.parse();
+	SQiggLParser.parse(sql, variables);
+    return SQiggLParser.perform();
 }
