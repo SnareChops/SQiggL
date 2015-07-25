@@ -11,5 +11,4 @@ let ActionRunnerDefinition: IRunnerDefinition = {
 export let ActionRunner = new Runner(ActionRunnerDefinition);
 
 export {default as IRunnerDefinition} from './runners/IRunnerDefinition';
-export {default as RunnerResult} from './runners/RunnerResult';
 export {default as Runner} from './runners/Runner';

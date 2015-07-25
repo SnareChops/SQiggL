@@ -31,7 +31,7 @@ export default class Parser {
 	// }
     constructor(public definition: IParserDefinition){
         if(!definition) throw 'Attempted to instatiate parser without a definition';
-        this.regex = new RegExp(`(?:${this.definition.runners.map(x => x.definition.regex.source).join(')|(')})`);
+        this.regex = new RegExp(`(?:${this.definition.runners.map(x => x.definition.regex.source).join(')|(')})`, 'gm');
     }
 	/**
      * Extract any commands out of the SQiggL query and determine their order, nesting, and type
@@ -46,13 +46,14 @@ export default class Parser {
 	    this.commands = [];
         this.stack = [];
         this.sql = sql;
-        let match
+        let match;
 		// Command.regex.lastIndex = 0;
 		while((match = this.regex.exec(sql)) != null){
             let found: Command, runner: Runner;
             for(runner of this.definition.runners){
                 if(runner.matches(match[0])){
                     found = new Command(match.index, match.input.length, match[1], match[2], new Scope(), runner);
+                    runner.parse(found);
                 }
             }
 			if(this.stack.length > 0 && this.stack.last().action.definition.dependents.contains(found.action)){

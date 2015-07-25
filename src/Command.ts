@@ -1,5 +1,7 @@
 import {Runner} from './Runners';
 import {Action} from './Actions';
+import {Condition} from './Conditions';
+import {Modifier} from './Modifiers';
 import {Replacer} from './Replacers';
 import CommandResult from './commands/CommandResult';
 import Scope from './Scope';
@@ -7,6 +9,8 @@ import Scope from './Scope';
 export default class Command {
     public dependents: Command[] = [];
     public action: Action;
+    public condition: Condition;
+    public modifiers: Modifier[] = [];
     public result: CommandResult;
     constructor(public index: number, public length: number, public statement: string, public inner: string, public scope: Scope, private runner: Runner){
         let action: Action;

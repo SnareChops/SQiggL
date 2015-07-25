@@ -10,19 +10,18 @@ export default class Runner {
         if(!definition) throw 'Attempted to instatiate runner without a definition';
     }
     
-    public parse(command: Command):Command {
+    public parse(command: Command) {
         let action: Action;
         for(action of this.definition.actions){
             if(action.matches(command.statement)) {
                 command.action = action;
-                return command;
+                command.action.parse(command);
             }
         }
-        return null;
     }
     
     public perform(command: Command, prev?: Command): Command {
-        command.result = command.action.perform(prev.result);
+        command.action.perform(prev);
         command.result.dependent = command.scope.perform(command).result;
         let replacer: Replacer;
         for(replacer of this.definition.replacers){
@@ -32,6 +31,7 @@ export default class Runner {
     }
     
     public matches(text: string): boolean {
+        this.definition.regex.lastIndex = 0;
         return this.definition.regex.test(text);
     }
 }

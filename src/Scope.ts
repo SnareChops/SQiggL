@@ -1,5 +1,4 @@
 import IVariables from './IVariables';
-import {RunnerResult} from './Runners'
 import Command from './Command';
 
 export default class Scope {

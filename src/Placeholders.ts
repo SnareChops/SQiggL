@@ -14,7 +14,7 @@ export let Placeholders: IPlaceholder[] = [
     {
         name: 'modifier',
         locator: /\(m\)/i,
-        replacement: (item?: Modifier[]) => `((?:${item.map(modifier => modifier.identifiers.map(identifier => identifier.source).join('|')).join('|')}|\\s*))`
+        replacement: (item?: Modifier[]) => `((?:${item.map(modifier => modifier.definition.identifiers.map(identifier => identifier.source).join('|')).join('|')}|\\s*))`
     }
 ];
 export default function Placeholder(name: string){

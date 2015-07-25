@@ -3,6 +3,7 @@ import ConditionResult from './ConditionResult';
 import IConditionIndices from './IConditionIndices';
 import IConditionDefinition from './IConditionDefinition';
 import IVariables from '../IVariables';
+import Command from '../Command';
 import {Modifier} from '../Modifiers'
 import '../Extensions';
 
@@ -43,28 +44,29 @@ export default class Condition {
         return new RegExp(template, 'i');
     }
     
-    public parse(statement: string, variables: IVariables): ConditionResult {
-        let result = new ConditionResult(), match = statement.match(this.regex), i, modifier;
+    private parse(command: Command): ConditionResult {
+        let result = new ConditionResult(), match = command.statement.match(this.regex), i, modifier: Modifier;
         result.statement = match[0];
         for(i=1;i<match.length;i++){
-            if(this.items[i][0] instanceof Modifier){
-                for(modifier of this.items[i]){
+            if(this.items[i-1] instanceof Array){
+                for(modifier of <Modifier[]>this.items[i-1]){
                     if(modifier.matches(match[i])) result.set(<string>this.indicies[i], modifier);
                 }
             }
             else result.set(<string>this.indicies[i], match[i])
         }
-        result.variables = variables;
+        result.variables = command.scope.variables;
         return result;
     }
     
-    public perform(result?: ConditionResult){
-        result.pass = this.rule(result.variable, result.comparative, result.variables);
-        let mod;
-        for(mod of result.modifier){
-            result.pass = mod.rule(result.pass, result.variable, result.comparative, result.variables);
+    public perform(command: Command): boolean{
+        let parsed = this.parse(command); 
+        parsed.pass = this.rule(parsed.variable, parsed.comparative, parsed.variables);
+        let mod: Modifier;
+        for(mod of <Modifier[]>parsed.modifier){
+            if(mod.definition.rule(parsed.pass, parsed.variable, parsed.comparative, parsed.variables)) return true;
         }
-        return result.pass;
+        return false;
     }
     
     public matches(statement: string){

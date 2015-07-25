@@ -1,3 +1,5 @@
-import {RunnerResult} from '../Runners';
 
-export default class CommandResult extends RunnerResult {}
+export default class CommandResult {
+    public dependent: CommandResult;
+    constructor(public text: string, public passed?: boolean){}
+}

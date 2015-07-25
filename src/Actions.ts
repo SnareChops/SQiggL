@@ -1,5 +1,5 @@
 import IActionDefinition from './actions/IActionDefinition';
-import ActionResult from './actions/ActionResult';
+import CommandResult from './commands/CommandResult';
 import Action from './actions/Action';
 import Command from './Command';
 import {Condition, Equal, GreaterThan, LessThan, IsNull, AlphabeticallyGreaterThan, AlphabeticallyLessThan, LengthGreaterThan, LengthLessThan, IsNaN, Between} from './Conditions';
@@ -10,7 +10,10 @@ let EndIfDefinition: IActionDefinition = {
     conditions: [],
     dependents: [],
     terminator: false,
-    rule: (command: Command, condition: Condition, prev: ActionResult): ActionResult => { return new ActionResult(command.inner, true)}
+    rule: (command: Command, prev?: Command): Command => {
+        command.result = new CommandResult(command.inner, true);
+        return command;
+    }
 };
 export let EndIf = new Action(EndIfDefinition);
 
@@ -19,7 +22,11 @@ let ElseDefinition: IActionDefinition = {
     conditions: [],
     dependents: [],
     terminator: false,
-    rule: (command: Command, condition: Condition, prev: ActionResult): ActionResult => !prev.text ? new ActionResult(command.inner + command.scope.perform().result.text, true) : new ActionResult('', false)
+    rule: (command: Command, prev?: Command): Command => {
+        if(!prev.result.passed) command.result = new CommandResult(command.inner + command.scope.perform().result.text, true);
+        else command.result = new CommandResult('', false);
+        return command;
+    }
 };
 export let Else = new Action(ElseDefinition);
 
@@ -28,10 +35,13 @@ let IfDefinition: IActionDefinition = {
     conditions: [Equal, GreaterThan, LessThan, IsNull, AlphabeticallyGreaterThan, AlphabeticallyLessThan, LengthGreaterThan, LengthLessThan, IsNaN, Between],
     dependents: [Else, EndIf],
     terminator: false,
-    rule: (command: Command, condition: Condition): ActionResult => condition.perform() ? new ActionResult(command.inner + command.scope.perform().result.text, true) : new ActionResult(command.terminate(), false) 
+    rule: (command: Command, prev?: Command): Command => {
+        if(command.condition.perform(command)) command.result = new CommandResult(command.inner + command.scope.perform().result.text, true);
+        else command.result = new CommandResult(command.terminate(), false);
+        return command;
+    } 
 };
 export let If = new Action(IfDefinition);
 
 export {default as IActionDefinition} from './actions/IActionDefinition';
-export {default as ActionResult} from './actions/ActionResult';
 export {default as Action} from './actions/Action';
