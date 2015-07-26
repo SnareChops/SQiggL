@@ -11,7 +11,7 @@ export default class Command {
     public action: Action;
     public condition: Condition;
     public modifiers: Modifier[] = [];
-    public result: CommandResult;
+    public result: CommandResult = new CommandResult('', false);
     constructor(public index: number, public length: number, public statement: string, public inner: string, public scope: Scope, private runner: Runner){
         let action: Action;
         for(action of runner.definition.actions){
@@ -28,6 +28,14 @@ export default class Command {
     
     public replace(replacer: Replacer){
         this.result.text = replacer.replace(this.result.text, this.scope.variables);
+    }
+    
+    public defer(passed: boolean): string {
+        let dependent:Command, text: string = '';
+        for(dependent of this.dependents){
+            text += dependent.perform(this);
+        }
+        return text;
     }
     
     public terminate(): string{

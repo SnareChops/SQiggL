@@ -6,11 +6,11 @@ export default class Scope {
 	public commands: Command[] = [];
 	public dependents: Command[] = [];
     
-    public perform(prev?: Command): Command {
-        let command: Command;
+    public perform(): string {
+        let command: Command, text: string = '';
         for(command of this.commands){
-            prev = command.perform(prev);
+            text += command.perform().result.text;
         }
-        return prev;
+        return text;
     }
 }

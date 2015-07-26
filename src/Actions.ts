@@ -23,7 +23,7 @@ let ElseDefinition: IActionDefinition = {
     dependents: [],
     terminator: false,
     rule: (command: Command, prev?: Command): Command => {
-        if(!prev.result.passed) command.result = new CommandResult(command.inner + command.scope.perform().result.text, true);
+        if(!prev.result.passed) command.result = new CommandResult(command.inner + command.scope.perform(), true);
         else command.result = new CommandResult('', false);
         return command;
     }
@@ -36,8 +36,8 @@ let IfDefinition: IActionDefinition = {
     dependents: [Else, EndIf],
     terminator: false,
     rule: (command: Command, prev?: Command): Command => {
-        if(command.condition.perform(command)) command.result = new CommandResult(command.inner + command.scope.perform().result.text, true);
-        else command.result = new CommandResult(command.terminate(), false);
+        if(command.condition.perform(command)) command.result = new CommandResult(command.inner + command.scope.perform() + command.terminate(), true);
+        else command.result = new CommandResult(command.defer(false), false);
         return command;
     } 
 };

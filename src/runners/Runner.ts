@@ -21,8 +21,8 @@ export default class Runner {
     }
     
     public perform(command: Command, prev?: Command): Command {
-        command.action.perform(prev);
-        command.result.dependent = command.scope.perform(command).result;
+        command.result = command.action.perform(command, prev).result;
+        // command.result.dependent = command.scope.perform(command).result;
         let replacer: Replacer;
         for(replacer of this.definition.replacers){
             command.replace(replacer);
