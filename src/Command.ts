@@ -33,7 +33,7 @@ export default class Command {
     public defer(passed: boolean): string {
         let dependent:Command, text: string = '';
         for(dependent of this.dependents){
-            text += dependent.perform(this);
+            text += dependent.perform(this).result.text;
         }
         return text;
     }

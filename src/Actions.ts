@@ -36,7 +36,9 @@ let IfDefinition: IActionDefinition = {
     dependents: [Else, EndIf],
     terminator: false,
     rule: (command: Command, prev?: Command): Command => {
-        if(command.condition.perform(command)) command.result = new CommandResult(command.inner + command.scope.perform() + command.terminate(), true);
+        if(command.condition.perform(command)) {
+            command.result = new CommandResult(command.inner + command.scope.perform() + command.terminate(), true);
+        }
         else command.result = new CommandResult(command.defer(false), false);
         return command;
     } 
