@@ -39,8 +39,8 @@ export default class Command {
     }
     
     public terminate(): string{
-        return this.scope.commands.some(command => command.action.definition.terminator)
-		  ? this.scope.commands.filter(command => command.action.definition.terminator)[1].perform().result.text
+        return this.dependents.some(command => command.action.definition.terminator)
+		  ? this.dependents.filter(command => command.action.definition.terminator)[0].perform().result.text
 		  : '';
     }
 }

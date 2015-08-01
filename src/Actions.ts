@@ -9,7 +9,7 @@ let EndIfDefinition: IActionDefinition = {
     regex: /^\s*endif\b/i,
     conditions: [],
     dependents: [],
-    terminator: false,
+    terminator: true,
     rule: (command: Command, prev?: Command): Command => {
         command.result = new CommandResult(command.inner, true);
         return command;

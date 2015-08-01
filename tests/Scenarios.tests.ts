@@ -74,16 +74,6 @@ describe('The scenario', () => {
             });
         });
         
-        describe('=! condition', () => {
-            let query = `UPDATE Names {{% if example =! 12 %}} SET Name = '{{example}}' {{% else %}} SET Name = 'Cow' {{% endif %}} WHERE Name = 'Awesome'`;
-            it('should provide a correct result if true', () => {
-                expect(parse(query, {example: '12'})).toEqual(`UPDATE Names SET Name = 'Cow'  WHERE Name = 'Awesome'`);
-            });
-            it('should provide a correct result if false', () => {
-                expect(parse(query, {example: '14'})).toEqual(`UPDATE Names SET Name = '14'  WHERE Name = 'Awesome'`);
-            });
-        });
-        
         describe('!== condition', () => {
             let query = `UPDATE Names {{% if example !== 12 %}} SET Name = '{{example}}' {{% else %}} SET Name = 'Cow' {{% endif %}} WHERE Name = 'Awesome'`;
             it('should provide a correct result if true', () => {
@@ -91,16 +81,6 @@ describe('The scenario', () => {
             });
             it('should provide a correct result if false', () => {
                 expect(parse(query, {example: '14'})).toEqual(`UPDATE Names SET Name = '14'  WHERE Name = 'Awesome'`);
-            });
-        });
-        
-        describe('!=! condition', () => {
-            let query = `UPDATE Names {{% if example !=! 12 %}} SET Name = '{{example}}' {{% else %}} SET Name = 'Cow' {{% endif %}} WHERE Name = 'Awesome'`;
-            it('should provide a correct result if true', () => {
-                expect(parse(query, {example: '12'})).toEqual(`UPDATE Names SET Name = '12'  WHERE Name = 'Awesome'`);
-            });
-            it('should provide a correct result if false', () => {
-                expect(parse(query, {example: '14'})).toEqual(`UPDATE Names SET Name = 'Cow'  WHERE Name = 'Awesome'`);
             });
         });
         
@@ -130,33 +110,8 @@ describe('The scenario', () => {
             });
         });
         
-        describe('=> condition', () => {
-            let query = `UPDATE Names {{% if example => 12 %}} SET Name = '{{example}}' {{% else %}} SET Name = 'Cow' {{% endif %}} WHERE Name = 'Awesome'`;
-            it('should provide a correct result if true', () => {
-                expect(parse(query, {example: '14'})).toEqual(`UPDATE Names SET Name = '14'  WHERE Name = 'Awesome'`);
-            });
-            it('should provide a correct result if equal', () => {
-                expect(parse(query, {example: '12'})).toEqual(`UPDATE Names SET Name = '12'  WHERE Name = 'Awesome'`);
-            });
-            it('should provide a correct result if false', () => {
-                expect(parse(query, {example: '9'})).toEqual(`UPDATE Names SET Name = 'Cow'  WHERE Name = 'Awesome'`);
-            });
-        });
-        
         describe('!> condition', () => {
             let query = `UPDATE Names {{% if example !> 12 %}} SET Name = '{{example}}' {{% else %}} SET Name = 'Cow' {{% endif %}} WHERE Name = 'Awesome'`;
-            it('should provide a correct result if true', () => {
-                expect(parse(query, {example: '14'})).toEqual(`UPDATE Names SET Name = 'Cow'  WHERE Name = 'Awesome'`);
-            });
-            it('should provide a correct result if equal', () => {
-                expect(parse(query, {example: '12'})).toEqual(`UPDATE Names SET Name = '12'  WHERE Name = 'Awesome'`);
-            });
-            it('should provide a correct result if false', () => {
-                expect(parse(query, {example: '9'})).toEqual(`UPDATE Names SET Name = '9'  WHERE Name = 'Awesome'`);
-            });
-        });
-        describe('>! condition', () => {
-            let query = `UPDATE Names {{% if example >! 12 %}} SET Name = '{{example}}' {{% else %}} SET Name = 'Cow' {{% endif %}} WHERE Name = 'Awesome'`;
             it('should provide a correct result if true', () => {
                 expect(parse(query, {example: '14'})).toEqual(`UPDATE Names SET Name = 'Cow'  WHERE Name = 'Awesome'`);
             });
@@ -178,45 +133,6 @@ describe('The scenario', () => {
             });
             it('should provide a correct result if false', () => {
                 expect(parse(query, {example: '9'})).toEqual(`UPDATE Names SET Name = '9'  WHERE Name = 'Awesome'`);
-            });
-        });
-        
-        describe('=>! condition', () => {
-            let query = `UPDATE Names {{% if example =>! 12 %}} SET Name = '{{example}}' {{% else %}} SET Name = 'Cow' {{% endif %}} WHERE Name = 'Awesome'`;
-            it('should provide a correct result if true', () => {
-                expect(parse(query, {example: '14'})).toEqual(`UPDATE Names SET Name = 'Cow'  WHERE Name = 'Awesome'`);
-            });
-            it('should provide a correct result if equal', () => {
-                expect(parse(query, {example: '12'})).toEqual(`UPDATE Names SET Name = '12'  WHERE Name = 'Awesome'`);
-            });
-            it('should provide a correct result if false', () => {
-                expect(parse(query, {example: '9'})).toEqual(`UPDATE Names SET Name = '9'  WHERE Name = 'Awesome'`);
-            });
-        });
-        
-        describe('!>! condition', () => {
-            let query = `UPDATE Names {{% if example !>! 12 %}} SET Name = '{{example}}' {{% else %}} SET Name = 'Cow' {{% endif %}} WHERE Name = 'Awesome'`;
-            it('should provide a correct result if true', () => {
-                expect(parse(query, {example: '14'})).toEqual(`UPDATE Names SET Name = '14'  WHERE Name = 'Awesome'`);
-            });
-            it('should provide a correct result if equal', () => {
-                expect(parse(query, {example: '12'})).toEqual(`UPDATE Names SET Name = 'Cow'  WHERE Name = 'Awesome'`);
-            });
-            it('should provide a correct result if false', () => {
-                expect(parse(query, {example: '9'})).toEqual(`UPDATE Names SET Name = 'Cow'  WHERE Name = 'Awesome'`);
-            });
-        });
-        
-        describe('=>= condition', () => {
-            let query = `UPDATE Names {{% if example =>= 12 %}} SET Name = '{{example}}' {{% else %}} SET Name = 'Cow' {{% endif %}} WHERE Name = 'Awesome'`;
-            it('should provide a correct result if true', () => {
-                expect(parse(query, {example: '14'})).toEqual(`UPDATE Names SET Name = '14'  WHERE Name = 'Awesome'`);
-            });
-            it('should provide a correct result if equal', () => {
-                expect(parse(query, {example: '12'})).toEqual(`UPDATE Names SET Name = '12'  WHERE Name = 'Awesome'`);
-            });
-            it('should provide a correct result if false', () => {
-                expect(parse(query, {example: '9'})).toEqual(`UPDATE Names SET Name = 'Cow'  WHERE Name = 'Awesome'`);
             });
         });
         
@@ -246,34 +162,8 @@ describe('The scenario', () => {
             });
         });
         
-        describe('=< condition', () => {
-            let query = `UPDATE Names {{% if example =< 12 %}} SET Name = '{{example}}' {{% else %}} SET Name = 'Cow' {{% endif %}} WHERE Name = 'Awesome'`;
-            it('should provide a correct result if true', () => {
-                expect(parse(query, {example: '9'})).toEqual(`UPDATE Names SET Name = '9'  WHERE Name = 'Awesome'`);
-            });
-            it('should provide a correct result if equal', () => {
-                expect(parse(query, {example: '12'})).toEqual(`UPDATE Names SET Name = '12'  WHERE Name = 'Awesome'`);
-            });
-            it('should provide a correct result if false', () => {
-                expect(parse(query, {example: '14'})).toEqual(`UPDATE Names SET Name = 'Cow'  WHERE Name = 'Awesome'`);
-            });
-        });
-        
         describe('!< condition', () => {
             let query = `UPDATE Names {{% if example !< 12 %}} SET Name = '{{example}}' {{% else %}} SET Name = 'Cow' {{% endif %}} WHERE Name = 'Awesome'`;
-            it('should provide a correct result if true', () => {
-                expect(parse(query, {example: '9'})).toEqual(`UPDATE Names SET Name = 'Cow'  WHERE Name = 'Awesome'`);
-            });
-            it('should provide a correct result if equal', () => {
-                expect(parse(query, {example: '12'})).toEqual(`UPDATE Names SET Name = '12'  WHERE Name = 'Awesome'`);
-            });
-            it('should provide a correct result if false', () => {
-                expect(parse(query, {example: '14'})).toEqual(`UPDATE Names SET Name = '14'  WHERE Name = 'Awesome'`);
-            });
-        });
-        
-        describe('<! condition', () => {
-            let query = `UPDATE Names {{% if example <! 12 %}} SET Name = '{{example}}' {{% else %}} SET Name = 'Cow' {{% endif %}} WHERE Name = 'Awesome'`;
             it('should provide a correct result if true', () => {
                 expect(parse(query, {example: '9'})).toEqual(`UPDATE Names SET Name = 'Cow'  WHERE Name = 'Awesome'`);
             });
@@ -298,42 +188,16 @@ describe('The scenario', () => {
             });
         });
         
-        describe('=<! condition', () => {
-            let query = `UPDATE Names {{% if example =<! 12 %}} SET Name = '{{example}}' {{% else %}} SET Name = 'Cow' {{% endif %}} WHERE Name = 'Awesome'`;
+        describe('abc> condition', () => {
+            let query = `UPDATE Names {{% if example abc> 'dragon' %}} SET Name = '{{example}}' {{% else %}} SET Name = 'Cow' {{% endif %}} WHERE Name = 'Awesome'`;
             it('should provide a correct result if true', () => {
-                expect(parse(query, {example: '9'})).toEqual(`UPDATE Names SET Name = 'Cow'  WHERE Name = 'Awesome'`);
+                expect(parse(query, {example: 'hello'})).toEqual(`UPDATE Names SET Name = '14'  WHERE Name = 'Awesome'`);
             });
             it('should provide a correct result if equal', () => {
-                expect(parse(query, {example: '12'})).toEqual(`UPDATE Names SET Name = '12'  WHERE Name = 'Awesome'`);
+                expect(parse(query, {example: 'dragon'})).toEqual(`UPDATE Names SET Name = 'Cow'  WHERE Name = 'Awesome'`);
             });
             it('should provide a correct result if false', () => {
-                expect(parse(query, {example: '14'})).toEqual(`UPDATE Names SET Name = '14'  WHERE Name = 'Awesome'`);
-            });
-        });
-        
-        describe('!<! condition', () => {
-            let query = `UPDATE Names {{% if example !<! 12 %}} SET Name = '{{example}}' {{% else %}} SET Name = 'Cow' {{% endif %}} WHERE Name = 'Awesome'`;
-            it('should provide a correct result if true', () => {
-                expect(parse(query, {example: '9'})).toEqual(`UPDATE Names SET Name = '9'  WHERE Name = 'Awesome'`);
-            });
-            it('should provide a correct result if equal', () => {
-                expect(parse(query, {example: '12'})).toEqual(`UPDATE Names SET Name = 'Cow'  WHERE Name = 'Awesome'`);
-            });
-            it('should provide a correct result if false', () => {
-                expect(parse(query, {example: '14'})).toEqual(`UPDATE Names SET Name = 'Cow'  WHERE Name = 'Awesome'`);
-            });
-        });
-        
-        describe('=<= condition', () => {
-            let query = `UPDATE Names {{% if example =<= 12 %}} SET Name = '{{example}}' {{% else %}} SET Name = 'Cow' {{% endif %}} WHERE Name = 'Awesome'`;
-            it('should provide a correct result if true', () => {
-                expect(parse(query, {example: '9'})).toEqual(`UPDATE Names SET Name = '9'  WHERE Name = 'Awesome'`);
-            });
-            it('should provide a correct result if equal', () => {
-                expect(parse(query, {example: '12'})).toEqual(`UPDATE Names SET Name = '12'  WHERE Name = 'Awesome'`);
-            });
-            it('should provide a correct result if false', () => {
-                expect(parse(query, {example: '14'})).toEqual(`UPDATE Names SET Name = 'Cow'  WHERE Name = 'Awesome'`);
+                expect(parse(query, {example: 'awkward'})).toEqual(`UPDATE Names SET Name = 'Cow'  WHERE Name = 'Awesome'`);
             });
         });
     });
@@ -345,21 +209,21 @@ describe('The scenario', () => {
         });
     });
     
-    describe('"missing dependent actions"', () => {
-        beforeEach(() => spyOn(console, 'error'));
+    // describe('"missing dependent actions"', () => {
+    //     beforeEach(() => spyOn(console, 'error'));
     
-        it('should throw a syntax error if a dependent action is found without the needed preceeding action', () => {
-            let sql = "UPDATE Students {{% else %}} SET FirstName = 'Scott'";
-            expect(parse(sql, null)).toEqual(sql);
-            expect(console.error).toHaveBeenCalled();
-        });
+    //     it('should throw a syntax error if a dependent action is found without the needed preceeding action', () => {
+    //         let sql = "UPDATE Students {{% else %}} SET FirstName = 'Scott'";
+    //         expect(parse(sql, null)).toEqual(sql);
+    //         expect(console.error).toHaveBeenCalled();
+    //     });
         
-        it('should throw a syntax error if a dependent action is found without the needed preceeding action', () => {
-            let sql = "UPDATE Students {{% endif %}} SET FirstName = 'Scott'";
-            expect(parse(sql, null)).toEqual(sql);
-            expect(console.error).toHaveBeenCalled();
-        });
-    });
+    //     it('should throw a syntax error if a dependent action is found without the needed preceeding action', () => {
+    //         let sql = "UPDATE Students {{% endif %}} SET FirstName = 'Scott'";
+    //         expect(parse(sql, null)).toEqual(sql);
+    //         expect(console.error).toHaveBeenCalled();
+    //     });
+    // });
     
     describe('"query with newlines"', () => {     
         it('should accept newlines in queries', () => {

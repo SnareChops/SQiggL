@@ -53,6 +53,7 @@ export default class Parser {
             for(runner of this.definition.runners){
                 if(runner.matches(match[0])){
                     found = new Command(match.index, match.input.length, match[1], match[2], new Scope(), runner);
+                    found.scope.variables = variables;
                     runner.parse(found);
                 }
             }

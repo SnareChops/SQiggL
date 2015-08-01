@@ -40,17 +40,18 @@ export default class Condition {
             this.indicies[idx] = name;
             idx++;
         }
-        template = template.replace(/\s+/g, '\\s+');
+        template = template.replace(/\s+/g, '(?:\\b|\\s+)');
         return new RegExp(template, 'i');
     }
     
     private parse(command: Command): ConditionResult {
-        let result = new ConditionResult(), match = command.statement.match(this.regex), i, modifier: Modifier;
+        let result = new ConditionResult(), match = command.statement.match(this.regex), i, modifier: Modifier, modNumber: number = -1;
         result.statement = match[0];
         for(i=1;i<match.length;i++){
             if(this.items[i-1] instanceof Array){
+                modNumber++;
                 for(modifier of <Modifier[]>this.items[i-1]){
-                    if(modifier.matches(match[i])) result.set(<string>this.indicies[i], modifier);
+                    if(modifier.matches(match[i])) result.set(<string>this.indicies[i], modifier, modNumber);
                 }
             }
             else result.set(<string>this.indicies[i], match[i])
@@ -60,13 +61,13 @@ export default class Condition {
     }
     
     public perform(command: Command): boolean{
-        let parsed = this.parse(command); 
+        let parsed = this.parse(command);
         parsed.pass = this.rule(parsed.variable, parsed.comparative, parsed.variables);
-        let mod: Modifier;
-        for(mod of <Modifier[]>parsed.modifier){
-            if(mod.definition.rule(parsed.pass, parsed.variable, parsed.comparative, parsed.variables)) return true;
+        let index: number;
+        for(index of this.definition.modOrder){
+            if(parsed.modifier[index]) parsed.pass = parsed.modifier[index].definition.rule(parsed.pass, parsed.variable, parsed.comparative, parsed.variables);
         }
-        return false;
+        return parsed.pass;
     }
     
     public matches(statement: string){
