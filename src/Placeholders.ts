@@ -2,14 +2,9 @@ import IPlaceholder from './placeholders/IPlaceholder';
 import {Modifier} from './Modifiers';
 export let Placeholders: IPlaceholder[] = [
     {
-        name: 'variable',
+        name: 'value',
         locator: /\(v\)/i,
-        replacement: () => '(\\w+)'
-    },
-    {
-        name: 'comparative',
-        locator: /\(c\)/i,
-        replacement: () => `(\\d+|["']\\w+["'])`
+        replacement: () => `((?:"|')?[\\w\\d]+(?:"|')?)`
     },
     {
         name: 'modifier',

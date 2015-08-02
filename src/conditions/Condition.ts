@@ -5,6 +5,7 @@ import IConditionDefinition from './IConditionDefinition';
 import IVariables from '../IVariables';
 import Command from '../Command';
 import {Modifier} from '../Modifiers'
+import Value from '../Value';
 import '../Extensions';
 
 export default class Condition {
@@ -12,7 +13,7 @@ export default class Condition {
     private indicies: IConditionIndices = {};
     private template: string;
     private items: Array<string | Modifier[]>;
-    private rule: (variable: string, comparative: string | string[], variables: IVariables) => boolean;
+    private rule: (values: Value[], variables: IVariables) => boolean;
     constructor(private definition: IConditionDefinition){
         if(!definition) throw 'Attempted to instatiate condition without a definition';
         this.regex = this.translate(this.definition);
@@ -41,6 +42,7 @@ export default class Condition {
             idx++;
         }
         template = template.replace(/\s+/g, '(?:\\b|\\s+)');
+        console.log(template);
         return new RegExp(template, 'i');
     }
     
@@ -62,10 +64,10 @@ export default class Condition {
     
     public perform(command: Command): boolean{
         let parsed = this.parse(command);
-        parsed.pass = this.rule(parsed.variable, parsed.comparative, parsed.variables);
+        parsed.pass = this.rule(parsed.value, parsed.variables);
         let index: number;
         for(index of this.definition.modOrder){
-            if(parsed.modifier[index]) parsed.pass = parsed.modifier[index].definition.rule(parsed.pass, parsed.variable, parsed.comparative, parsed.variables);
+            if(parsed.modifier[index]) parsed.pass = parsed.modifier[index].definition.rule(parsed.pass, parsed.value, parsed.variables);
         }
         return parsed.pass;
     }

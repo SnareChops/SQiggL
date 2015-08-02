@@ -191,7 +191,7 @@ describe('The scenario', () => {
         describe('abc> condition', () => {
             let query = `UPDATE Names {{% if example abc> 'dragon' %}} SET Name = '{{example}}' {{% else %}} SET Name = 'Cow' {{% endif %}} WHERE Name = 'Awesome'`;
             it('should provide a correct result if true', () => {
-                expect(parse(query, {example: 'hello'})).toEqual(`UPDATE Names SET Name = '14'  WHERE Name = 'Awesome'`);
+                expect(parse(query, {example: 'hello'})).toEqual(`UPDATE Names SET Name = 'hello'  WHERE Name = 'Awesome'`);
             });
             it('should provide a correct result if equal', () => {
                 expect(parse(query, {example: 'dragon'})).toEqual(`UPDATE Names SET Name = 'Cow'  WHERE Name = 'Awesome'`);

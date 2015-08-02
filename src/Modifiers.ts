@@ -1,16 +1,17 @@
 import IModifierDefinition from './modifiers/IModifierDefinition';
 import Modifier from './modifiers/Modifier';
 import IVariables from './IVariables';
+import Value from './Value';
 
 let NotDefinition: IModifierDefinition = {
     identifiers: [/!/i, /(?:\b|\s+)not(?:\b|\s+)/i],
-    rule: (pass: boolean, variable: string, comparative: string | string[], variables: IVariables): boolean => !pass
+    rule: (pass: boolean, values: Value[], variables: IVariables): boolean => !pass
 }
 export let Not = new Modifier(NotDefinition);
 
 let OrEqualDefinition: IModifierDefinition = {
     identifiers: [/=/i],
-    rule: (pass: boolean, variable: string, comparative: string | string[], variables: IVariables): boolean => pass || variables[variable] === comparative
+    rule: (pass: boolean, values: Value[], variables: IVariables): boolean => pass || values[0].evaluate(variables) === values[1].evaluate(variables)
 }
 export let OrEqual = new Modifier(OrEqualDefinition);
 

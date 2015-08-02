@@ -1,17 +1,17 @@
 import IVariables from '../IVariables';
 import {Modifier} from '../Modifiers';
+import Value from '../Value';
 export default class ConditionResult {
     public pass: boolean;
-    public variable: string;
-    public comparative: any;
+    public value: Value[] = [];
     public variables: IVariables;
     public modifier: Modifier[] = [];
     public statement: string;
     public set(prop: string, value: string | Modifier, index?: number){
         if(this[prop] instanceof Array) {
-            if(index) this[prop][index] = value;
-            else this[prop].push(value);
+            if(index) this[prop][index] = prop === 'value' ? new Value(value) : value;
+            else this[prop].push(prop === 'value' ? new Value(value) : value);
         }
-        else /^["'].*["']$/i.test(value) ? this[prop] = value.substr(1, value.length - 2) : this[prop] = variables[value];
+        else this[prop] = prop === 'value' ? new Value(value) : value;
     }
 }
