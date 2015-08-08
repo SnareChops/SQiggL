@@ -42,7 +42,6 @@ export default class Condition {
             idx++;
         }
         template = template.replace(/\s+/g, '(?:\\b|\\s+)');
-        console.log(template);
         return new RegExp(template, 'i');
     }
     

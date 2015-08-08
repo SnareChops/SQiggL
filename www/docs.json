@@ -1,5 +1,7 @@
 [
   "docs/IVariables.md",
+  "docs/ValueType.md",
+  "docs/Value.md",
   "docs/modifiers/IModifierDefinition.md",
   "docs/modifiers/Modifier.md",
   "docs/Modifiers.md",

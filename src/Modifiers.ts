@@ -15,5 +15,11 @@ let OrEqualDefinition: IModifierDefinition = {
 }
 export let OrEqual = new Modifier(OrEqualDefinition);
 
+let LengthOrEqualDefinition: IModifierDefinition = {
+    identifiers: [/=/i],
+    rule: (pass: boolean, values: Value[], variables: IVariables): boolean => pass || (<string>values[0].evaluate(variables)).length === values[1].evaluate(variables)
+}
+export let LengthOrEqual = new Modifier(LengthOrEqualDefinition);
+
 export {default as IModifierDefinition} from './modifiers/IModifierDefinition';
 export {default as Modifier} from './modifiers/Modifier'; 
