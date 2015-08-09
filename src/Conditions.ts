@@ -1,7 +1,7 @@
 import IConditionDefinition from './conditions/IConditionDefinition';
 import IVariables from './IVariables';
 import Condition from './conditions/Condition';
-import {Not, OrEqual, LengthOrEqual} from './Modifiers';
+import {Not, OrEqual, LengthOrEqual, BetweenOrEqual} from './Modifiers';
 import Value from './Value';
 let EqualDefinition: IConditionDefinition = {
     template: '(v) (m)=(m) (v)',
@@ -77,9 +77,9 @@ export let IsNaN = new Condition(IsNaNDefinition);
 
 let BetweenDefinition: IConditionDefinition = {
     template: '(v) (v)>(m)<(v)',
-    items: ['value', 'value', [Not, OrEqual], 'value'],
+    items: ['value', 'value', [Not, BetweenOrEqual], 'value'],
     modOrder: [0],
-    rule: (values: Value[], variables: IVariables): boolean => values[1].evaluate(variables) > values[0].evaluate(variables) && values[2].evaluate(variables) < values[0].evaluate(variables) 
+    rule: (values: Value[], variables: IVariables): boolean => values[1].evaluate(variables) < values[0].evaluate(variables) && values[2].evaluate(variables) > values[0].evaluate(variables) 
 }
 export let Between = new Condition(BetweenDefinition);
 

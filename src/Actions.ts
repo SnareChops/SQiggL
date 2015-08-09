@@ -45,5 +45,32 @@ let IfDefinition: IActionDefinition = {
 };
 export let If = new Action(IfDefinition);
 
+let EndUnlessDefinition: IActionDefinition = {
+    regex: /^\s*endunless\b/i,
+    conditions: [],
+    dependents: [],
+    terminator: true,
+    rule: (command: Command, prev?: Command): Command => {
+        command.result = new CommandResult(command.inner, true);
+        return command;
+    }
+}
+export let EndUnless = new Action(EndUnlessDefinition);
+
+let UnlessDefinition: IActionDefinition = {
+    regex: /^\s*unless\b/i,
+    conditions: [Equal, GreaterThan, LessThan, IsNull, AlphabeticallyGreaterThan, AlphabeticallyLessThan, LengthGreaterThan, LengthLessThan, IsNaN, Between],
+    dependents: [Else, EndUnless],
+    terminator: false,
+    rule: (command: Command, prev?: Command): Command => {
+        if(!command.condition.perform(command)){
+            command.result = new CommandResult(command.inner + command.scope.perform() + command.terminate(), true);
+        }
+        else command.result = new CommandResult(command.defer(false), false);
+        return command;
+    }
+}
+export let Unless = new Action(UnlessDefinition);
+
 export {default as IActionDefinition} from './actions/IActionDefinition';
 export {default as Action} from './actions/Action';
