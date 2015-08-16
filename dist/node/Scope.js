@@ -4,13 +4,13 @@ var Scope = (function () {
         this.commands = [];
         this.dependents = [];
     }
-    Scope.prototype.perform = function (prev) {
-        var command;
+    Scope.prototype.perform = function () {
+        var command, text = '';
         for (var _i = 0, _a = this.commands; _i < _a.length; _i++) {
             command = _a[_i];
-            prev = command.perform(prev);
+            text += command.perform().result.text;
         }
-        return prev;
+        return text;
     };
     return Scope;
 })();

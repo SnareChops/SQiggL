@@ -25,7 +25,9 @@ var Parser = (function () {
         this.commands = [];
         this.stack = [];
         this.error = [];
-        this.regex = new RegExp("(?:" + this.definition.runners.map(function (x) { return x.definition.regex.source; }).join(')|(') + ")");
+        if (!definition)
+            throw 'Attempted to instatiate parser without a definition';
+        this.regex = new RegExp("(?:" + this.definition.runners.map(function (x) { return x.definition.regex.source; }).join(')|(') + ")", 'gm');
     }
     /**
      * Extract any commands out of the SQiggL query and determine their order, nesting, and type
@@ -48,6 +50,8 @@ var Parser = (function () {
                 runner = _a[_i];
                 if (runner.matches(match[0])) {
                     found = new Command_1.default(match.index, match.input.length, match[1], match[2], new Scope_1.default(), runner);
+                    found.scope.variables = variables;
+                    runner.parse(found);
                 }
             }
             if (this.stack.length > 0 && this.stack.last().action.definition.dependents.contains(found.action)) {

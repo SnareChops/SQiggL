@@ -1,18 +1,13 @@
 exports.Placeholders = [
     {
-        name: 'variable',
+        name: 'value',
         locator: /\(v\)/i,
-        replacement: function () { return '(\\w+)'; }
-    },
-    {
-        name: 'comparative',
-        locator: /\(c\)/i,
-        replacement: function () { return "(\\d+|[\"']\\w+[\"'])"; }
+        replacement: function () { return "((?:\"|')?[\\w\\d]+(?:\"|')?)"; }
     },
     {
         name: 'modifier',
         locator: /\(m\)/i,
-        replacement: function (item) { return ("((?:" + item.map(function (modifier) { return modifier.identifiers.map(function (identifier) { return identifier.source; }).join('|'); }).join('|') + "|\\s*))"); }
+        replacement: function (item) { return ("((?:" + item.map(function (modifier) { return modifier.definition.identifiers.map(function (identifier) { return identifier.source; }).join('|'); }).join('|') + "|\\s*))"); }
     }
 ];
 function Placeholder(name) {
