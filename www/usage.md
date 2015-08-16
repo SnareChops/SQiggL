@@ -1,6 +1,6 @@
 #tl;dr;
 
-SQiggL (currently) supports the keywords `if else endif` and the operators `is null, is not null, >, <, >=, <=, ==`
+SQiggL (currently) supports the actions `if unless else endif endunless` and the conditions `is null, is NaN, >, <, =, len>, len<, abc>, abc<, ><`. The modifiers `!, not, =` are available to many of the conditions and will allow for comaparasons like `>=, !=, !>, >!<, is not NaN`.
 
 Example:
 ```
@@ -50,7 +50,7 @@ Currently all variables are global and are passed in as the second argument to t
 In future versions there will be ways to declare scoped and global variables within the query.
 
 ##> < >= <=
-SQiggL supports `> < >= <=` for numbers only currently. There are plans to support unique operators to assist in other situations, for example: `len>` or `abc>` being "length greater than" and "alphabetically greater than" respectively. Have suggestions for operators, or would like to ask questions, please submit [an issue](https://github.com/SnareChops/SQiggL-js/issues) and I'd love to discuss any ideas or complaints.
+SQiggL supports `> < >= <=` for numbers and `len> len< abc> abc<` for strings. Have suggestions for operators, or would like to ask questions, please submit [an issue](https://github.com/SnareChops/SQiggL-js/issues) and I'd love to discuss any ideas or complaints.
 ```
     UPDATE Something SET 
         {{% if myVar > 100 %}} 
