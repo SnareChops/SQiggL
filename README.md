@@ -88,7 +88,7 @@ SET {{% if myVar > 12 %}}
 WHERE ID = 1
 ```
 
-This is just a taste of what SQiggL can do, there is a more detailed usage guide on the [SQiggL site](https://snarechops.github.io/SQiggL-js/#/docs/)
+This is just a taste of what SQiggL can do, there is a more detailed usage guide on the [SQiggL site](https://snarechops.github.io/SQiggL.io/#/docs/)
 
 ##Milestone 0.3 features:
 
