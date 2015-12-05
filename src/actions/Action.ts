@@ -1,5 +1,5 @@
 import IActionDefinition from './IActionDefinition';
-import {Condition} from '../Conditions';
+import {Expression} from '../Expressions';
 import IVariables from '../IVariables';
 import Command from '../Command';
 import Scope from '../Scope';
@@ -14,10 +14,10 @@ export default class Action {
     }
     
     public parse(command: Command){
-        let condition: Condition;
-        for(condition of this.definition.conditions){
-            if(condition.matches(command.statement)) {
-                command.condition = condition;
+        let expression: Expression;
+        for(expression of this.definition.expressions){
+            if(expression.matches(command.statement)) {
+                command.expression = expression;
             }
         }
     }

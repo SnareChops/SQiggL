@@ -1,7 +1,7 @@
 import IVariables from '../IVariables';
 import {Modifier} from '../Modifiers';
 import Value from '../Value';
-export default class ConditionResult {
+export default class ExpressionResult {
     public pass: boolean;
     public value: Value[] = [];
     public variables: IVariables;

@@ -1,28 +1,28 @@
 import Placeholder from '../Placeholders';
-import ConditionResult from './ConditionResult';
-import IConditionIndices from './IConditionIndices';
-import IConditionDefinition from './IConditionDefinition';
+import ExpressionResult from './ExpressionResult';
+import IExpressionIndices from './IExpressionIndices';
+import IExpressionDefinition from './IExpressionDefinition';
 import IVariables from '../IVariables';
 import Command from '../Command';
 import {Modifier} from '../Modifiers'
 import Value from '../Value';
 import '../Extensions';
 
-export default class Condition {
+export default class Expression {
     private regex: RegExp;
-    private indicies: IConditionIndices = {};
+    private indicies: IExpressionIndices = {};
     private template: string;
     private items: Array<string | Modifier[]>;
-    private rule: (values: Value[], variables: IVariables) => boolean;
-    constructor(private definition: IConditionDefinition){
-        if(!definition) throw 'Attempted to instatiate condition without a definition';
+    private rule: (command: Command, values: Value[], variables: IVariables) => any;
+    constructor(private definition: IExpressionDefinition){
+        if(!definition) throw 'Attempted to instatiate expression without a definition';
         this.regex = this.translate(this.definition);
         this.template = definition.template;
         this.items = definition.items;
         this.rule = definition.rule;
     }
     
-    private translate(definition: IConditionDefinition): RegExp{
+    private translate(definition: IExpressionDefinition): RegExp{
         let template = definition.template, item: (string | Modifier[]), name: string, idx=1;
         for(item of definition.items){
             if(!item) throw 'Invalid item in items definition';
@@ -45,8 +45,8 @@ export default class Condition {
         return new RegExp(template, 'i');
     }
     
-    private parse(command: Command): ConditionResult {
-        let result = new ConditionResult(), match = command.statement.match(this.regex), i, modifier: Modifier, modNumber: number = -1;
+    private parse(command: Command): ExpressionResult {
+        let result = new ExpressionResult(), match = command.statement.match(this.regex), i, modifier: Modifier, modNumber: number = -1;
         result.statement = match[0];
         for(i=1;i<match.length;i++){
             if(this.items[i-1] instanceof Array){
@@ -61,9 +61,9 @@ export default class Condition {
         return result;
     }
     
-    public perform(command: Command): boolean{
+    public evaluate(command: Command): any{
         let parsed = this.parse(command);
-        parsed.pass = this.rule(parsed.value, parsed.variables);
+        parsed.pass = this.rule(command, parsed.value, parsed.variables);
         let index: number;
         for(index of this.definition.modOrder){
             if(parsed.modifier[index]) parsed.pass = parsed.modifier[index].definition.rule(parsed.pass, parsed.value, parsed.variables);

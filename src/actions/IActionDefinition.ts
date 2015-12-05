@@ -1,11 +1,11 @@
 import Action from './Action';
-import {Condition} from '../Conditions';
+import {Expression} from '../Expressions';
 import Command from '../Command';
 import Scope from '../Scope';
 
 interface IActionDefinition {
     regex: RegExp;
-    conditions: Condition[];
+    expressions: Expression[]
     dependents: Action[];
     terminator: boolean;
     rule: (command: Command, prev?: Command) => Command;

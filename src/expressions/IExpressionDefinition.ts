@@ -1,10 +1,11 @@
 import {Modifier} from '../Modifiers';
+import Command from '../Command';
 import IVariables from '../IVariables';
 import Value from '../Value';
-interface IConditionDefinition {
+interface IExpressionDefinition {
     template: string;
     items: Array<string | Modifier[]>;
     modOrder: number[];
-    rule: (values: Value[], variables: IVariables) => boolean;
+    rule: (command: Command, values: Value[], variables: IVariables) => any;
 }
-export default IConditionDefinition;
+export default IExpressionDefinition;
