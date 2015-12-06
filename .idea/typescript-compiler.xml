@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="TypeScriptCompiler">
-    <option name="typeScriptServiceDirectory" value="$USER_HOME$/.npm-packages/lib/node_modules/typescript/bin" />
+    <option name="typeScriptServiceDirectory" value="$USER_HOME$/.npm-packages/lib/node_modules/typescript/lib" />
+    <option name="nodeInterpreterTextField" value="/usr/local/bin/node" />
+    <option name="scopeName" value="Source and Tests" />
+    <option name="useConfig" value="true" />
     <option name="versionType" value="SERVICE_DIRECTORY" />
   </component>
 </project>

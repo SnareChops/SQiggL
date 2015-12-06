@@ -5,23 +5,14 @@
   "path": "typings",
   "bundle": "typings/tsd.d.ts",
   "installed": {
-    "jasmine/jasmine.d.ts": {
-      "commit": "066819c65ff561ca109955e0b725c253e243f0a2"
+    "mocha/mocha.d.ts": {
+      "commit": "e5a27ea95e47b95333784f1f0d590127b4e39a89"
     },
-    "angularjs/angular.d.ts": {
-      "commit": "43b6bf88758852b9ab713a9b011487f047f94f4e"
+    "should/should.d.ts": {
+      "commit": "e5a27ea95e47b95333784f1f0d590127b4e39a89"
     },
-    "angular-material/angular-material.d.ts": {
-      "commit": "43b6bf88758852b9ab713a9b011487f047f94f4e"
-    },
-    "jquery/jquery.d.ts": {
-      "commit": "43b6bf88758852b9ab713a9b011487f047f94f4e"
-    },
-    "firebase/firebase.d.ts": {
-      "commit": "ac3a1f059f655059484d6aa5ba1f0f85908ae06c"
-    },
-    "angularfire/angularfire.d.ts": {
-      "commit": "ac3a1f059f655059484d6aa5ba1f0f85908ae06c"
+    "node/node.d.ts": {
+      "commit": "e5a27ea95e47b95333784f1f0d590127b4e39a89"
     }
   }
 }
