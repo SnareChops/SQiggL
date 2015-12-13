@@ -1,1 +1,3 @@
-require('./tests/lexer.tests');
+require('./src/lexer.specs');
+require('./src/parser.specs');
+require('./scenario.specs');

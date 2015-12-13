@@ -1,42 +1,52 @@
-export interface Action{
+export interface StartingAction{
     name?: string;
     key: string;
-    dependents?: Action[];
 }
 
-export var If: Action = {
-    key: 'if'
+export interface DependentAction extends StartingAction{
+    dependents: StartingAction[];
+    end: boolean;
+}
+
+//export interface Action extends DependentAction{}
+
+export var If: StartingAction = {
+    key: 'if',
 };
 
-export var Else: Action = {
-    key: 'else',
-    dependents: [If]
-};
-
-export var EndIf: Action = {
+export var EndIf: DependentAction = {
     key: 'endif',
-    dependents: [If]
+    dependents: [If],
+    end: true
 };
 
-export var Unless: Action = {
+export var Unless: StartingAction = {
     key: 'unless'
 };
 
-export var EndUnless: Action = {
+export var EndUnless: DependentAction = {
     key: 'endunless',
-    dependents: [Unless]
+    dependents: [Unless],
+    end: true
 };
 
-export var For: Action = {
+export var Else: DependentAction = {
+    key: 'else',
+    dependents: [If, Unless],
+    end: false
+};
+
+export var For: StartingAction = {
     key: 'for'
 };
 
-export var EndFor: Action = {
+export var EndFor: DependentAction = {
     key: 'endfor',
-    dependents: [For]
+    dependents: [For],
+    end: true
 };
 
-export var CORE_ACTIONS: Action[] = [
+export var CORE_ACTIONS: (StartingAction | DependentAction)[] = [
     If,
     Else,
     EndIf,

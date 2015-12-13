@@ -1,5 +1,6 @@
-import {Action} from './actions';
+import {StartingAction, DependentAction} from './actions';
 import {Expression} from './expressions';
+import {Modifier} from './modifiers';
 
 export enum DSLType{
     text,
@@ -14,24 +15,31 @@ export enum DSLVariableType{
     value
 }
 
+export interface DSLText{
+    text: string;
+}
+
 export interface DSLVariable{
     literal: string;
     key?: string;
     value?: string;
+    resolved?: string;
 }
 
-export interface DSLCommand{
+export interface DSLCommand extends DSLExpression{
     literal: string;
-    action?: Action;
-    values?: string[];
-    modifiers?: string[];
+    action: StartingAction | DependentAction;
 }
 
-export interface DSLReplacement{
+export interface DSLReplacement extends DSLExpression{
     literal: string;
-    expression?: Expression;
-    values?: string[];
-    modifiers?: string[];
+}
+
+export interface DSLExpression{
+    literal: string;
+    expression: Expression;
+    values?: any[];
+    modifiers?: Modifier[];
 }
 
 export interface DSL{
@@ -40,4 +48,10 @@ export interface DSL{
     replacement?: DSLReplacement;
     command?: DSLCommand;
     comment?: string;
+    scope?: DSL[];
+}
+
+export interface LeveledDSL{
+    level: number;
+    dsl: DSL;
 }

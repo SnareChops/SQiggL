@@ -6,7 +6,8 @@
         "outDir": ".",
         "rootDir": ".",
         "sourceMap": false,
-        "moduleResolution": "node"
+        "moduleResolution": "node",
+        "suppressImplicitAnyIndexErrors": true
     },
     "exclude": [
         "node_modules",

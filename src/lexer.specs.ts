@@ -1,5 +1,6 @@
 import {Lexer} from '../src/lexer';
 import {DSL, DSLCommand} from "../src/dsl";
+import {Not} from '../src/modifiers';
 const should = require('should');
 
 describe('Lexer', () => {
@@ -10,7 +11,7 @@ describe('Lexer', () => {
         //});
 
         it('should be ok to change the left and right wrappers', () => {
-            const lexer = new Lexer(null, {leftWrapperChar: '(', rightWrapperChar: ')'});
+            const lexer = new Lexer({leftWrapperChar: '(', rightWrapperChar: ')'});
             const result = lexer.parse('SELECT * FROM (table)');
             result[0].should.have.property('text');
             result[1].should.have.property('replacement');
@@ -59,10 +60,10 @@ describe('Lexer', () => {
             result[0].should.have.property('replacement', {literal: 'table'});
         });
 
-        it('should remove newlines from commands', () => {
+        it('should remove newlines from replacements', () => {
             const lexer = new Lexer();
-            const result = lexer.parse('{ something\nelse }');
-            result[0].should.have.property('replacement', {literal: 'something else'});
+            const result = lexer.parse('{\n something }');
+            result[0].should.have.property('replacement', {literal: 'something'});
         });
     });
 
@@ -101,24 +102,24 @@ describe('Lexer', () => {
             const lexer = new Lexer();
             const result = lexer.parse('SELECT * FROM {% if table = \'Test\' } TestTable {% else } ProdTable {% endif }');
             <DSL>result[1].command.should.have.property('literal', 'if table = \'Test\'');
-            <DSL>result[3].command.should.have.property('literal', 'else');
-            <DSL>result[5].command.should.have.property('literal', 'endif');
+            <DSL>result[2].command.should.have.property('literal', 'else');
+            <DSL>result[3].command.should.have.property('literal', 'endif');
         });
 
         it('should correctly identify the action of a command in a given string', () => {
             const lexer = new Lexer();
-            const result = lexer.parse('SELECT * FROM {% else }');
+            const result = lexer.parse('SELECT * FROM {% if }');
             const dsl: DSL = result[1];
             const command: DSLCommand = dsl.command;
-            command.action.should.have.property('key', 'else');
+            command.action.should.have.property('key', 'if');
         });
 
         it('should correct itentify the action of a command despite casing', () => {
             const lexer = new Lexer();
-            const result = lexer.parse('SELECT * FROM {% eLsE }');
+            const result = lexer.parse('SELECT * FROM {% iF }');
             const dsl: DSL = result[1];
             const command: DSLCommand = dsl.command;
-            command.action.should.have.property('key', 'else');
+            command.action.should.have.property('key', 'if');
         });
 
     });
@@ -176,6 +177,49 @@ describe('Lexer', () => {
             const result = lexer.parse(`{+ dragon: "Felix's pet" }`);
             <DSL>result[0].variable.should.have.property('key', 'dragon');
             <DSL>result[0].variable.should.have.property('value', `"Felix's pet"`);
+        });
+    });
+
+    describe('scope', () => {
+        it('should determine the correct level of items nested in actions', () => {
+            const lexer = new Lexer();
+            const result = lexer.parse('SELECT * FROM {% if table = \'Test\' } TestTable {% else } ProdTable {% endif }');
+            <DSL>result[0].should.have.property('text');
+            <DSL>result[1].should.have.property('command');
+            <DSL>result[1].should.have.property('scope');
+            <DSL>result[1].scope[0].should.have.property('text');
+            <DSL>result[2].should.have.property('command');
+            <DSL>result[2].should.have.property('scope');
+            <DSL>result[2].scope[0].should.have.property('text');
+            <DSL>result[3].should.have.property('command');
+        });
+    });
+
+    describe('expressions', () => {
+        it('should detect an expression in a replacement', () => {
+            const lexer = new Lexer();
+            const result = lexer.parse('{12 > 13}');
+            <DSL>result[0].replacement.should.have.property('expression');
+        });
+
+        it('should detect an expression in a replacement with a modifier', () => {
+            const lexer = new Lexer();
+            const result = lexer.parse('{12 !< 13}');
+            <DSL>result[0].replacement.should.have.property('expression');
+        });
+
+        it('should correctly identify a modifier in an expression', () => {
+            const lexer = new Lexer();
+            const result = lexer.parse('{12 !> 13}');
+            <DSL>result[0].replacement.should.have.property('modifiers');
+            <DSL>result[0].replacement.modifiers[0].should.equal(Not)
+        });
+
+        it('should correctly identifiy the values in an expression', () => {
+            const lexer = new Lexer();
+            const result = lexer.parse('{12 > 13}');
+            <DSL>result[0].replacement.values[0].should.equal('12');
+            <DSL>result[0].replacement.values[1].should.equal('13');
         });
     });
 });
