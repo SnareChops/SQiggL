@@ -1,5 +1,5 @@
 import {StartingAction, DependentAction} from './actions';
-import {Expression} from './expressions';
+import {Expression, BooleanExpression, ValueExpression} from './expressions';
 import {Modifier} from './modifiers';
 
 export enum DSLType{
@@ -28,9 +28,12 @@ export interface DSLVariable{
 
 export interface DSLCommand extends DSLExpression{
     action: StartingAction | DependentAction;
+    expression: BooleanExpression;
 }
 
-export interface DSLReplacement extends DSLExpression{}
+export interface DSLReplacement extends DSLExpression{
+    expression: ValueExpression;
+}
 
 export interface DSLExpression{
     literal: string;
