@@ -27,13 +27,10 @@ export interface DSLVariable{
 }
 
 export interface DSLCommand extends DSLExpression{
-    literal: string;
     action: StartingAction | DependentAction;
 }
 
-export interface DSLReplacement extends DSLExpression{
-    literal: string;
-}
+export interface DSLReplacement extends DSLExpression{}
 
 export interface DSLExpression{
     literal: string;

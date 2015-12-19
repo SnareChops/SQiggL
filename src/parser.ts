@@ -65,7 +65,11 @@ export class Parser{
     }
 
     private parseReplacement(dsl: DSLReplacement, variables: ScopedVariables): string{
-
-        return '';
+        let value: any, result: string | boolean;
+        for(value of dsl.values){
+            if(value.charAt(0) === "'" || value.charAt('"')) value = value.slice(1, value.length-1);
+            else value = variables[value];
+        }
+        return dsl.expression.rule(dsl.values, dsl.literal);
     }
 }
