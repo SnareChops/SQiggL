@@ -8,7 +8,7 @@ export interface DependentAction extends StartingAction{
     end: boolean;
 }
 
-//export interface Action extends DependentAction{}
+export type Action = StartingAction | DependentAction;
 
 export var If: StartingAction = {
     key: 'if',
@@ -46,7 +46,7 @@ export var EndFor: DependentAction = {
     end: true
 };
 
-export var CORE_ACTIONS: (StartingAction | DependentAction)[] = [
+export var CORE_ACTIONS: Action[] = [
     If,
     Else,
     EndIf,

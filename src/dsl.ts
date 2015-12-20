@@ -32,7 +32,7 @@ export interface DSLCommand extends DSLExpression{
 }
 
 export interface DSLReplacement extends DSLExpression{
-    expression: ValueExpression;
+    expression: ValueExpression | BooleanExpression;
 }
 
 export interface DSLExpression{

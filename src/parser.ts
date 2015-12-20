@@ -5,6 +5,8 @@ export interface ParserOptions{
     commentBeginning?: string;
     commentEnding?: string;
     stringEscapeChar?: string;
+    trueString?: string;
+    falseString?: string;
 }
 
 export interface ScopedVariables{
@@ -19,6 +21,8 @@ export class Parser{
         this.options.commentBeginning = options.commentBeginning || '/*';
         this.options.commentEnding = options.commentEnding || '*/';
         this.options.stringEscapeChar = options.stringEscapeChar || '\\';
+        this.options.trueString = options.trueString || '1';
+        this.options.falseString = options.falseString || '0';
     }
 
     public parse(dsls: DSL[], variables?: ScopedVariables): string{
@@ -65,11 +69,17 @@ export class Parser{
     }
 
     private parseReplacement(dsl: DSLReplacement, variables: ScopedVariables): string{
-        let value: any, result: string | boolean;
-        for(value of dsl.values){
-            if(value.charAt(0) === "'" || value.charAt('"')) value = value.slice(1, value.length-1);
-            else value = variables[value];
+        let idx: number = 0, result: string | boolean;
+        for(idx; idx<dsl.values.length; idx++){
+            if(dsl.values[idx].charAt(0) === "'" || dsl.values[idx].charAt('"')) dsl.values[idx] = dsl.values[idx].slice(1, dsl.values[idx].length-1);
+            else if(isNaN(+dsl.values[idx])){
+                if(variables.hasOwnProperty(dsl.values[idx])) dsl.values[idx] = variables[dsl.values[idx]];
+                else throw new Error(`SQiggLParserError: ${dsl.values[idx]} is not a defined variable in this scope`);
+            }
         }
-        return dsl.expression.rule(dsl.values, dsl.literal);
+        result = dsl.expression.rule(dsl.values, dsl.literal);
+        if(result === true) return this.options.trueString;
+        if(result === false) return this.options.falseString;
+        return <string>result;
     }
 }

@@ -1,6 +1,6 @@
-import {DSL, DSLType, DSLText, DSLVariable, DSLVariableType, DSLCommand, DSLReplacement, LeveledDSL} from './dsl';
-import {StartingAction, DependentAction, CORE_ACTIONS} from './actions';
-import {Expression, CORE_EXPRESSIONS, VALUE, SPACE, OrderedModifier} from './expressions';
+import {DSL, DSLType, DSLText, DSLVariable, DSLVariableType, DSLCommand, DSLReplacement, DSLExpression, LeveledDSL} from './dsl';
+import {Action, StartingAction, DependentAction, CORE_ACTIONS} from './actions';
+import {Expression, BooleanExpression, ValueExpression, BaseExpression, CORE_EXPRESSIONS, VALUE, SPACE, OrderedModifier} from './expressions';
 import {Modifier, CORE_MODIFIERS} from './modifiers';
 
 export interface LexerOptions{
@@ -11,10 +11,14 @@ export interface LexerOptions{
     commentChar?: string;
     variableAssignmentChar?: string;
     stringEscapeChar?: string;
+    customActions?: Action[]; //TODO:Implement
+    customExpressions?: Expression[]; //TODO:Implement
+    customModifiers?: Modifier[]; //TODO:Implement
+    includeCoreLibrary?: boolean; //TODO:Implement
 }
 
 export class Lexer{
-    private actions: (StartingAction | DependentAction)[] = CORE_ACTIONS;
+    private actions: Action[] = CORE_ACTIONS;
     private expressions: Expression[] = CORE_EXPRESSIONS;
     private modifiers: Modifier[] = CORE_MODIFIERS;
     private leftWrapperChar: string;
@@ -24,7 +28,7 @@ export class Lexer{
     private commentChar: string;
     private variableAssignmentChar: string;
     private stringEscapeChar: string;
-    constructor(options?: LexerOptions, actions?: (StartingAction | DependentAction)[], expressions?: Expression[], modifiers?: Modifier[]){
+    constructor(options?: LexerOptions){
         options = options || {};
         this.leftWrapperChar = options.leftWrapperChar || '{';
         this.rightWrapperChar = options.rightWrapperChar || '}';
@@ -37,9 +41,9 @@ export class Lexer{
         for(let i=0; i< array.length - 1; i++){
             if(array[i] === array[i + 1]) throw new Error('SQiggL Lexer Options Error: All Lexer Options chars must be unique');
         }
-        if(actions != null) this.actions = this.actions.concat(actions);
-        if(expressions != null) this.expressions = this.expressions.concat(expressions);
-        if(modifiers != null) this.modifiers = this.modifiers.concat(modifiers);
+        if(options.customActions != null) this.actions = this.actions.concat(options.customActions);
+        if(options.customExpressions != null) this.expressions = this.expressions.concat(options.customExpressions);
+        if(options.customModifiers != null) this.modifiers = this.modifiers.concat(options.customModifiers);
         this.expressions = this.translateExpressionTemplatesToRegex(this.expressions);
     }
 
@@ -224,41 +228,117 @@ export class Lexer{
 
     private parseReplacement(input: string): DSLReplacement{
         let dsl: DSLReplacement = <DSLReplacement>{literal: input};
-        let expression: Expression;
-        let match: RegExpExecArray;
-        let foundModsOrdered: OrderedModifier[];
-        let items: (string | OrderedModifier[])[];
-        let idx: number;
-        let ordMod: OrderedModifier;
-        let ord: string;
-        for(expression of this.expressions){
-            match = expression.regex.exec(input);
-            foundModsOrdered = [];
-            if(match !== null){
-                items = expression.template.filter(x => x === VALUE || typeof x === 'object');
-                for(idx = 0; idx < items.length; idx++) {
-                    if(items[idx] === VALUE) {
-                        dsl.values = dsl.values || [];
-                        dsl.values.push(match[idx+1]);
-                    } else {
-                        for(ordMod of <OrderedModifier[]>items[idx]) {
-                            for(ord in ordMod) {
-                                if(ordMod.hasOwnProperty(ord)) {
-                                    if(ordMod[ord].identifiers.some((x:string) => x === match[idx + 1])) {
-                                        foundModsOrdered.push(ordMod);
-                                    }
-                                }
-                            }
-                        }
+        let parts: string[] = this.extractParts(input);
+        if(parts.length > 1) dsl = this.parseExpression(dsl, parts);
+        //for(expression of this.expressions){
+        //    match = expression.regex.exec(input);
+        //    foundModsOrdered = [];
+        //    if(match !== null){
+        //        items = (<BaseExpression>expression).template.filter(x => x === VALUE || typeof x === 'object');
+        //        for(idx = 0; idx < items.length; idx++) {
+        //            if(items[idx] === VALUE) {
+        //                dsl.values = dsl.values || [];
+        //                dsl.values.push(match[idx+1]);
+        //            } else {
+        //                for(ordMod of <OrderedModifier[]>items[idx]) {
+        //                    for(ord in ordMod) {
+        //                        if(ordMod.hasOwnProperty(ord)) {
+        //                            if(ordMod[ord].identifiers.some((x:string) => x === match[idx + 1])) {
+        //                                foundModsOrdered.push(ordMod);
+        //                            }
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        dsl.modifiers = this.sortAndExtractModifiers(foundModsOrdered);
+        //        dsl.expression = expression;
+        //        return dsl;
+        //    }
+        //}
+        //if(input.split(' ').length > 1) throw new Error('SQiggL Parser Error: Invalid expression in replacement statement.');
+        return dsl;
+    }
+
+    private parseExpression(dsl: DSLExpression, parts: string[]): DSLExpression{
+        let expression: Expression,
+            pidx: number,
+            eidx: number,
+            foundOrderedMod: OrderedModifier,
+            foundIdentifier: string,
+            clone: (string | OrderedModifier)[],
+            isMatch: boolean;
+        for(expression of this.expressions){ console.log('NEXT'); console.log(expression.template);
+            // Set initial state for matching
+            pidx = 0;
+            eidx = 0;
+            isMatch = true; // Assume is a match until found otherwise
+            // Clone the array to protect original from modifications
+            clone = parts.slice(0);
+            let oops: number = 0;
+            while(eidx < expression.template.length){
+                console.log('IDX', pidx);
+                var ePart: string | OrderedModifier[] = expression.template[eidx];
+                if(ePart === VALUE) { console.log('VALUE');
+                    // Do nothing, can't match on values as they are user defined.
+                    eidx++;
+                    pidx++;
+                } else if(ePart === SPACE){ console.log('SPACE');
+                    if(<string>clone[pidx] !== ePart) {
+                        isMatch = false;
+                        break;
                     }
+                    clone.splice(pidx, 1); // Remove the space as it is no longer needed for the match
+                    eidx++;
+                } else if(Array.isArray(ePart)){ console.log('MODIFIER');
+                    [foundIdentifier, foundOrderedMod] = this.compareOrderedModifier(<string>clone[pidx], ePart);
+                    if(foundIdentifier == null) {
+                        isMatch = false;
+                        break;
+                    }
+                    clone.splice(pidx, 0, foundOrderedMod);
+                    pidx++;
+                    clone.splice(pidx, 1, (<string>clone[pidx]).slice(foundIdentifier.length));
+                    eidx++;
+                    pidx++;
+                    console.log(foundIdentifier, 'in', expression.template);
+                } else { console.log('OPERATOR');
+                    console.log(clone);
+                    console.log(clone[pidx]);
+                    if(ePart !== (<string>clone[pidx]).slice(0, ePart.length)){
+                        isMatch = false;
+                        break;
+                    }
+                    if(ePart.length !== (<string>clone[pidx]).length){
+                        clone.splice(pidx+1, 0, (<string>clone[pidx]).slice(ePart.length));
+                        pidx++;
+                    }
+                    console.log(clone);
+                    eidx++;
+                    pidx++;
                 }
-                dsl.modifiers = this.sortAndExtractModifiers(foundModsOrdered);
-                dsl.expression = expression;
-                return dsl;
+                if(oops++ > 100) throw new Error('OOPS Expression');
             }
         }
-        if(input.split(' ').length > 1) throw new Error('SQiggL Parser Error: Invalid expression in replacement statement.');
         return dsl;
+    }
+
+    private compareOrderedModifier(part: string, ePart: OrderedModifier[]): [string, OrderedModifier] {
+        let ord: OrderedModifier,
+            key: string,
+            identifier: string;
+        for(ord of ePart){
+            for(key of Object.keys(ord)){
+                for(identifier of ord[key].identifiers){
+                    if(part.length >= identifier.length && identifier === part.slice(0, identifier.length)){
+                        // match
+                        console.log('match', identifier);
+                        return [identifier, ord];
+                    }
+                }
+            }
+        }
+        return [null, null];
     }
 
     /**
@@ -283,7 +363,7 @@ export class Lexer{
      * @param value
      * @returns {DSLCommand}
      */
-    private generateCommandDSL(definition: StartingAction | DependentAction, value: string): DSLCommand{
+    private generateCommandDSL(definition: Action, value: string): DSLCommand{
         return <DSLCommand>{literal: value, action: definition};
     }
 
@@ -355,7 +435,7 @@ export class Lexer{
      * @returns {Expression[]}
      */
     private translateExpressionTemplatesToRegex(expressions: Expression[]): Expression[]{
-        let expression: Expression;
+        let expression: BooleanExpression | ValueExpression;
         for(expression of expressions){
             let regexString: string = '^',
                 part: string | OrderedModifier[];
@@ -420,5 +500,50 @@ export class Lexer{
                 if(x.hasOwnProperty(key)) return x[key];
             }
         });
+    }
+
+    private extractParts(input: string): string[]{
+        let idx: number = 0, parts: string[] = [];
+        let oops: number = 0;
+        while(idx < input.length){
+            parts.push(this.extractWord(input, idx));
+            idx += parts[parts.length-1].length;
+            if(input[idx] === ' '){
+                parts.push(SPACE);
+                idx++;
+            }
+            if(oops++ > 100) throw new Error('OOPS PARTS');
+        }
+        return parts;
+    }
+
+    private extractWord(input: string, start: number): string{
+        let nextSpace: number;
+        if(input[start] === "'" || input[start] === '"'){
+            return this.extractString(input, start, input[start]);
+        } else {
+            nextSpace = input.indexOf(' ', start);
+            return input.slice(start, nextSpace > 0 ? nextSpace : input.length);
+        }
+    }
+
+    private extractString(input: string, start: number, stringChar: string): string{
+        let idx: number = start + 1;
+        while(idx < input.length){
+            switch(input[idx]){
+                case this.stringEscapeChar:
+                    if(input[idx+1] === this.stringEscapeChar || input[idx+1] === stringChar){
+                        idx+=2;
+                    } else {
+                        throw new Error(`SQiggLLexerError: Illegal escape character found in string ${input} at index ${idx}`);
+                    }
+                    break;
+                case stringChar:
+                    return input.slice(start, idx+1);
+                default:
+                    idx++;
+            }
+        }
+        throw new Error(`SQiggLLexerError: Invalid string found in ${input}`);
     }
 }
