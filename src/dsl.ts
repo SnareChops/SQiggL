@@ -1,4 +1,4 @@
-import {StartingAction, DependentAction} from './actions';
+import {Action, StartingAction, DependentAction} from './actions';
 import {Expression, BooleanExpression, ValueExpression} from './expressions';
 import {Modifier} from './modifiers';
 
@@ -27,12 +27,12 @@ export interface DSLVariable{
 }
 
 export interface DSLCommand extends DSLExpression{
-    action: StartingAction | DependentAction;
+    action: Action;
     expression: BooleanExpression;
 }
 
 export interface DSLReplacement extends DSLExpression{
-    expression: ValueExpression | BooleanExpression;
+    expression: Expression;
 }
 
 export interface DSLExpression{

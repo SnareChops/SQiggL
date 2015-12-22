@@ -11,11 +11,11 @@ export class ReplacementParser{
      * @param variables {ScopedVariables}
      * @returns {string}
      */
-    public parse(dsl: DSLReplacement, variables: ScopedVariables): string{
+    public parse(dsl: DSLReplacement, variables?: ScopedVariables): string{
         let idx: number = 0, result: string | boolean;
         if(!!dsl.expression) {
             for (idx; idx < dsl.values.length; idx++) {
-                if (dsl.values[idx].charAt(0) === "'" || dsl.values[idx].charAt('"')) dsl.values[idx] = dsl.values[idx].slice(1, dsl.values[idx].length - 1);
+                if (dsl.values[idx][0] === "'" || dsl.values[idx][0] === '"') dsl.values[idx] = dsl.values[idx].slice(1, dsl.values[idx].length - 1);
                 else if (isNaN(+dsl.values[idx])) {
                     if (variables.hasOwnProperty(dsl.values[idx])) dsl.values[idx] = variables[dsl.values[idx]];
                     else throw new Error(`SQiggLParserError: ${dsl.values[idx]} is not a defined variable in this scope`);

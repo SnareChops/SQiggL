@@ -15,7 +15,7 @@ export interface ScopedVariables{
     [key: string]: any;
 }
 
-const DEFAULT_PARSER_OPTIONS: ParserOptions = {
+export const DEFAULT_PARSER_OPTIONS: ParserOptions = {
     exportComments: false,
     commentBeginning: '/*',
     commentEnding: '*/',
@@ -26,7 +26,7 @@ const DEFAULT_PARSER_OPTIONS: ParserOptions = {
 
 export class Parser{
     private options: ParserOptions = <ParserOptions>{};
-    constructor(options?: ParserOptions = {}){
+    constructor(options: ParserOptions = {}){
         this.setOptions(options);
     }
 

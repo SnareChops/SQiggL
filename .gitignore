@@ -1,8 +1,6 @@
 .idea
 node_modules
 src/**/*.js
-tests/**/*.js
 index.js
 test.js
 scenario.specs.js
-coverage

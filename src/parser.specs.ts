@@ -26,7 +26,7 @@ describe('Parser', () => {
     });
 
     describe('text', () => {
-        it('should output a text untouched', () => {
+        it('should output text untouched', () => {
             const parser = new Parser();
             const result = parser.parse([{text: 'this is a test string'}]);
             result.should.equal('this is a test string');

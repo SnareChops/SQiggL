@@ -30,17 +30,17 @@ export var Equal: BooleanExpression = {
 
 export var GreaterThan: BooleanExpression = {
     template: [VALUE, SPACE, [{1: Not}], '>', [{0: OrEqual}], SPACE, VALUE],
-    rule: (values: string[]) => Number(values[0]) > Number(values[1])
+    rule: (values: string[]) => (+values[0]) > (+values[1])
 };
 
 export var LessThan: BooleanExpression = {
     template: [VALUE, SPACE, [{1: Not}], '<', [{0: OrEqual}], SPACE, VALUE],
-    rule: (values: string[]) => Number(values[0]) < Number(values[1])
+    rule: (values: string[]) => (+values[0]) < (+values[1])
 };
 
 export var IsNull: BooleanExpression = {
     template: [VALUE, SPACE, 'is', SPACE, [{0: Not}], SPACE, 'null'],
-    rule: (values: string[]) => values[0] === '' || values[0] == null
+    rule: (values: string[]) => !values[0]
 };
 
 export var LexicalGreaterThan: BooleanExpression = {
