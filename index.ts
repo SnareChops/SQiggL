@@ -11,7 +11,7 @@ function parse(query: string, variables?: ScopedVariables, options?: SQiggLOptio
     const lexer = new Lexer(options);
     const dsl = lexer.parse(query);
     const parser = new Parser(options);
-    return parser.parse(dsl);
+    return parser.parse(dsl, variables);
 }
 
 let SQiggL = {parse: parse};

@@ -215,7 +215,7 @@ describe('Lexer', () => {
             <DSL>result[0].replacement.modifiers[0].should.equal(Not)
         });
 
-        it('should correctly identifiy the values in an expression', () => {
+        it('should correctly identify the values in an expression', () => {
             const lexer = new Lexer();
             const result = lexer.parse('{12 > 13}');
             <DSL>result[0].replacement.values[0].should.equal('12');

@@ -16,17 +16,17 @@ describe('Scenarios', () => {
         result.should.equal('SELECT * FROM Table /* this is the client\'s table */');
     });
 
-    xit('should correctly output a SQiggL query containing a string literal replacement', () => {
+    it('should correctly output a SQiggL query containing a string literal replacement', () => {
         const result = SQiggL.parse('SELECT * FROM {\'Table\'}');
         result.should.equal('SELECT * FROM Table');
     });
 
-    xit('should correctly output a SQiggL query containing a number literal replacement', () => {
+    it('should correctly output a SQiggL query containing a number literal replacement', () => {
         const result = SQiggL.parse('SELECT * FROM Table WHERE ID = {12}');
         result.should.equal('SELECT * FROM Table WHERE ID = 12');
     });
 
-    xit('should correctly output a SQiggL query containing a variable replacement', () => {
+    it('should correctly output a SQiggL query containing a variable replacement', () => {
         const result = SQiggL.parse('SELECT * FROM Table WHERE ID = {id}', {id: 12});
         result.should.equal('SELECT * FROM Table WHERE ID = 12');
     });

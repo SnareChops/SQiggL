@@ -4,7 +4,7 @@ function parse(query, variables, options) {
     var lexer = new lexer_1.Lexer(options);
     var dsl = lexer.parse(query);
     var parser = new parser_1.Parser(options);
-    return parser.parse(dsl);
+    return parser.parse(dsl, variables);
 }
 var SQiggL = { parse: parse };
 Object.defineProperty(exports, "__esModule", { value: true });
