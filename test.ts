@@ -2,6 +2,7 @@
 import './src/lexer.specs';
 
 // Parsers
+import './src/parsers/command.parser.specs';
 import './src/parsers/replacement.parser.specs';
 import './src/parser.specs';
 

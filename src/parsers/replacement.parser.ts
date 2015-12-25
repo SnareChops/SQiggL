@@ -1,5 +1,6 @@
 import {ParserOptions, ScopedVariables} from '../parser';
 import {DSLReplacement} from '../dsl';
+import {ExpressionParser} from './expression.parser';
 
 export class ReplacementParser{
     constructor(private options: ParserOptions){}
@@ -14,14 +15,7 @@ export class ReplacementParser{
     public parse(dsl: DSLReplacement, variables?: ScopedVariables): string{
         let idx: number = 0, result: string | boolean;
         if(!!dsl.expression) {
-            for (idx; idx < dsl.values.length; idx++) {
-                if (dsl.values[idx][0] === "'" || dsl.values[idx][0] === '"') dsl.values[idx] = dsl.values[idx].slice(1, dsl.values[idx].length - 1);
-                else if (isNaN(+dsl.values[idx])) {
-                    if (variables.hasOwnProperty(dsl.values[idx])) dsl.values[idx] = variables[dsl.values[idx]];
-                    else throw new Error(`SQiggLParserError: ${dsl.values[idx]} is not a defined variable in this scope`);
-                }
-            }
-            result = dsl.expression.rule(dsl.values, dsl.literal);
+            result = new ExpressionParser(this.options).parse(dsl, variables);
         } else {
             if(dsl.literal[0] === "'" || dsl.literal[0] === "'") return dsl.literal.slice(1, dsl.literal.length - 1);
             else if(!isNaN(+dsl.literal)) return dsl.literal;
