@@ -32,4 +32,12 @@ describe('Scenarios', function () {
         var result = index_1.default.parse('SELECT * FROM Table WHERE status = {\'yes\' abc> \'no\'}');
         result.should.equal('SELECT * FROM Table WHERE status = 1');
     });
+    it('should correctly output a SQiggL query containing a StartingAction/TerminatingAction pair', function () {
+        var result = index_1.default.parse('SELECT * FROM Table {% if 13 > 12 } WHERE status = 1 {% endif }');
+        result.should.equal('SELECT * FROM Table  WHERE status = 1 ');
+    });
+    it('should correctly output a SQiggL query containing a StartingAction, DependentAction, and TerminatingAction chain', function () {
+        var result = index_1.default.parse('SELECT * FROM Table {% if 12 > 13 } WHERE status = 1 {% else } WHERE status = 0 {% endif }');
+        result.should.equal('SELECT * FROM Table  WHERE status = 0 ');
+    });
 });

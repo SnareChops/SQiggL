@@ -1,49 +1,61 @@
-export interface StartingAction{
+import {Parser} from './parser';
+import {ScopedVariables} from './parser';
+import {DSL} from './dsl';
+interface BaseAction{
     name?: string;
     key: string;
+
+}
+export interface StartingAction extends BaseAction{
+    rule: (expressionResult: string | boolean, variables: ScopedVariables, scope: DSL[], parser: Parser) => string;
 }
 
-export interface DependentAction extends StartingAction{
+export interface DependentAction extends BaseAction{
     dependents: StartingAction[];
-    end: boolean;
+    rule: (expressionResult: string | boolean, variables: ScopedVariables, scope: DSL[], parser: Parser) => string;
 }
 
-export type Action = StartingAction | DependentAction;
+export interface TerminatingAction extends BaseAction{
+    dependents: StartingAction[];
+}
+
+
+export type Action = StartingAction | DependentAction | TerminatingAction;
 
 export var If: StartingAction = {
     key: 'if',
+    rule: (expressionResult: boolean, variables: ScopedVariables, scope: DSL[], parser: Parser) => expressionResult ? parser.parse(scope, variables) : null
 };
 
-export var EndIf: DependentAction = {
+export var EndIf: TerminatingAction = {
     key: 'endif',
     dependents: [If],
-    end: true
 };
 
 export var Unless: StartingAction = {
-    key: 'unless'
+    key: 'unless',
+    rule: (expressionResult: boolean, variables: ScopedVariables, scope: DSL[], parser: Parser) => !expressionResult ? parser.parse(scope, variables) : null
 };
 
-export var EndUnless: DependentAction = {
+export var EndUnless: TerminatingAction = {
     key: 'endunless',
     dependents: [Unless],
-    end: true
 };
 
 export var Else: DependentAction = {
     key: 'else',
     dependents: [If, Unless],
-    end: false
+    rule: (expressionResult: boolean, variables: ScopedVariables, scope: DSL[], parser: Parser) => parser.parse(scope, variables)
 };
 
 export var For: StartingAction = {
-    key: 'for'
+    key: 'for',
+    rule: (expressionResult: string, variables: ScopedVariables, scope: DSL[], parser: Parser) => null
 };
 
-export var EndFor: DependentAction = {
+export var EndFor: TerminatingAction = {
     key: 'endfor',
     dependents: [For],
-    end: true
 };
 
 export var CORE_ACTIONS: Action[] = [

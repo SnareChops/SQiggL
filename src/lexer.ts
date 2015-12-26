@@ -31,10 +31,42 @@ const DEFAULT_LEXER_OPTIONS: LexerOptions = {
     includeCoreLibrary: true
 };
 
+/**
+ * The parent lexer to all specific lexers.
+ *
+ * Performs all identification of statements and prepares all text for
+ * parsing by the specific lexers.
+ *
+ * @internal
+ */
 export class Lexer{
+    /**
+     * A list of all known Actions (including custom actions defined and imported by plugins)
+     *
+     * @internal
+     */
     private actions: Action[];
+
+    /**
+     * A list of all known Expressions (including custom expressions defined and imported by plugins)
+     *
+     * @internal
+     */
     private expressions: Expression[];
+
+    /**
+     * A list of all known Modifiers (including custom modifiers defined and imported by plugins)
+     *
+     * @internal
+     */
     private modifiers: Modifier[];
+
+    /**
+     * Creates a new instance of Lexer
+     *
+     * @internal
+     * @param options {LexerOptions} - The {@link LexerOptions} used for DSL generation
+     */
     constructor(private options: LexerOptions = {}){
         this.setOptions(this.options)
             .validateOptions(this.options)
@@ -44,8 +76,10 @@ export class Lexer{
 
     /**
      * Set the lexer options to either the provided options, or the defaults
-     * @param options {LexerOptions}
-     * @returns {Lexer}
+     *
+     * @internal
+     * @param options {LexerOptions} - The {@link LexerOptions} used for DSL generations
+     * @returns {Lexer} - The Lexer (For convenience chaining of startup methods)
      */
     private setOptions(options: LexerOptions): Lexer{
         for(var key of Object.keys(DEFAULT_LEXER_OPTIONS)){
@@ -57,8 +91,10 @@ export class Lexer{
     /**
      * Validate that the options will not conflict with each other.
      * *All* provided string character options *must* be unique
-     * @param options {LexerOptions}
-     * @returns {Lexer}
+     *
+     * @internal
+     * @param options {LexerOptions} - The {@link LexerOptions} used for DSL generation.
+     * @returns {Lexer} - The Lexer (For convenience chaining of startup methods)
      */
     private validateOptions(options: LexerOptions): Lexer{
         let array: string[] = [];
@@ -74,8 +110,10 @@ export class Lexer{
     /**
      * Add the core Actions, Expressions, and Modifiers.
      * These will not be set if `options.includeCoreLibrary` is false.
-     * @param options {LexerOptions}
-     * @returns {Lexer}
+     *
+     * @internal
+     * @param options {LexerOptions} - The {@link LexerOptions} used for DSL generation.
+     * @returns {Lexer} - The Lexer (For convenience chaining of startup methods)
      */
     private setLibTypes(options: LexerOptions): Lexer{
         if(!!options.includeCoreLibrary){
@@ -88,8 +126,10 @@ export class Lexer{
 
     /**
      * Add any custom Actions, Expressions, or Modifiers provided.
-     * @param options {LexerOptions}
-     * @returns {Lexer}
+     *
+     * @internal
+     * @param options {LexerOptions} - The {@link LexerOptions} used for DSL generation.
+     * @returns {Lexer} - The Lexer (For convenience chaining of startup methods)
      */
     private setCustomTypes(options: LexerOptions): Lexer{
         if(options.customActions != null) this.actions = this.actions.concat(options.customActions);
@@ -103,8 +143,9 @@ export class Lexer{
      * through the parsing process and output the full DSL used to then execute
      * by the "Parser"
      *
-     * @param input {string}
-     * @returns {DSL[]}
+     * @internal
+     * @param input {string} - The string to generate DSL for.
+     * @returns {DSL[]} - The final DSL to be passed to the Parser.
      */
     public parse(input: string): DSL[] {
         let dsl = this.identify(input);
@@ -119,8 +160,9 @@ export class Lexer{
      * identified statements to the individual DSL parsers to create the appropriate DSL
      * for the query.
      *
-     * @param input {string}
-     * @returns {DSL[]}
+     * @internal
+     * @param input {string} - The string to identify different statements and generate DSL for.
+     * @returns {DSL[]} - The now identified and fully parsed DSL, ready for leveling and scoping.
      */
     private identify(input: string): DSL[]{
         let currentType: DSLType = DSLType.text,
@@ -176,11 +218,14 @@ export class Lexer{
             case DSLType.text:
                 return <DSL>{text: value};
             case DSLType.variable:
+                value = VariableLexer.cleanStringForLexing(value);
                 return <DSL>{variable: new VariableLexer(this.options).invoke(value)};
             case DSLType.replacement:
-                return <DSL>{replacement: new ReplacementLexer(this.options, this.expressions).invoke(value)};
+                value = ReplacementLexer.cleanStringForLexing(value);
+                return <DSL>{replacement: new ReplacementLexer(this.options, this.expressions).invoke(value, this.extractParts(value))};
             case DSLType.command:
-                return <DSL>{command: new CommandLexer(this.options, this.actions).invoke(value)};
+                value = CommandLexer.cleanStringForLexing(value);
+                return <DSL>{command: new CommandLexer(this.options, this.actions, this.expressions).invoke(value, this.extractParts(value))};
             case DSLType.comment:
                 return <DSL>{comment: value.trim()};
             default:
@@ -195,7 +240,7 @@ export class Lexer{
      *  - If an action is found check if it's a DependentAction
      *      - If the action is not a dependent, save on current level and increase the level for the next items
      *      - If the action is a dependent, move up a level and save the item
-     *          - If `end === false`, move the level back down for more nested items
+     *      - If the action is not a TerminatingAction, move the level back down for more nested items
      *  - If no action is found, save the item on the current level
      *
      * @param dsls {DSL[]} - The current DSL array
@@ -210,7 +255,7 @@ export class Lexer{
                 if((<DependentAction>dsl.command.action).dependents != null){
                     levels.push({level: --currentLevel, dsl: dsl});
                     if(currentLevel < 0) throw new Error('SQiggL Parser Error: Your SQiggL is incorrectly nested.');
-                    if(!(<DependentAction>dsl.command.action).end) currentLevel++;
+                    if(!!(<DependentAction>dsl.command.action).rule) currentLevel++;
                 } else {
                     levels.push({level: currentLevel++, dsl: dsl});
                 }
@@ -245,5 +290,71 @@ export class Lexer{
             idx++;
         }
         return leveledDSL.map(x => x.dsl);
+    }
+
+    /**
+     * Split the found string into parts
+     * A part is any set of characters, separated by a space.
+     * Words within a literal string are *not* split. They are treated as one "Part"
+     * @param input {string}
+     * @returns {string[]}
+     */
+    private extractParts(input: string): string[]{
+        let idx: number = 0, parts: string[] = [];
+        let oops: number = 0;
+        while(idx < input.length){
+            parts.push(this.extractWord(input, idx));
+            idx += parts[parts.length-1].length;
+            if(input[idx] === ' '){
+                parts.push(SPACE);
+                idx++;
+            }
+        }
+        return parts;
+    }
+
+    /**
+     * Finds a single "part".
+     * If the "part" is a literal string, use the `extractString` method instead.
+     * @param input {string}
+     * @param start {number} - The starting index to search
+     * @returns {string}
+     */
+    private extractWord(input: string, start: number): string{
+        let nextSpace: number;
+        if(input[start] === "'" || input[start] === '"'){
+            return this.extractString(input, start, input[start]);
+        } else {
+            nextSpace = input.indexOf(' ', start);
+            return input.slice(start, nextSpace > 0 ? nextSpace : input.length);
+        }
+    }
+
+    /**
+     * Finds a single "part" that is a literal string.
+     * Honors escaped quotes.
+     * @param input {string}
+     * @param start {number} - The starting index to search
+     * @param stringChar {string} - Which type of quote was used
+     * @returns {string}
+     */
+    private extractString(input: string, start: number, stringChar: string): string{
+        let idx: number = start + 1;
+        while(idx < input.length){
+            switch(input[idx]){
+                case this.options.stringEscapeChar:
+                    if(input[idx+1] === this.options.stringEscapeChar || input[idx+1] === stringChar){
+                        idx+=2;
+                    } else {
+                        throw new Error(`SQiggLLexerError: Illegal escape character found in string ${input} at index ${idx}`);
+                    }
+                    break;
+                case stringChar:
+                    return input.slice(start, idx+1);
+                default:
+                    idx++;
+            }
+        }
+        throw new Error(`SQiggLLexerError: Invalid string found in ${input}`);
     }
 }

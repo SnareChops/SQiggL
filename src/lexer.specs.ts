@@ -114,14 +114,13 @@ describe('Lexer', () => {
             command.action.should.have.property('key', 'if');
         });
 
-        it('should correct itentify the action of a command despite casing', () => {
+        it('should correct identify the action of a command despite casing', () => {
             const lexer = new Lexer();
             const result = lexer.parse('SELECT * FROM {% iF }');
             const dsl: DSL = result[1];
             const command: DSLCommand = dsl.command;
             command.action.should.have.property('key', 'if');
         });
-
     });
 
     describe('comment', () => {

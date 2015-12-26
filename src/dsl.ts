@@ -29,6 +29,7 @@ export interface DSLVariable{
 export interface DSLCommand extends DSLExpression{
     action: Action;
     expression: BooleanExpression;
+    failed?: boolean;
 }
 
 export interface DSLReplacement extends DSLExpression{

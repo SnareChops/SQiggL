@@ -1,17 +1,29 @@
 import {LexerOptions} from '../lexer';
 import {DSLVariable, DSLVariableType} from '../dsl';
 
+/**
+ * The Lexer responsible for all DSL generation of variable statements
+ *
+ * @internal
+ */
 export class VariableLexer{
 
+    /**
+     * Creates a new instance of the VariableLexer
+     *
+     * @internal
+     * @param options {LexerOptions} - The LexerOptions to use when generating DSL
+     */
     constructor(private options: LexerOptions){}
 
     /**
      * Walk through a variable declaration and return a variable DSL
+     *
+     * @internal
      * @param input {string}
      * @returns {DSLVariable}
      */
     public invoke(input: string): DSLVariable{
-        input = this.cleanInput(input);
         let currentType: DSLVariableType = DSLVariableType.key,
             idx: number = 0,
             startIdx: number = 0,
@@ -76,6 +88,8 @@ export class VariableLexer{
 
     /**
      * Generate the DSL for a variable piece by piece. Building on the definition until complete.
+     *
+     * @internal
      * @param dsl {DSLVariable}
      * @param type {DSLVariableType}
      * @param value {string}
@@ -97,10 +111,12 @@ export class VariableLexer{
 
     /**
      * Clean and prepare the input for parsing
+     *
+     * @internal
      * @param input {string}
      * @returns {string}
      */
-    private cleanInput(input: string): string{
+    public static cleanStringForLexing(input: string): string{
         return input.replace('\n', ' ').replace(/ (?=(?:(?:\\.|"(?:\\.|[^"\\])*"|[^\\'"])*'(?:\\.|"(?:\\.|[^"'\\])*"|[^\\'])*')*(?:\\.|"(?:\\.|[^"\\])*"|[^\\'])*$)(?=(?:(?:\\.|'(?:\\.|[^'\\])*'|[^\\'"])*"(?:\\.|'(?:\\.|[^'"\\])*'|[^\\"])*")*(?:\\.|'(?:\\.|[^'\\])*'|[^\\"])*$)/g, '').trim();
     }
 }

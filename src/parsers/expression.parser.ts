@@ -5,15 +5,15 @@ export class ExpressionParser {
     constructor(private options:ParserOptions) {}
 
     /**
-     * Take a DSLReplacement, run any expressions against it, and output the final string.
+     * Take a DSLExpression and output the final string or boolean.
      *
-     * @param dsl {DSLReplacement}
+     * @param dsl {DSLExpression}
      * @param variables {ScopedVariables}
-     * @returns {string}
+     * @returns {string | boolean}
      */
-    public parse(dsl:DSLExpression, variables?:ScopedVariables):string | boolean{
+    public parse(dsl: DSLExpression, variables?: ScopedVariables):string | boolean{
         let idx: number;
-        for (idx; idx < dsl.values.length; idx++) {
+        for (idx=0; idx < dsl.values.length; idx++) {
             if (dsl.values[idx][0] === "'" || dsl.values[idx][0] === '"') dsl.values[idx] = dsl.values[idx].slice(1, dsl.values[idx].length - 1);
             else if (isNaN(+dsl.values[idx])) {
                 if (variables.hasOwnProperty(dsl.values[idx])) dsl.values[idx] = variables[dsl.values[idx]];
