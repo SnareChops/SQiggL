@@ -60,4 +60,16 @@ describe('Expressions', () => {
             result.should.equal(false);
         });
     });
+
+    describe('LexicalLessThan', () => {
+        it('should return true if expression is true', () => {
+            const result = LexicalLessThan.rule(['Hello', 'World']);
+            result.should.equal(true);
+         });
+
+        it('should return false if expression is false', () => {
+            const result = LexicalLessThan.rule(['World', 'Hello']);
+            result.should.equal(false);
+        });
+    });
 });
