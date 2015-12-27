@@ -24,10 +24,18 @@ export class ExpressionLexer{
      * and rules them out one-by-one until a match is found.
      * **WARNING!** This method is **very** fragile.
      *
+     * - Modifiers in expressions are optional, when searching for a modifier, if one is not found
+     *   then move to the next part of the template and compare the same "Part" against that.
+     *
+     * - Modifiers that are directly before operators *may* have an optional space. If a space is found
+     *   in the "Part" then splice out the space and compare the next "Part" against the operator.
+     *
+     * - If no matching expression is found then throw an error.
+     *
      * @internal
      * @param dsl {DSLExpression} - The DSL to which to append the found DSLExpression
      * @param parts {string} - The expression "Parts" as found in the replacement or command
-     * @returns {DSLExpression}
+     * @returns {DSLExpression} - The appended DSLExpression with all found expression properties.
      */
     public invoke(dsl: DSLExpression, parts: string[]): DSLExpression{
         let expression: Expression,
@@ -73,7 +81,7 @@ export class ExpressionLexer{
                     eidx++;
                 } else if(Array.isArray(ePart)){ // Modifier
                     [foundIdentifier, foundOrderedMod] = this.compareOrderedModifier(<string>clone[pidx], ePart);
-                    if(foundIdentifier == null) {
+                    if(!foundIdentifier) {
                         // Modifiers are optional, stay on same part, move to next ePart
                         eidx++;
                         if(operatorResolved) pidx++;
@@ -84,6 +92,9 @@ export class ExpressionLexer{
                     clone.splice(pidx, 1, (<string>clone[pidx]).slice(foundIdentifier.length));
                     eidx++;
                 } else {
+                    if(clone[pidx] === SPACE && Array.isArray(expression.template[eidx-1])){
+                        clone.splice(pidx, 1); // Modifiers may have an optional space between the modifier and the operator
+                    }
                     if(ePart !== (<string>clone[pidx]).slice(0, ePart.length)){
                         isMatch = false;
                         break;
@@ -107,6 +118,7 @@ export class ExpressionLexer{
                 break;
             }
         }
+        if(!isMatch) throw new Error(`SQiggLLexerError: Unable to determine expression type of '${parts.join('')}'`);
         return dsl;
     }
 

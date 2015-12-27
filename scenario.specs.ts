@@ -65,17 +65,19 @@ describe('Full feature sweep: ', () => {
                 result.should.equal(`UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'`);
             });
         });
-    //
-    //    describe('is not null condition', () => {
-    //        let query = `UPDATE Names {{% if example is not null %}} SET Name = '{{example}}' {{% else %}} SET Name = 'Cow' {{% endif %}} WHERE Name = 'Awesome'`;
-    //        it('should provide a correct result if true', () => {
-    //            expect(parse(query, {example: '12'})).toEqual(`UPDATE Names SET Name = '12'  WHERE Name = 'Awesome'`);
-    //        });
-    //        it('should provide a correct result if false', () => {
-    //            expect(parse(query, {penny: '14'})).toEqual(`UPDATE Names SET Name = 'Cow'  WHERE Name = 'Awesome'`);
-    //        });
-    //    });
-    //
+
+        describe('is not null', () => {
+            let query = `UPDATE Names {% if example is not null } SET Name = '{example}' {% else } SET Name = 'Cow' {% endif } WHERE Name = 'Awesome'`;
+            it('should provide a correct result if true', () => {
+                const result = SQiggL.parse(query, {example: '12'});
+                result.should.equal(`UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'`);
+            });
+            it('should provide a correct result if false', () => {
+                const result = SQiggL.parse(query, {penny: '14'});
+                result.should.equal(`UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'`);
+            });
+        });
+
     //    describe('is !null condition', () => {
     //        let query = `UPDATE Names {{% if example is !null %}} SET Name = '{{example}}' {{% else %}} SET Name = 'Cow' {{% endif %}} WHERE Name = 'Awesome'`;
     //        it('should provide a correct result if true', () => {
