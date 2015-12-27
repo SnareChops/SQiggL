@@ -74,12 +74,28 @@ export class Parser{
     private resolveVariable(dsl: DSLVariable, scopedVariables: ScopedVariables): ScopedVariables{
         if(dsl.value[0] === `'` || dsl.value[0] === `"`){
             scopedVariables[dsl.key] = dsl.value.slice(1, dsl.value.length - 1);
-        } else if(isNaN(<any>dsl.value)) {
+        } else if(isNaN(+dsl.value)) {
             if(scopedVariables[dsl.value] == null) throw new Error(`SQiggLVariableResolutionError: Unable to find ${dsl.value} in the current scope`);
             scopedVariables[dsl.key] = scopedVariables[dsl.value];
         } else {
-            scopedVariables[dsl.key] = parseFloat(dsl.value);
+            scopedVariables[dsl.key] = +dsl.value;
         }
         return scopedVariables;
+    }
+
+    /**
+     * Resolves a value as either a literal string, literal number,
+     * or a variable value and then returns that value as a string.
+     *
+     * @internal
+     * @param value {string | number} - The value to resolve.
+     * @param variables {ScopedVariables} - The list of known variables for this scope.
+     * @returns {string} - The resolved value.
+     */
+    public static resolveValue(value: string | number, variables: ScopedVariables): string{
+        if(value[0] === `'` || value[0] === `"`) return (<string>value).slice(1, (<string>value).length - 1);
+        if(!isNaN(+value)) return value.toString();
+        if(!!variables && variables.hasOwnProperty(<string>value)) return variables[<string>value];
+        throw new Error(`SQiggLParserError: ${value} is not a defined variable in this scope`);
     }
 }

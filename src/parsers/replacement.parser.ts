@@ -1,26 +1,40 @@
-import {ParserOptions, ScopedVariables} from '../parser';
+import {ParserOptions, ScopedVariables, Parser} from '../parser';
 import {DSLReplacement} from '../dsl';
 import {ExpressionParser} from './expression.parser';
+import {ExpressionResult} from '../expressions';
 
+/**
+ * The parser responsible for all DSLReplacements.
+ *
+ * @internal
+ */
 export class ReplacementParser{
+
+    /**
+     * Creates a new instance of ReplacementParser
+     *
+     * @internal
+     * @param options {ParserOptions} - The {@link ParserOptions} for string output.
+     */
     constructor(private options: ParserOptions){}
 
     /**
      * Take a DSLReplacement, run any expressions against it, and output the final string.
      *
-     * @param dsl {DSLReplacement}
-     * @param variables {ScopedVariables}
-     * @returns {string}
+     * @internal
+     * @param dsl {DSLReplacement} - The DSL to parse.
+     * @param variables {ScopedVariables} - The list of known variables for this scope.
+     * @returns {string} - The final output string for this replacement.
      */
     public parse(dsl: DSLReplacement, variables?: ScopedVariables): string{
-        let idx: number = 0, result: string | boolean;
+        let result: ExpressionResult;
         if(!!dsl.expression) {
             result = new ExpressionParser(this.options).parse(dsl, variables);
+            if(Array.isArray(result)){
+                result = (<string[]>result).join(`${Parser.resolveValue(dsl.joiner, variables)} `);
+            }
         } else {
-            if(dsl.literal[0] === "'" || dsl.literal[0] === "'") return dsl.literal.slice(1, dsl.literal.length - 1);
-            else if(!isNaN(+dsl.literal)) return dsl.literal;
-            else if(variables.hasOwnProperty(dsl.literal)) return variables[dsl.literal];
-            else throw new Error(`SQiggLParserError: ${dsl.literal} is not a defined variable in this scope`);
+            result = Parser.resolveValue(dsl.literal, variables).toString();
         }
         if(result === true) return this.options.trueString;
         if(result === false) return this.options.falseString;

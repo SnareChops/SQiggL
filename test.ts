@@ -1,7 +1,14 @@
 // Expressions
-import './src/expressions.spec';
+import './src/expressions.specs';
+
+// Modifiers
+import './src/modifiers.specs';
+
+// Actions
+import './src/actions.specs';
 
 // Lexers
+import './src/lexers/expression.lexer.specs';
 import './src/lexer.specs';
 
 // Parsers

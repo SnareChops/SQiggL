@@ -10,37 +10,46 @@ export interface BaseExpression{
     regex?: RegExp;
 }
 
+export type ExpressionValue = string | number | (string | number)[];
+
 export interface BooleanExpression extends BaseExpression{
-    rule: (values?: string[], literal?: string) => boolean;
+    rule: (values?: ExpressionValue[], literal?: string) => boolean;
 }
 
 export interface ValueExpression extends BaseExpression{
-    rule: (values?: string[], literal?: string) => string;
+    rule: (values?: ExpressionValue[], literal?: string) => string;
 }
 
-export type Expression = BooleanExpression | ValueExpression;
+export interface IterableExpression extends BaseExpression{
+    rule: (values?: ExpressionValue[], literal?: string) => string[];
+}
+
+export type Expression = BooleanExpression | ValueExpression | IterableExpression;
+export type ExpressionResult = string | boolean | string[];
 
 export var VALUE: string = '(v)';
+export var LOCALVARIABLE: string = '(l)';
+export var JOINER: string = '(j)';
 export var SPACE: string = ' ';
 
 export var Equal: BooleanExpression = {
     template: [VALUE, SPACE,[{1: Not}, {2: OrEqual}], '=', [{0: OrEqual}], SPACE, VALUE],
-    rule: (values: string[]) => values[0] == values[1]
+    rule: (values: (string | number)[]) => values[0] == values[1]
 };
 
 export var GreaterThan: BooleanExpression = {
     template: [VALUE, SPACE, [{1: Not}], '>', [{0: OrEqual}], SPACE, VALUE],
-    rule: (values: string[]) => (+values[0]) > (+values[1])
+    rule: (values: (string | number)[]) => (+values[0]) > (+values[1])
 };
 
 export var LessThan: BooleanExpression = {
     template: [VALUE, SPACE, [{1: Not}], '<', [{0: OrEqual}], SPACE, VALUE],
-    rule: (values: string[]) => (+values[0]) < (+values[1])
+    rule: (values: (string | number)[]) => (+values[0]) < (+values[1])
 };
 
 export var IsNull: BooleanExpression = {
     template: [VALUE, SPACE, 'is', SPACE, [{0: Not}], SPACE, 'null'],
-    rule: (values: string[]) => !values[0]
+    rule: (values: (string | number)[]) => !values[0]
 };
 
 export var LexicalGreaterThan: BooleanExpression = {
@@ -70,7 +79,12 @@ export var IsNaN: BooleanExpression = {
 
 export var Between: BooleanExpression = {
     template: [VALUE, SPACE, VALUE, '>', [{1: Not}], [{0: BetweenOrEqual}], '<', VALUE],
-    rule: (values: string[]) => values[1] < values[0] && values[2] > values[0]
+    rule: (values: (string | number)[]) => values[1] < values[0] && values[2] > values[0]
+};
+
+export var IterableOf: IterableExpression = {
+    template: [LOCALVARIABLE, SPACE, 'of', SPACE, VALUE, SPACE, 'using', SPACE, JOINER],
+    rule: (values: ExpressionValue[]) => <string[]>values[0]
 };
 
 export var CORE_EXPRESSIONS: Expression[] = [
@@ -83,5 +97,6 @@ export var CORE_EXPRESSIONS: Expression[] = [
     LengthGreaterThan,
     LengthLessThan,
     IsNaN,
-    Between
+    Between,
+    IterableOf
 ];

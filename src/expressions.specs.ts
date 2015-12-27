@@ -1,4 +1,4 @@
-import {Equal, GreaterThan, LessThan, IsNull, LexicalGreaterThan, LexicalLessThan, LengthGreaterThan, LengthLessThan, IsNaN, Between} from './expressions';
+import {Equal, GreaterThan, LessThan, IsNull, LexicalGreaterThan, LexicalLessThan, LengthGreaterThan, LengthLessThan, IsNaN, Between, IterableOf} from './expressions';
 
 describe('Expressions', () => {
     describe('Equal', () => {
@@ -70,6 +70,63 @@ describe('Expressions', () => {
         it('should return false if expression is false', () => {
             const result = LexicalLessThan.rule(['World', 'Hello']);
             result.should.equal(false);
+        });
+    });
+
+    describe('LengthGreaterThan', () => {
+        it('should return true if expression is true', () => {
+            const result = LengthGreaterThan.rule(['Dragon', 'Cat']);
+            result.should.equal(true);
+        });
+
+        it('should return false if expression is false', () => {
+            const result = LengthGreaterThan.rule(['Cat', 'Dragon']);
+            result.should.equal(false);
+        });
+    });
+
+    describe('LengthLessThan', () => {
+        it('should return true if expression is true', () => {
+            const result = LengthLessThan.rule(['Cat', 'Dragon']);
+            result.should.equal(true);
+        });
+
+        it('should return false if expression is false', () => {
+            const result = LengthLessThan.rule(['Dragon', 'Cat']);
+            result.should.equal(false);
+        });
+    });
+
+    describe('IsNaN', () => {
+        it('should return true if expression is true', () => {
+            const result = IsNaN.rule(['Hello']);
+            result.should.equal(true);
+        });
+
+        it('should return false if expression is false', () => {
+            const result = IsNaN.rule(['12']);
+            result.should.equal(false);
+        });
+    });
+
+    describe('Between', () => {
+        it('should return true if expression is true', () => {
+            const result = Between.rule(['12', '10', '15']);
+            result.should.equal(true);
+        });
+
+        it('should return false if expression is false', () => {
+            const result = Between.rule(['10', '12', '15']);
+            result.should.equal(false);
+        });
+    });
+
+    describe('IterableOf', () => {
+        it('should return an iterable result', () => {
+            const result = IterableOf.rule([['hairy', 'furry', 'fuzzy']]);
+            result[0].should.equal('hairy');
+            result[1].should.equal('furry');
+            result[2].should.equal('fuzzy');
         });
     });
 });

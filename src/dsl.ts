@@ -1,5 +1,5 @@
 import {Action, StartingAction, DependentAction} from './actions';
-import {Expression, BooleanExpression, ValueExpression} from './expressions';
+import {Expression, BooleanExpression, ValueExpression, IterableExpression} from './expressions';
 import {Modifier} from './modifiers';
 
 export enum DSLType{
@@ -28,7 +28,7 @@ export interface DSLVariable{
 
 export interface DSLCommand extends DSLExpression{
     action: Action;
-    expression: BooleanExpression;
+    expression: BooleanExpression | IterableExpression;
     failed?: boolean;
 }
 
@@ -39,6 +39,8 @@ export interface DSLReplacement extends DSLExpression{
 export interface DSLExpression{
     literal: string;
     expression: Expression;
+    local?: string;
+    joiner?: string;
     values?: any[];
     modifiers?: Modifier[];
 }

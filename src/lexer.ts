@@ -20,7 +20,7 @@ export interface LexerOptions{
     includeCoreLibrary?: boolean; //TODO:Implement
 }
 
-const DEFAULT_LEXER_OPTIONS: LexerOptions = {
+export const DEFAULT_LEXER_OPTIONS: LexerOptions = {
     leftWrapperChar: '{',
     rightWrapperChar: '}',
     commandChar: '%',

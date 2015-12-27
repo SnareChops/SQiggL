@@ -1,9 +1,8 @@
 import {CommandParser} from './command.parser';
-import {DSLCommand, DSL} from '../dsl';
-import {If} from '../actions';
-import {GreaterThan} from '../expressions';
+import {DSLCommand, DSL, DSLText, DSLReplacement} from '../dsl';
+import {If, Else, For} from '../actions';
+import {GreaterThan, IterableOf} from '../expressions';
 import {DEFAULT_PARSER_OPTIONS} from '../parser';
-import {Else} from "../actions";
 
 describe('Command Parser', () => {
     it('should correctly return a string in a StartingAction that is false', () => {
@@ -22,5 +21,14 @@ describe('Command Parser', () => {
         const dsl: DSL = {command: {literal: 'else', action: Else, expression: null}, scope: [{text: 'Merry Christmas'}]};
         const result = new CommandParser(DEFAULT_PARSER_OPTIONS).parse(dsl);
         result.should.equal('Merry Christmas');
+    });
+
+    it('should correctly return a string for an IterableCommand', () => {
+        const commandDSL: DSLCommand = {literal: 'for cat of catTypes using \', \'', action: For, expression: IterableOf, local: 'cat', values: [['hairy', 'furry', 'fuzzy']], joiner: '\',\''};
+        const textDSL: DSLText = {text: 'Hello '};
+        const replacementDSL: DSLReplacement = {literal: 'cat', expression: null};
+        const dsl: DSL = {command: commandDSL, scope: [textDSL, {replacement: replacementDSL}]};
+        const result: string = new CommandParser(DEFAULT_PARSER_OPTIONS).parse(dsl);
+        result.should.equal('Hello hairy, Hello furry, Hello fuzzy');
     });
 });

@@ -1,5 +1,6 @@
 import {Parser} from './parser';
 import {DSL} from './dsl';
+import * as should from 'should';
 
 describe('Parser', () => {
 
@@ -33,7 +34,29 @@ describe('Parser', () => {
         });
     });
 
-    describe('variable', () => {
-        it('should output ')
+    describe('resolveValue', () => {
+        it('should correctly output a string literal using single quotes', () => {
+            const result = Parser.resolveValue('\'Hello\'', null);
+            result.should.equal('Hello');
+        });
+
+        it('should correctly output a string literal using double quotes', () => {
+            const result = Parser.resolveValue('"Hello"', null);
+            result.should.equal('Hello');
+        });
+
+        it('should correctly output a number literal', () => {
+            const result = Parser.resolveValue('12', null);
+            result.should.equal('12');
+        });
+
+        it('should correctly output a found variable value', () => {
+            const result = Parser.resolveValue('cat', {cat: 'Dragon'});
+            result.should.equal('Dragon');
+        });
+
+        //it('should throw an error if a variable value is undefined', (done) => {
+        //    Parser.resolveValue('cat', {dragon: 'Fish'})
+        //});
     });
 });

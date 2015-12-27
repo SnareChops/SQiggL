@@ -1,9 +1,22 @@
 import {LexerOptions} from '../lexer';
-import {Expression, OrderedModifier, SPACE, VALUE} from '../expressions';
+import {Expression, OrderedModifier, SPACE, VALUE, LOCALVARIABLE, JOINER} from '../expressions';
 import {DSLExpression} from '../dsl';
 import {Modifier} from '../modifiers';
 
+/**
+ * The lexer responsible for all Expression DSL generation.
+ *
+ * @internal
+ */
 export class ExpressionLexer{
+
+    /**
+     * Creates a new instance of ExpressionLexer
+     *
+     * @internal
+     * @param options {LexerOptions} - The {@link LexerOptions} for DSL generation.
+     * @param expressions {Expression[]} - The list of known expressions for DSL generation.
+     */
     constructor(private options: LexerOptions, private expressions: Expression[]){}
 
     /**
@@ -11,6 +24,7 @@ export class ExpressionLexer{
      * and rules them out one-by-one until a match is found.
      * **WARNING!** This method is **very** fragile.
      *
+     * @internal
      * @param dsl {DSLExpression} - The DSL to which to append the found DSLExpression
      * @param parts {string} - The expression "Parts" as found in the replacement or command
      * @returns {DSLExpression}
@@ -23,7 +37,9 @@ export class ExpressionLexer{
             foundIdentifier: string,
             clone: (string | OrderedModifier)[],
             isMatch: boolean,
-            operatorResolved: boolean;
+            operatorResolved: boolean,
+            localVariable: string,
+            joiner: string;
         for(expression of this.expressions){
             // Set initial state for matching
             pidx = 0;
@@ -31,10 +47,20 @@ export class ExpressionLexer{
             isMatch = true; // Assume is a match until found otherwise
             operatorResolved = false;
             clone = parts.slice(0); // Clone the array to protect original from modifications
+            localVariable = null;
+            joiner = null;
             let oops: number = 0;
-            while(eidx < expression.template.length){
-                var ePart: string | OrderedModifier[] = expression.template[eidx];
-                if(ePart === VALUE) {
+            while(eidx < expression.template.length) {
+                var ePart:string | OrderedModifier[] = expression.template[eidx];
+                if(ePart === LOCALVARIABLE) {
+                    localVariable = <string>clone[pidx];
+                    clone.splice(pidx, 1);
+                    eidx++;
+                } else if(ePart === JOINER) {
+                    joiner = <string>clone[pidx];
+                    clone.splice(pidx, 1);
+                    eidx++;
+                } else if(ePart === VALUE) {
                     // Do nothing, can't match on values as they are user defined.
                     eidx++;
                     pidx++;
@@ -73,6 +99,8 @@ export class ExpressionLexer{
                 if(oops++ > 100) throw new Error('OOPS Expression');
             }
             if(isMatch){
+                if(!!localVariable) dsl.local = localVariable;
+                if(!!joiner) dsl.joiner = joiner;
                 dsl.expression = expression;
                 dsl.values = clone.filter(x => typeof x === 'string');
                 dsl.modifiers = this.sortAndExtractModifiers(<OrderedModifier[]>clone.filter(x => typeof x === 'object'));
@@ -87,6 +115,9 @@ export class ExpressionLexer{
      * Expression template. This method will then return both the found identifier in the "Part"
      * and the matching OrderedModifier, or will return [null, null] if not found.
      *
+     * {@see Lexer.extractParts} for the definition of a "Part".
+     *
+     * @internal
      * @param part {string} - The "Part" of the found expression to compare.
      * @param ePart {OrderedModifier[]} - The OrderedModifier collection to compare the "Part" against.
      * @returns {{string, OrderedModifier]} - A tuple of the identifier and matching OrderedModifier found.
@@ -116,6 +147,7 @@ export class ExpressionLexer{
      * the list of *found* modifiers in the expression that is currently being
      * evaluated.
      *
+     * @internal
      * @param ordered: {OrderedModifier[]}
      * @returns {Modifier[]}
      */
