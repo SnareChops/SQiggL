@@ -2,6 +2,7 @@ import {ExpressionParser} from './expression.parser';
 import {DSLExpression} from '../dsl';
 import {GreaterThan} from '../expressions';
 import {DEFAULT_PARSER_OPTIONS} from '../parser';
+import {Not} from "../modifiers";
 
 describe('ExpressionParser', () => {
     describe('parse', () => {
@@ -21,6 +22,12 @@ describe('ExpressionParser', () => {
             const dsl: DSLExpression = {literal: 'high > low', expression: GreaterThan, values: ['high', 'low']};
             const result = new ExpressionParser(DEFAULT_PARSER_OPTIONS).parse(dsl, {high: 13, low: 12});
             result.should.eql(true);
+        });
+
+        it('should correctly return true if an expression is false but then negated with a modifier', () => {
+            const dsl: DSLExpression = {literal: '12 > 13', expression: GreaterThan, values:['12', '13'], modifiers:[Not]};
+            const result = new ExpressionParser(DEFAULT_PARSER_OPTIONS).parse(dsl);
+            result.should.equal(true);
         });
     });
 });

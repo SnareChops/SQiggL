@@ -8,6 +8,7 @@ export interface OrderedModifier{
 export interface BaseExpression{
     template: (string | OrderedModifier[])[];
     regex?: RegExp;
+    suppressUndefinedVariableError?: boolean;
 }
 
 export type ExpressionValue = string | number | (string | number)[];
@@ -48,8 +49,9 @@ export var LessThan: BooleanExpression = {
 };
 
 export var IsNull: BooleanExpression = {
-    template: [VALUE, SPACE, 'is', SPACE, [{0: Not}], SPACE, 'null'],
-    rule: (values: (string | number)[]) => !values[0]
+    template: [VALUE, SPACE, 'is', SPACE, [{0: Not}], 'null'],
+    rule: (values: (string | number)[]) => !values[0],
+    suppressUndefinedVariableError: true
 };
 
 export var LexicalGreaterThan: BooleanExpression = {

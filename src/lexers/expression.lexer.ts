@@ -71,7 +71,7 @@ export class ExpressionLexer{
                     }
                     clone.splice(pidx, 1); // Remove the space as it is no longer needed for the match
                     eidx++;
-                } else if(Array.isArray(ePart)){ //console.log('MODIFIER');
+                } else if(Array.isArray(ePart)){ // Modifier
                     [foundIdentifier, foundOrderedMod] = this.compareOrderedModifier(<string>clone[pidx], ePart);
                     if(foundIdentifier == null) {
                         // Modifiers are optional, stay on same part, move to next ePart

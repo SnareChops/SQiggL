@@ -31,7 +31,7 @@ export class CommandParser {
         const command: DSLCommand = dsl.command;
         const action: StartingAction | DependentAction | IterableAction = <StartingAction | DependentAction | IterableAction>command.action;
         let expressionResult: ExpressionResult = null;
-        if(!!command.expression) expressionResult = new ExpressionParser(this.options).parse(command);
+        if(!!command.expression) expressionResult = new ExpressionParser(this.options).parse(command, variables);
         let result: string;
         if(!!action.rule){
             if(Array.isArray(expressionResult)) result = (<IterableAction>action).rule(<string[]>expressionResult, variables, dsl.scope, new Parser(this.options), command);

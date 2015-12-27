@@ -4,7 +4,6 @@ import {DSL, DSLCommand} from './dsl';
 interface BaseAction{
     name?: string;
     key: string;
-
 }
 export interface StartingAction extends BaseAction{
     rule: (expressionResult: string | boolean, variables: ScopedVariables, scope: DSL[], parser: Parser) => string;
