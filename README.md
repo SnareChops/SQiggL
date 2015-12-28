@@ -1,6 +1,6 @@
 #SQiggL
 
-[![Build Status](https://travis-ci.org/SnareChops/SQiggL-js.svg?branch=master)](https://travis-ci.org/SnareChops/SQiggL-js)
+[![Circle CI](https://circleci.com/gh/SnareChops/SQiggL-js/tree/master.svg?style=svg)](https://circleci.com/gh/SnareChops/SQiggL-js/tree/master)
 
 ##Getting Started:
 
