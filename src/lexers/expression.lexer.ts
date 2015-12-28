@@ -24,11 +24,62 @@ export class ExpressionLexer{
      * and rules them out one-by-one until a match is found.
      * **WARNING!** This method is **very** fragile.
      *
-     * - Modifiers in expressions are optional, when searching for a modifier, if one is not found
+     * Rules: *rules are documented here and then referenced in the below method.*
+     *
+     * - Rule L1: If the template declares a local variable, save the variable and continue
+     *   matching. if the match succeeds then set the local variable on the DSL.
+     *
+     * - Rule L2: Local variables once found and saved should be spliced from the clone.
+     *   This prevents them from being confused with values in the outputted DSL.
+     *
+     * - Rule J1: If the template declares a joiner, save the joiner and continue matching.
+     *   If the match succeeds then set the joiner on the DSL.
+     *
+     * - Rule J2: Once found and saved Joiners should be spliced from the clone.
+     *   This prevents them from being confused with values in the outputted DSL.
+     *
+     * - Rule V1: If the template declares a VALUE then advance the indexes to the next parts.
+     *   Values can't be matched against the template since they are user defined.
+     *
+     * - Rule S1: If the template declares a SPACE then compare the current item in the clone
+     *   with the SPACE. If they are not equal then NO MATCH. Set isMatch to false and break the
+     *   loop to try the next expression.
+     *
+     * - Rule S2: Successful SPACE matches should remove the SPACE from the clone to prevent
+     *   it from being confused with the values in the outputted DSL.
+     *
+     * - Rule M1: Modifiers in expressions are optional, when searching for a modifier, if one is not found
      *   then move to the next part of the template and compare the same "Part" against that.
      *
-     * - Modifiers that are directly before operators *may* have an optional space. If a space is found
+     * - Rule M2: Modifiers that are directly before operators *may* have an optional space. If a space is found
      *   in the "Part" then splice out the space and compare the next "Part" against the operator.
+     *
+     * - Rule M3: Due to rule M2, if a Modifier is found check the length of the Modifier
+     *   against the length of the "Part". Splice out the "Part" completely if the lengths
+     *   are equal, else remove only the characters that represent the Modifier directly
+     *
+     * - Rule M4: If an operator has already been found in the template and a modifier was not
+     *   matched then move to the next "Part" of the clone. This is a side effect of rule M3
+     *
+     * - Rule M5: If a modifier is successfully matched then inject it into the clone for
+     *   eventual output in the DSL.
+     *
+     * - Rule O1: If an operator is declared in the template compare the "Part" against the
+     *   operator. match only the same amount of characters as a modifier may follow the
+     *   operator in the same "Part".
+     *
+     * - Rule O2: If rule O1 fails then NO MATCH. Set isMatch to false and break the loop and
+     *   try the next expression.
+     *
+     * - Rule O3: If the operator and the "Part" are not the same length then splice out the
+     *   operator from the "Part" leaving what remains. This is because a modifier may occupy
+     *   the same "Part" and that should be matched in the next cycle.
+     *
+     * - Rule O4: If after applying Rule O3 the remaining "Part" is an empty string then
+     *   splice out the "Part" from the clone.
+     *
+     * - Rule O5: If rule O3 doesn't apply, remove the "Part" from the clone. This prevents
+     *   it from being confused with the values in the output DSL.
      *
      * - If no matching expression is found then throw an error.
      *
@@ -61,48 +112,67 @@ export class ExpressionLexer{
             while(eidx < expression.template.length) {
                 var ePart:string | OrderedModifier[] = expression.template[eidx];
                 if(ePart === LOCALVARIABLE) {
+                    /* Rule: L1 */
                     localVariable = <string>clone[pidx];
+                    /* Rule: L2 */
                     clone.splice(pidx, 1);
                     eidx++;
                 } else if(ePart === JOINER) {
+                    /* Rule: J1 */
                     joiner = <string>clone[pidx];
+                    /* Rule: J2 */
                     clone.splice(pidx, 1);
                     eidx++;
                 } else if(ePart === VALUE) {
-                    // Do nothing, can't match on values as they are user defined.
+                    /* Rule: V1 */
                     eidx++;
                     pidx++;
                 } else if(ePart === SPACE){
                     if(<string>clone[pidx] !== ePart) {
+                        /* Rule: S1 */
                         isMatch = false;
                         break;
                     }
-                    clone.splice(pidx, 1); // Remove the space as it is no longer needed for the match
+                    /* Rule: S2 */
+                    clone.splice(pidx, 1);
                     eidx++;
                 } else if(Array.isArray(ePart)){ // Modifier
                     [foundIdentifier, foundOrderedMod] = this.compareOrderedModifier(<string>clone[pidx], ePart);
-                    if(!foundIdentifier) {
-                        // Modifiers are optional, stay on same part, move to next ePart
+                    if(!foundIdentifier) {/* Rule: M1 */
                         eidx++;
+                        /* Rule: M4 */
                         if(operatorResolved) pidx++;
                         continue;
                     }
+                    /* Rule: M5 */
                     clone.splice(pidx, 0, foundOrderedMod);
                     pidx++;
-                    clone.splice(pidx, 1, (<string>clone[pidx]).slice(foundIdentifier.length));
+                    if((<string>clone[pidx]).length === foundIdentifier.length) {
+                        /* Rule: M3 */
+                        clone.splice(pidx, 1);
+                    } else {
+                        /* Rule: M3 */
+                        clone.splice(pidx, 1, (<string>clone[pidx]).slice(foundIdentifier.length));
+                    }
                     eidx++;
                 } else {
                     if(clone[pidx] === SPACE && Array.isArray(expression.template[eidx-1])){
-                        clone.splice(pidx, 1); // Modifiers may have an optional space between the modifier and the operator
+                        /* Rule: M2 */
+                        clone.splice(pidx, 1);
                     }
+                    /* Rule: O1 */
                     if(ePart !== (<string>clone[pidx]).slice(0, ePart.length)){
+                        /* Rule: O2 */
                         isMatch = false;
                         break;
                     }
                     if(ePart.length !== (<string>clone[pidx]).length){
+                        /* Rule: O3 */
                         clone.splice(pidx, 1, (<string>clone[pidx]).slice(ePart.length, (<string>clone[pidx]).length));
+                        /* Rule: O4 */
                         if(clone[pidx] === '') clone.splice(pidx, 1);
                     } else {
+                        /* Rule: O5 */
                         clone.splice(pidx, 1);
                     }
                     eidx++;
@@ -110,7 +180,9 @@ export class ExpressionLexer{
                 if(oops++ > 100) throw new Error('OOPS Expression');
             }
             if(isMatch){
+                /* Rule: L1 */
                 if(!!localVariable) dsl.local = localVariable;
+                /* Rule: J1 */
                 if(!!joiner) dsl.joiner = joiner;
                 dsl.expression = expression;
                 dsl.values = clone.filter(x => typeof x === 'string');

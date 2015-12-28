@@ -27,15 +27,15 @@ describe('Modifiers', () => {
 
     describe('LengthOrEqual', () => {
         it('should return true if the prevResult is true', () => {
-            LengthOrEqual.rule(true, ['Cat', 'Dragon']).should.equal(true);
+            LengthOrEqual.rule(true, ['Cat', '6']).should.equal(true);
         });
 
         it('should return true if the prevResult is false and the values are of equal length', () => {
-            LengthOrEqual.rule(false, ['Cat', 'Sam']).should.equal(true);
+            LengthOrEqual.rule(false, ['Cat', '3']).should.equal(true);
         });
 
         it('should return false if the prevResult is false and the values are not of equal length', () => {
-            LengthOrEqual.rule(false, ['Cat', 'Dragon']).should.equal(false);
+            LengthOrEqual.rule(false, ['Cat', '6']).should.equal(false);
         });
     });
 

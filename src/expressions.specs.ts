@@ -75,24 +75,24 @@ describe('Expressions', () => {
 
     describe('LengthGreaterThan', () => {
         it('should return true if expression is true', () => {
-            const result = LengthGreaterThan.rule(['Dragon', 'Cat']);
+            const result = LengthGreaterThan.rule(['Dragon', 3]);
             result.should.equal(true);
         });
 
         it('should return false if expression is false', () => {
-            const result = LengthGreaterThan.rule(['Cat', 'Dragon']);
+            const result = LengthGreaterThan.rule(['Cat', 6]);
             result.should.equal(false);
         });
     });
 
     describe('LengthLessThan', () => {
         it('should return true if expression is true', () => {
-            const result = LengthLessThan.rule(['Cat', 'Dragon']);
+            const result = LengthLessThan.rule(['Cat', 6]);
             result.should.equal(true);
         });
 
         it('should return false if expression is false', () => {
-            const result = LengthLessThan.rule(['Dragon', 'Cat']);
+            const result = LengthLessThan.rule(['Dragon', 3]);
             result.should.equal(false);
         });
     });

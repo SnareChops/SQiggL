@@ -34,7 +34,7 @@ export var JOINER: string = '(j)';
 export var SPACE: string = ' ';
 
 export var Equal: BooleanExpression = {
-    template: [VALUE, SPACE,[{1: Not}, {2: OrEqual}], '=', [{0: OrEqual}], SPACE, VALUE],
+    template: [VALUE, SPACE,[{1: Not}], '=', [{0: OrEqual}], SPACE, VALUE],
     rule: (values: (string | number)[]) => values[0] == values[1]
 };
 
@@ -66,12 +66,12 @@ export var LexicalLessThan: BooleanExpression = {
 
 export var LengthGreaterThan: BooleanExpression = {
     template: [VALUE, SPACE, [{1: Not}], 'len>', [{0: LengthOrEqual}], SPACE, VALUE],
-    rule: (values: string[]) => values[0].length > values[1].length
+    rule: (values: string[]) => values[0].length > +values[1]
 };
 
 export var LengthLessThan: BooleanExpression = {
     template: [VALUE, SPACE, [{1: Not}], 'len<', [{0: LengthOrEqual}], SPACE, VALUE],
-    rule: (values: string[]) => values[0].length < values[1].length
+    rule: (values: string[]) => values[0].length < +values[1]
 };
 
 export var IsNaN: BooleanExpression = {

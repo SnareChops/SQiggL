@@ -17,7 +17,7 @@ export var OrEqual: Modifier = {
 
 export var LengthOrEqual: Modifier = {
     identifiers: ['='],
-    rule: (prevResult: ExpressionResult, values: string[]) => prevResult || values[0].length === values[1].length
+    rule: (prevResult: ExpressionResult, values: string[]) => prevResult || values[0].length === +values[1]
 };
 
 export var BetweenOrEqual: Modifier = {
