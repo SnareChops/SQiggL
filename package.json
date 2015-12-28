@@ -4,7 +4,8 @@
   "description": "",
   "main": "dist/node/SQiggL.js",
   "scripts": {
-    "test": "./node_modules/.bin/tsc -p . && mocha"
+    "test": "./node_modules/.bin/tsc -p . && mocha",
+    "cover": "node_modules/.bin/istanbul cover node_modules/.bin/_mocha -- -R spec test"
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,7 @@
   },
   "homepage": "https://github.com/SnareChops/SQiggL-js",
   "devDependencies": {
+    "istanbul": "^0.4.1",
     "mocha": "^2.3.4",
     "should": "^8.0.2",
     "typescript": "^1.7.5"

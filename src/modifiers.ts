@@ -22,7 +22,7 @@ export var LengthOrEqual: Modifier = {
 
 export var BetweenOrEqual: Modifier = {
     identifiers: ['='],
-    rule: (prevResult: ExpressionResult, values: string[]) => prevResult || values[0] === values[1] || values[0] === values[2]
+    rule: (prevResult: ExpressionResult, values: string[]) => prevResult || +values[0] === +values[1] || +values[0] === +values[2]
 };
 
 export var CORE_MODIFIERS: Modifier[] = [

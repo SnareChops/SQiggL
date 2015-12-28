@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for sqiggl-js/src/lexers/command.lexer.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../prettify.css" />
+    <link rel="stylesheet" href="../../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../../index.html">all files</a> / <a href="index.html">sqiggl-js/src/lexers/</a> command.lexer.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">96% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>24/25</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">83.33% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>5/6</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>6/6</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">95.83% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>23/24</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">663×</span>
+<span class="cline-any cline-yes">663×</span>
+<span class="cline-any cline-yes">663×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">4641×</span>
+<span class="cline-any cline-yes">663×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">663×</span>
+<span class="cline-any cline-yes">663×</span>
+<span class="cline-any cline-yes">224×</span>
+<span class="cline-any cline-yes">224×</span>
+<span class="cline-any cline-yes">219×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">663×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">663×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">663×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">var expression_lexer_1 = require('./expression.lexer');
+/**
+ * The lexer responsible for all DSL generation of Command statements
+ *
+ * @internal
+ */
+var CommandLexer = (function () {
+    /**
+     * Creates a new instance of CommandLexer
+     *
+     * @internal
+     * @param options {LexerOptions} - The {@link LexerOptions} used for DSL generation.
+     * @param actions {Action[]} - List of all known actions for DSL generation.
+     * @param expressions {Expression[]} - List of all known expressions for DSL generation.
+     */
+    function CommandLexer(options, actions, expressions) {
+        this.options = options;
+        this.actions = actions;
+        this.expressions = expressions;
+    }
+    /**
+     * Search for a matching action in the command and return a DSLCommand
+     *
+     * As a rule all commands must start with an {@link Action} as the first "Part".
+     * If an {@link Action} is not found, throw a No Action error
+     *
+     * - If the action has more that one "Part" then it must have an expression.
+     *   Splice off the first two parts from the command, then check if it has more
+     *   than one "Part".
+     *   - If more than one "Part" then pass the reduced "Parts" to the {@link ExpressionLexer}
+     *     and set the DSL equal to the now appended DSL with expression.
+     *   - If only one "Part" then set the "Part" as the only value and expression to null.
+     *     This is considered a variable and will be attempted to be resolved in the parser
+     *     later.
+     *
+     * @internal
+     * @param input {string}
+     * @param parts {string[]} - The "Parts" of the input. {@see Lexer.extractParts} for more details on the definition of a "Part".
+     * @returns {DSLCommand}
+     */
+    CommandLexer.prototype.invoke = function (input, parts) {
+        var potential = this.actions.map(function (x) { return x.key.toLowerCase(); }).indexOf(parts[0].toLowerCase());
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (potential &lt; 0)
+<span class="cstat-no" title="statement not covered" >            throw new Error("SQiggL No Action Error: Commands require the first word to be a known action. " + parts[0] + " is not a recognized action.");</span>
+        var dsl = this.generateCommandDSL(this.actions[potential], input);
+        if (parts.length &gt; 1) {
+            parts.splice(0, 2);
+            if (parts.length &gt; 1) {
+                dsl = new expression_lexer_1.ExpressionLexer(this.options, this.expressions).invoke(dsl, parts);
+            }
+            else {
+                dsl.expression = null;
+                dsl.values = [parts[0]];
+            }
+        }
+        return dsl;
+    };
+    /**
+     * Create a DSL command from the matching Action definition
+     *
+     * @internal
+     * @param definition {Action}
+     * @param value {string}
+     * @returns {DSLCommand}
+     */
+    CommandLexer.prototype.generateCommandDSL = function (definition, value) {
+        return { literal: value, action: definition };
+    };
+    /**
+     * Clean and prepare the input for parsing
+     *
+     * @internal
+     * @param input {string}
+     * @returns {string}
+     */
+    CommandLexer.cleanStringForLexing = function (input) {
+        return input.replace(/\s+/g, ' ').trim();
+    };
+    return CommandLexer;
+})();
+exports.CommandLexer = CommandLexer;
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon Dec 28 2015 16:41:55 GMT-0500 (EST)
+</div>
+</div>
+<script src="../../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../../sorter.js"></script>
+</body>
+</html>

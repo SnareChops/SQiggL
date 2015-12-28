@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for sqiggl-js/src/lexer.specs.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../index.html">all files</a> / <a href="index.html">sqiggl-js/src/</a> lexer.specs.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>150/150</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/0</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>38/38</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>150/150</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">var lexer_1 = require('../src/lexer');
+var modifiers_1 = require('../src/modifiers');
+var should = require('should');
+describe('Lexer', function () {
+    describe('options', function () {
+        //it('should throw an error if any options use the same character', () =&gt; {
+        //    (new Lexer({leftWrapperChar: '*', rightWrapperChar: '*'})).should.throwError();
+        //});
+        it('should be ok to change the left and right wrappers', function () {
+            var lexer = new lexer_1.Lexer({ leftWrapperChar: '(', rightWrapperChar: ')' });
+            var result = lexer.parse('SELECT * FROM (table)');
+            result[0].should.have.property('text');
+            result[1].should.have.property('replacement');
+        });
+    });
+    describe('text', function () {
+        it('should return a non-special query unaltered', function () {
+            var lexer = new lexer_1.Lexer();
+            var query = 'SELECT * FROM Table';
+            var result = lexer.parse(query);
+            result[0].should.have.property('text', query);
+        });
+        it('should retain whitespace on text', function () {
+            var lexer = new lexer_1.Lexer();
+            var query = ' SELECT * FROM Table   ';
+            var result = lexer.parse(query);
+            result[0].should.have.property('text', query);
+        });
+        it('should respect newlines in non-special areas', function () {
+            var lexer = new lexer_1.Lexer();
+            var query = 'SELECT * \nFROM Table';
+            var result = lexer.parse(query);
+            result[0].should.have.property('text', query);
+        });
+    });
+    describe('replacement', function () {
+        it('should find a replacement in a given string', function () {
+            var lexer = new lexer_1.Lexer();
+            var result = lexer.parse('SELECT * FROM {table}');
+            result[1].should.have.property('replacement');
+        });
+        it('should return a literal for a replacement in a given string', function () {
+            var lexer = new lexer_1.Lexer();
+            var result = lexer.parse('SELECT * FROM {table}');
+            result[1].should.have.property('replacement', { literal: 'table' });
+        });
+        it('should trim whitespace on replacements', function () {
+            var lexer = new lexer_1.Lexer();
+            var result = lexer.parse('{ table }');
+            result[0].should.have.property('replacement', { literal: 'table' });
+        });
+        it('should remove newlines from replacements', function () {
+            var lexer = new lexer_1.Lexer();
+            var result = lexer.parse('{\n something }');
+            result[0].should.have.property('replacement', { literal: 'something' });
+        });
+    });
+    describe('command', function () {
+        it('should find a command in a given string', function () {
+            var lexer = new lexer_1.Lexer();
+            var result = lexer.parse('{% if command }');
+            result[0].should.have.property('command');
+        });
+        it('should return a literal for a command in a given string', function () {
+            var lexer = new lexer_1.Lexer();
+            var result = lexer.parse('{%if command}');
+            result[0].command.should.have.property('literal', 'if command');
+        });
+        it('should trim whitespace on commands', function () {
+            var lexer = new lexer_1.Lexer();
+            var result = lexer.parse('{% if command }');
+            result[0].command.should.have.property('literal', 'if command');
+        });
+        it('should remove newlines from commands', function () {
+            var lexer = new lexer_1.Lexer();
+            var result = lexer.parse('{% if\ncommand}');
+            result[0].command.should.have.property('literal', 'if command');
+        });
+        it('should reduce multiple whitespace characters to a single space', function () {
+            var lexer = new lexer_1.Lexer();
+            var result = lexer.parse('{% if      command}');
+            result[0].command.should.have.property('literal', 'if command');
+        });
+        it('should find multiple commands in a given string', function () {
+            var lexer = new lexer_1.Lexer();
+            var result = lexer.parse('SELECT * FROM {% if table = \'Test\' } TestTable {% else } ProdTable {% endif }');
+            result[1].command.should.have.property('literal', 'if table = \'Test\'');
+            result[2].command.should.have.property('literal', 'else');
+            result[3].command.should.have.property('literal', 'endif');
+        });
+        it('should correctly identify the action of a command in a given string', function () {
+            var lexer = new lexer_1.Lexer();
+            var result = lexer.parse('SELECT * FROM {% if }');
+            var dsl = result[1];
+            var command = dsl.command;
+            command.action.should.have.property('key', 'if');
+        });
+        it('should correct identify the action of a command despite casing', function () {
+            var lexer = new lexer_1.Lexer();
+            var result = lexer.parse('SELECT * FROM {% iF }');
+            var dsl = result[1];
+            var command = dsl.command;
+            command.action.should.have.property('key', 'if');
+        });
+    });
+    describe('comment', function () {
+        it('should find a comment in a given string', function () {
+            var lexer = new lexer_1.Lexer();
+            var result = lexer.parse('SELECT * FROM {# something }');
+            result[1].should.have.property('comment', 'something');
+        });
+        it('should trim whitespace on comments', function () {
+            var lexer = new lexer_1.Lexer();
+            var result = lexer.parse('{# test comment }');
+            result[0].should.have.property('comment', 'test comment');
+        });
+    });
+    describe('variable', function () {
+        it('should find variable declarations in a given string', function () {
+            var lexer = new lexer_1.Lexer();
+            var result = lexer.parse('{+ key:value }');
+            result[0].should.have.property('variable');
+        });
+        it('should remove all whitespace from variable declarations', function () {
+            var lexer = new lexer_1.Lexer();
+            var result = lexer.parse('{+ key : value }');
+            result[0].variable.should.have.property('literal', 'key:value');
+        });
+        it('should also remove newlines from variable declarations', function () {
+            var lexer = new lexer_1.Lexer();
+            var result = lexer.parse('{+ key : \n value');
+            result[0].variable.should.have.property('literal', 'key:value');
+        });
+        it('should correctly set a key and value', function () {
+            var lexer = new lexer_1.Lexer();
+            var result = lexer.parse("{+ dragon:'cat' }");
+            result[0].variable.should.have.property('key');
+            result[0].variable.should.have.property('value');
+        });
+        it('should correctly set the value of key and value', function () {
+            var lexer = new lexer_1.Lexer();
+            var result = lexer.parse("{+ dragon:'cat' }");
+            result[0].variable.should.have.property('key', 'dragon');
+            result[0].variable.should.have.property('value', "'cat'");
+        });
+        it('should correctly handle a variable with an opposite quote inside a string value', function () {
+            var lexer = new lexer_1.Lexer();
+            var result = lexer.parse("{+ dragon: \"Felix's pet\" }");
+            result[0].variable.should.have.property('key', 'dragon');
+            result[0].variable.should.have.property('value', "\"Felix's pet\"");
+        });
+    });
+    describe('scope', function () {
+        it('should determine the correct level of items nested in actions', function () {
+            var lexer = new lexer_1.Lexer();
+            var result = lexer.parse('SELECT * FROM {% if table = \'Test\' } TestTable {% else } ProdTable {% endif }');
+            result[0].should.have.property('text');
+            result[1].should.have.property('command');
+            result[1].should.have.property('scope');
+            result[1].scope[0].should.have.property('text');
+            result[2].should.have.property('command');
+            result[2].should.have.property('scope');
+            result[2].scope[0].should.have.property('text');
+            result[3].should.have.property('command');
+        });
+    });
+    describe('expressions', function () {
+        it('should detect an expression in a replacement', function () {
+            var lexer = new lexer_1.Lexer();
+            var result = lexer.parse('{12 &gt; 13}');
+            result[0].replacement.should.have.property('expression');
+        });
+        it('should detect an expression in a replacement with a modifier', function () {
+            var lexer = new lexer_1.Lexer();
+            var result = lexer.parse('{12 !&lt; 13}');
+            result[0].replacement.should.have.property('expression');
+        });
+        it('should correctly identify a modifier in an expression', function () {
+            var lexer = new lexer_1.Lexer();
+            var result = lexer.parse('{12 !&gt; 13}');
+            result[0].replacement.should.have.property('modifiers');
+            result[0].replacement.modifiers[0].should.equal(modifiers_1.Not);
+        });
+        it('should correctly identify the values in an expression', function () {
+            var lexer = new lexer_1.Lexer();
+            var result = lexer.parse('{12 &gt; 13}');
+            result[0].replacement.values[0].should.equal('12');
+            result[0].replacement.values[1].should.equal('13');
+        });
+    });
+});
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon Dec 28 2015 16:41:55 GMT-0500 (EST)
+</div>
+</div>
+<script src="../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../sorter.js"></script>
+</body>
+</html>

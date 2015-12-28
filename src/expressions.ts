@@ -80,7 +80,7 @@ export var IsNaN: BooleanExpression = {
 };
 
 export var Between: BooleanExpression = {
-    template: [VALUE, SPACE, VALUE, '>', [{1: Not}], [{0: BetweenOrEqual}], '<', VALUE],
+    template: [VALUE, SPACE, VALUE, SPACE, '>', [{1: Not}], [{0: BetweenOrEqual}], '<', SPACE, VALUE],
     rule: (values: (string | number)[]) => values[1] < values[0] && values[2] > values[0]
 };
 
