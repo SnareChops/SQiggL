@@ -58,7 +58,7 @@ result in an unsafe query. NEVER trust user input, use SQiggL with caution!**
 
 ### Commands
 
-A Command is a SQiggL statement that has an Action and an [Expression](#Expressions). Commands are used to perform
+A Command is a SQiggL statement that has an Action and an [Expression](#expressions). Commands are used to perform
 manipulations to the query. For example a command with an `if` Action will conditionally include
 text in your query.
 
@@ -82,13 +82,13 @@ SQiggL currently supports the following actions: *with more coming soon*
 *Notes:*
 * An Action **must** be the first word in a command
 * Only 1 action/expression pair may be defined in a single `{% }`. *Support for `and`, `or`, and complex expressions coming soon.*
-* The `%` character is the default but is customizable. See [Configuration](#Configuration) for more information.
-* Custom actions may be added to provide more features. See [Extensible](#Extensible) for more information.
+* The `%` character is the default but is customizable. See [Configuration](#configuration) for more information.
+* Custom actions may be added to provide more features. See [Extensible](#extensible) for more information.
 
 ### Replacements
 
-A Replacement is an [Expression](#Expressions) or a [Variable](#Variables) that should be evaluated and then injected into the final
-output at the location where it was defined.
+A Replacement is an [Expression](#expressions) or a [Variable](#variables) that should be evaluated and
+then injected into the final output at the location where it was defined.
 
 Replacements are surrounded by `{ }`
 
@@ -104,8 +104,8 @@ Replacements are surrounded by `{ }`
 
 ### Expressions
 
-Expressions are the main logic of SQiggL and can be used in [Commands](#Commands) or [Replacements](#Replacements)
-and can also have [Modifiers](#Modifiers) to extend their functionality.
+Expressions are the main logic of SQiggL and can be used in [Commands](#commands) or [Replacements](#replacements)
+and can also have [Modifiers](#modifiers) to extend their functionality.
 
 There are 3 types of expressions:
 * Boolean expressions return either `true` or `false`. *(Which resolve to `1` or `0` in the outputted SQL)*
@@ -137,7 +137,7 @@ which iterates a collection of values.
 
 In a `For` command the `<var>` will be set as a local variable on the current scope and will contain
 the current value of `<collection>`. The output of each iteration of the command will be separated by
-the `<joiner>`. See the [Examples](#Examples) below for more information.
+the `<joiner>`. See the [Examples](#examples) below for more information.
 
 In a `For` replacement the `<var>` is ignored and will instead output each value in the `<collection>`
 separated by the `<joiner>`
@@ -157,7 +157,7 @@ Variables can also be aliased by other variables
 
 ### Modifiers
 
-Modifiers add additional features to [Expressions](#Expressions). Each expression defines what modifiers
+Modifiers add additional features to [Expressions](#expressions). Each expression defines what modifiers
 it can use and where they can be located in the expression.
 
 modifier    | general rule (Each implementation may be slightly different) | examples
@@ -198,7 +198,8 @@ actual support for this will come when the API stabilizes*
 
 ## Milestone 0.4 features:
 
-This update will add a new concept to the language (though extremely familiar to us) `and, &&, or, ||`. These will do what you would expect: `{{% if myVar > 12 && myVar < 3 %}}`
+This update will add a new concept to the language (though extremely familiar to us) `and, &&, or, ||`.
+These will do what you would expect: `{{% if myVar > 12 && myVar < 3 %}}`
 
 new thing | rule
 ----------|-----
@@ -209,7 +210,8 @@ new thing | rule
 
 ## Milestone 0.5 features:
 
-This update will add turnary statements to the language `if myVar > 12 then myVar else otherVar`. The other common syntax will also be supported `myVar > 12 ? myVar : otherVar`
+This update will add turnary statements to the language `if myVar > 12 then myVar else otherVar`.
+The other common syntax will also be supported `myVar > 12 ? myVar : otherVar`.
 
 ## Milestone 0.6 features:
 
