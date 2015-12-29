@@ -1,11 +1,31 @@
-#SQiggL
+# SQiggL
 
 [![Circle CI](https://circleci.com/gh/SnareChops/SQiggL/tree/master.svg?style=svg)](https://circleci.com/gh/SnareChops/SQiggL/tree/master)
 [![Code Climate](https://codeclimate.com/github/SnareChops/SQiggL/badges/gpa.svg)](https://codeclimate.com/github/SnareChops/SQiggL)
 [![Test Coverage](https://codeclimate.com/github/SnareChops/SQiggL/badges/coverage.svg)](https://codeclimate.com/github/SnareChops/SQiggL/coverage)
 [![Issue Count](https://codeclimate.com/github/SnareChops/SQiggL/badges/issue_count.svg)](https://codeclimate.com/github/SnareChops/SQiggL)
 
-##Getting Started:
+**This is the repo for the upcoming 0.3 release**
+
+## What and Why?!?!?!
+
+SQiggL is in active development to become the best SQL templating tool for DBAs and developers.
+While modern ORMs are very feature rich sometimes you just need raw SQL to run, but would like a tool
+that can help make those SQL files reusable and add some configuration options to them. SQiggL would
+like to become your preferred SQL templating tool to accomplish this goal. Some example use cases could
+be customizable SQL seed files for testing and DB setup, or dynamic query generation based on any rules
+in your application. In reality SQiggL could be used to template any type of text file, but uses SQL as
+it's main target audience.
+
+SQiggL aims to provide a fully functional CLI with multiple file parsing abilities and a feature rich
+templating language that is both **extensible** and powerful. It will have a plugin API that can be
+used to add any features to the language and will allow for many supporting libraries to support it's core.
+
+Many of these features are not yet available, but are all in active development. Contributions are more
+than welcome and encouraged. The source code is **heavily** documented and would be the best place to
+get started.
+
+## Getting Started:
 
 First install SQiggL with
 
@@ -16,7 +36,7 @@ npm install sqiggl
 Next `require` it in your node application using
 
 ```
-var SQiggL = require('sqiggl').default;
+var SQiggL = require('sqiggl');
 ```
 
 Supply a query to be parsed and any variables
@@ -31,47 +51,127 @@ Finally log your result, or use it in a database request
 console.log(result);
 ```
 
-_Note: SQiggL does NOT protect against SQL injection. Passing a dangerous string into a SQiggL variable will result in an unsafe query. NEVER trust user input, use SQiggL with caution!_
+**SQiggL does NOT protect against SQL injection. Passing a dangerous string into a SQiggL variable will
+result in an unsafe query. NEVER trust user input, use SQiggL with caution!**
 
-##Terminology
-Word | Meaning | Examples
------|---------|---------
-Action | This is the main keyword for "doing" something | `if, else, endif, unless, with, ...`
-Expression | These are the operators that perform a comparison | `=, >, <, len>, abc>, ...`
-Modifier | This is an operator that modifies the result of a condition | `!, =, not, ...`
+## Current Features
 
-_`=` is both an expression and a modifier depending on which position it is in, For example `>=` it's a modifier, `!=` it's an expression. This is because `>` is the expression in the first example and `=` is a modifier that then checks if the result is equal when `>` is false. Please see the [SQiggL site](https://snarechops.github.io/SQiggL/#/docs/) for a more detailed explanation_
+### Commands
 
-##Current Features 
+A Command is a SQiggL statement that has an Action and an [Expression](#Expressions). Commands are used to perform
+manipulations to the query. For example a command with an `if` Action will conditionally include
+text in your query.
 
-_If you have not yet read the terminology section above, please do so. SQiggL does not use the standard set of terms for programming languages and there is a fundamental difference in the way the language is parsed that causes this. I feel it is an improvement and allows for some really neat features, that said, it may be a little confusing at first_
+Commands are surrounded by `{% }` in SQiggL queries.
 
-SQiggL currently supports the following actions: `if, unleass, else, endif, endunless`
+SQiggL currently supports the following actions: *with more coming soon*
 
-The following conditions are supported:
+ action    | example
+-----------|---------
+`if`       | `{% if <boolean expression> } output this text {% endif }`
+`unless`   | `{% unless <boolean expression> } output this text {% endunless }`
+`else`     | `{% if <boolean expression> } output this {% else } output that {% endif }`
+`for`      | `{% for <iterable expression> } output this {% endfor }`
+`endif`    | *see `if` above*
+`endunless`| *see `unless` above*
+`endfor`   | *see `for` above*
 
-condition | rule
----------|-----
-`is null` | is null
-`is NaN` | is not a number
-`>` | greater than
-`<` | less than
-`=` | equal to (both "==" and "===" are synonyms for convenience)
-`len>` | length greater than
-`len<` | length less than
-`abc>` | lexical greater than
-`abc<` | lexical less than
-`><` | between (ex: `12><14`)
 
-Also variables can be replaced in queries using `{ }`
-```SET Something = '{ myVar }'```
-with a value of "Hello" for `myVar` will result in
-```SET Something = 'Hello'```
+`else` works with both `if` and `unless`. Support for a generic `end` will come soon.
 
-Examples: 
+*Notes:*
+* An Action **must** be the first word in a command
+* Only 1 action/expression pair may be defined in a single `{% }`. *Support for `and`, `or`, and complex expressions coming soon.*
+* The `%` character is the default but is customizable. See [Configuration](#Configuration) for more information.
+* Custom actions may be added to provide more features. See [Extensible](#Extensible) for more information.
+
+### Replacements
+
+A Replacement is an [Expression](#Expressions) or a [Variable](#Variables) that should be evaluated and then injected into the final
+output at the location where it was defined.
+
+Replacements are surrounded by `{ }`
+
+ examples       | value of var  | output
+--------------- |---------------|-------
+`Hello {var}`   |   `World`     | `Hello World`
+`Hello {'Cat'}` |               | `Hello Cat`
+`Number {12}`   |               | `Number 12`
+`{var > 13}`    |   `15`        | `1` *1 is true in SQL*
+
+*Notes:*
+* Only 1 replacement is allowed per `{ }`. *Support for `and`, `or`, and complex expressions coming soon.*
+
+### Expressions
+
+Expressions are the main logic of SQiggL and can be used in [Commands](#Commands) or [Replacements](#Replacements)
+and can also have [Modifiers](#Modifiers) to extend their functionality.
+
+There are 3 types of expressions:
+* Boolean expressions return either `true` or `false`. *(Which resolve to `1` or `0` in the outputted SQL)*
+* Value expressions return a value. *(a string or a number)*
+* Iterable expressions return a collection of values that can be iterated over by a Replacement or a Command.
+
+The following boolean expressions are supported:
+
+expression| rule                     | example
+----------|--------------------------|--------
+`is null` | is null                  | `example is null`
+`is NaN`  | is not a number          | `example is NaN`
+`>`       | greater than             | `13 > 12`
+`<`       | less than                | `12 < 13`
+`=`       | equal to                 | `example = something`
+`len>`    | length greater than      | `'SQiggL' len> 3`
+`len<`    | length less than         | `'SQiggL' len< 10`
+`abc>`    | lexical greater than     | `'Dragon' abc> 'Cat'`
+`abc<`    | lexical less than        | `'Cat' abc< 'Dragon'`
+`><`      | between                  | `10 5 >< 15`
+
+The only iterable expression supported at the moment is
+
 ```
+<var> of <collection> using <joiner>
+```
+
+which iterates a collection of values.
+
+In a `For` command the `<var>` will be set as a local variable on the current scope and will contain
+the current value of `<collection>`. The output of each iteration of the command will be separated by
+the `<joiner>`. See the [Examples](#Examples) below for more information.
+
+In a `For` replacement the `<var>` is ignored and will instead output each value in the `<collection>`
+separated by the `<joiner>`
+
+*Notes:*
+* Arithmetic is not currently supported.
+* Expressions cannot currently be grouped or nested at this time
+
+### Variables
+
+Variables be defined in the SQiggL query, or can be provided as the second argument to `SQiggL.parse`.
+Variables also honor their scope within a query. For example a variable defined in an `if` action will
+be undefined outside of that action.
+
+Variables are defined in this syntax: `{+ key : 'value' }`
+Variables can also be aliased by other variables
+
+### Modifiers
+
+Modifiers add additional features to [Expressions](#Expressions). Each expression defines what modifiers
+it can use and where they can be located in the expression.
+
+modifier    | general rule (Each implementation may be slightly different) | examples
+------------|--------------------------------------------------------------|---------
+`=`         | Returns true if the expression is equal                      | `13 >= 13` `10 5 >=< 10`
+`!` or `not`| Negates the result of the expression                         | `var is not null` `'it' !len> 3`
+
+### Examples
+
+```
+{+ myVar : 'Bob' }
 UPDATE Something 
-SET {% if myVar is not null }
+SET
+{% if myVar is not null }
     FirstName = '{ myVar }'
 {% else }
     FirstName = 'Default' 
@@ -80,38 +180,42 @@ WHERE ID = 1
 ```
 
 ```
-UPDATE Something 
-SET {% if myVar > 12 }
-    Value = { myVar }
-{% else }
-    Value = { minimum }
-{% end }
-WHERE ID = 1
+{+ isAdmin: 1 }
+{+ fields:['FirstName', 'LastName', 'Birthdate'] }
+SELECT {var of fields using ','} FROM TableA;
+SELECT {var of fields using ','} FROM TableB WHERE Admin = {isAdmin};
 ```
 
-This is just a taste of what SQiggL can do, there is a more detailed usage guide on the [SQiggL site](https://snarechops.github.io/SQiggL.io/#/docs/)
+This is just a taste of what SQiggL can do and it is already capable of much more but many many more more
+features are coming soon.
 
-##Milestone 0.3 features:
+# Extensible
 
-This update will include three new actions `with, for, endfor`. There will probably not be any new conditions for this release as it is a fairly large change in the language and I would like to get it done and out to the public before adding more conditions.
+SQiggL is an extensible language, in the future you will be able to add in new actions, expressions,
+modifiers, and other core features. Once the official 1.0 release drops there will be plugin instructions
+here explaining how. *Technically it's possible to extend SQiggL now, the hooks are in the options, but
+actual support for this will come when the API stabilizes*
 
-I might also try to sneek coalesce into this update (ex: `myVar ?? otherVar`), but we'll have to see how it goes.
-
-##Milestone 0.4 features:
+## Milestone 0.4 features:
 
 This update will add a new concept to the language (though extremely familiar to us) `and, &&, or, ||`. These will do what you would expect: `{{% if myVar > 12 && myVar < 3 %}}`
 
 new thing | rule
 ----------|-----
-`and` | Only true if all conditions pass
-`&&` | Same as `and`
-`or` | True if any of the conditions pass
-`||` | Same as `or`
+`and`     | Only true if all conditions pass
+`&&`      | Same as `and`
+`or`      | True if any of the conditions pass
+`||`      | Same as `or`
 
-##Milestone 0.5 features:
+## Milestone 0.5 features:
 
 This update will add turnary statements to the language `if myVar > 12 then myVar else otherVar`. The other common syntax will also be supported `myVar > 12 ? myVar : otherVar`
 
-#Extensible
+## Milestone 0.6 features:
 
-SQiggL is an extensible language, in the future you will be able to add in new actions, expressions, modifiers, and other core features. Once the official 1.0 release drops there will be plugin instructions here explaining how.
+This update will add basic arithmatic to expressions and hopefully the ability to nest expressions within
+other expressions.
+
+## Milestone 0.7 features:
+
+This update will add a CLI interface.

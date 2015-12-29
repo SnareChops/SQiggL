@@ -84,6 +84,11 @@ export var Between: BooleanExpression = {
     rule: (values: (string | number)[]) => values[1] < values[0] && values[2] > values[0]
 };
 
+export var Coalesce: ValueExpression = {
+    template: [VALUE, SPACE, '??', SPACE, VALUE],
+    rule: (values: (string | number)[]) => (values[0] || values[1]).toString()
+};
+
 export var IterableOfUsing: IterableExpression = {
     template: [LOCALVARIABLE, SPACE, 'of', SPACE, VALUE, SPACE, 'using', SPACE, JOINER],
     rule: (values: ExpressionValue[]) => <string[]>values[0]
@@ -100,5 +105,6 @@ export var CORE_EXPRESSIONS: Expression[] = [
     LengthLessThan,
     IsNaN,
     Between,
+    Coalesce,
     IterableOfUsing
 ];
