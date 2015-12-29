@@ -1,6 +1,9 @@
 #SQiggL
 
-[![Circle CI](https://circleci.com/gh/SnareChops/SQiggL-js/tree/master.svg?style=svg)](https://circleci.com/gh/SnareChops/SQiggL-js/tree/master)
+[![Circle CI](https://circleci.com/gh/SnareChops/SQiggL/tree/master.svg?style=svg)](https://circleci.com/gh/SnareChops/SQiggL/tree/master)
+[![Code Climate](https://codeclimate.com/github/SnareChops/SQiggL/badges/gpa.svg)](https://codeclimate.com/github/SnareChops/SQiggL)
+[![Test Coverage](https://codeclimate.com/github/SnareChops/SQiggL/badges/coverage.svg)](https://codeclimate.com/github/SnareChops/SQiggL/coverage)
+[![Issue Count](https://codeclimate.com/github/SnareChops/SQiggL/badges/issue_count.svg)](https://codeclimate.com/github/SnareChops/SQiggL)
 
 ##Getting Started:
 
