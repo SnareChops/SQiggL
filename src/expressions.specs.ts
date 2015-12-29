@@ -1,4 +1,4 @@
-import {Equal, GreaterThan, LessThan, IsNull, LexicalGreaterThan, LexicalLessThan, LengthGreaterThan, LengthLessThan, IsNaN, Between, IterableOf} from './expressions';
+import {Equal, GreaterThan, LessThan, IsNull, LexicalGreaterThan, LexicalLessThan, LengthGreaterThan, LengthLessThan, IsNaN, Between, IterableOfUsing} from './expressions';
 
 describe('Expressions', () => {
     describe('Equal', () => {
@@ -123,7 +123,7 @@ describe('Expressions', () => {
 
     describe('IterableOf', () => {
         it('should return an iterable result', () => {
-            const result = IterableOf.rule([['hairy', 'furry', 'fuzzy']]);
+            const result = IterableOfUsing.rule([['hairy', 'furry', 'fuzzy']]);
             result[0].should.equal('hairy');
             result[1].should.equal('furry');
             result[2].should.equal('fuzzy');

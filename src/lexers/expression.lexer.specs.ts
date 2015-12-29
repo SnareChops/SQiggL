@@ -1,7 +1,7 @@
 import {DSLExpression} from '../dsl';
 import {ExpressionLexer} from './expression.lexer';
 import {DEFAULT_LEXER_OPTIONS} from '../lexer';
-import {CORE_EXPRESSIONS, IterableOf} from '../expressions';
+import {CORE_EXPRESSIONS, IterableOfUsing} from '../expressions';
 
 describe('ExpressionLexer', () => {
     describe('invoke', () => {

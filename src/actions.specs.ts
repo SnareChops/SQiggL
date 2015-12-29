@@ -1,6 +1,7 @@
 import {If, Unless, Else, For} from './actions';
-import {DSL} from './dsl';
+import {DSL, DSLCommand} from './dsl';
 import {Parser, DEFAULT_PARSER_OPTIONS} from './parser';
+import {IterableOfUsing} from './expressions';
 import * as should from 'should';
 
 describe('Actions', () => {
@@ -46,5 +47,19 @@ describe('Actions', () => {
         });
     });
 
-    //TODO: For
+    describe('For', () => {
+        it('should return the inner scope as many times as there are values and combining them with the joiner', () => {
+            const commandDSL: DSLCommand = {literal: 'for var of vars using \',\'', action: For, expression: IterableOfUsing, local: 'var', joiner: '\',\'', values: [['1', '2', '3']]};
+            const dsl: DSL[] = [{text: 'Hello World'}];
+            const result = For.rule(['1', '2', '3'], void 0, dsl, new Parser(DEFAULT_PARSER_OPTIONS), commandDSL);
+            result.should.equal('Hello World, Hello World, Hello World');
+        });
+
+        it('should iterate the inner scope and correctly replace the inner values using the expressionResult', () => {
+            const commandDSL: DSLCommand = {literal: 'for var of vars using \',\'', action: For, expression: IterableOfUsing, local: 'var', joiner: '\',\'', values: [['1', '2', '3']]};
+            const dsl: DSL[] = [{text: 'Iteration '}, {replacement: {literal: 'var', expression: null}}];
+            const result = For.rule(['1', '2', '3'], void 0, dsl, new Parser(DEFAULT_PARSER_OPTIONS), commandDSL);
+            result.should.equal('Iteration 1, Iteration 2, Iteration 3');
+        });
+    });
 });

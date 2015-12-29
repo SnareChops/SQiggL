@@ -84,7 +84,7 @@ export var Between: BooleanExpression = {
     rule: (values: (string | number)[]) => values[1] < values[0] && values[2] > values[0]
 };
 
-export var IterableOf: IterableExpression = {
+export var IterableOfUsing: IterableExpression = {
     template: [LOCALVARIABLE, SPACE, 'of', SPACE, VALUE, SPACE, 'using', SPACE, JOINER],
     rule: (values: ExpressionValue[]) => <string[]>values[0]
 };
@@ -100,5 +100,5 @@ export var CORE_EXPRESSIONS: Expression[] = [
     LengthLessThan,
     IsNaN,
     Between,
-    IterableOf
+    IterableOfUsing
 ];

@@ -47,7 +47,7 @@ export class Parser{
      * @param variables {ScopedVariables}
      * @returns {string} - The final SQL output
      */
-    public parse(dsl: DSL[], variables?: ScopedVariables): string{
+    public parse(dsl: DSL[], variables: ScopedVariables = {}): string{
         let output: string = '', idx: number;
         for(idx=0; idx < dsl.length; idx++){
             if(dsl[idx].variable) variables = this.resolveVariable(dsl[idx].variable, variables);

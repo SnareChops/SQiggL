@@ -53,7 +53,7 @@ export var Else: DependentAction = {
 
 export var For: IterableAction = {
     key: 'for',
-    rule: (expressionResult: string[], variables: ScopedVariables, scope: DSL[], parser: Parser, commandDSL: DSLCommand) => {
+    rule: (expressionResult: string[], variables: ScopedVariables = {}, scope: DSL[], parser: Parser, commandDSL: DSLCommand) => {
         let result: string[] = [];
         for(var value of expressionResult){
             variables[commandDSL.local] = value;
