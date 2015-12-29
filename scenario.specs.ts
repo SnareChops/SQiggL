@@ -41,6 +41,16 @@ describe('Scenarios', () => {
         result.should.equal('SELECT * FROM Table WHERE status = 1');
     });
 
+    it('should correctly output a SQiggL query containing a value expression', () => {
+        const result = SQiggL.parse('SELECT * FROM {dev ?? prod}', {dev: 'DevTable'});
+        result.should.equal('SELECT * FROM DevTable');
+    });
+
+    it('should correctly output a SQiggL query containing a coalesce', () => {
+        const result = SQiggL.parse('SELECT * FROM {dev ?? prod}', {prod: 'ProdTable'});
+        result.should.equal('SELECT * FROM ProdTable');
+    });
+
     it('should correctly output a SQiggL query containing a StartingAction/TerminatingAction pair', () => {
         const result = SQiggL.parse('SELECT * FROM Table {% if 13 > 12 } WHERE status = 1 {% endif }');
         result.should.equal('SELECT * FROM Table  WHERE status = 1 ');
@@ -1138,7 +1148,7 @@ describe('Full feature sweep: ', () => {
             });
         });
 
-        describe('between condition', () => {
+        describe('><', () => {
             let query = `UPDATE Names {% if example 10 >< 20 } SET Name = '{example}' {% else } SET Name = 'Cow' {% endif } WHERE Name = 'Awesome'`;
             it('should provide a correct result if true', () => {
                 const result = SQiggL.parse(query, {example: 15});
@@ -1162,7 +1172,7 @@ describe('Full feature sweep: ', () => {
             });
         });
 
-        describe('!between', () => {
+        describe('>!<', () => {
             let query = `UPDATE Names {% if example 10 >!< 20 } SET Name = '{example}' {% else } SET Name = 'Cow' {% endif } WHERE Name = 'Awesome'`;
             it('should provide a correct result if true', () => {
                 const result = SQiggL.parse(query, {example: 15});
@@ -1186,7 +1196,7 @@ describe('Full feature sweep: ', () => {
             });
         });
 
-        describe('between= condition', () => {
+        describe('>=<', () => {
             let query = `UPDATE Names {% if example 10 >=< 20 } SET Name = '{example}' {% else } SET Name = 'Cow' {% endif } WHERE Name = 'Awesome'`;
             it('should provide a correct result if true', () => {
                 const result = SQiggL.parse(query, {example: 15});

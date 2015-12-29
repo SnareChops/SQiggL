@@ -1,4 +1,4 @@
-import {Equal, GreaterThan, LessThan, IsNull, LexicalGreaterThan, LexicalLessThan, LengthGreaterThan, LengthLessThan, IsNaN, Between, IterableOfUsing} from './expressions';
+import {Equal, GreaterThan, LessThan, IsNull, LexicalGreaterThan, LexicalLessThan, LengthGreaterThan, LengthLessThan, IsNaN, Between, Coalesce, IterableOfUsing} from './expressions';
 
 describe('Expressions', () => {
     describe('Equal', () => {
@@ -118,6 +118,18 @@ describe('Expressions', () => {
         it('should return false if expression is false', () => {
             const result = Between.rule(['10', '12', '15']);
             result.should.equal(false);
+        });
+    });
+
+    describe('Coalesce', () => {
+        it('should return the first value if it is not null', () => {
+            const result = Coalesce.rule(['Hello', 'World']);
+            result.should.equal('Hello');
+        });
+
+        it('should return the second value if the first is null', () => {
+            const result = Coalesce.rule([null, 'World']);
+            result.should.equal('World');
         });
     });
 

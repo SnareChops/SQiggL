@@ -86,7 +86,8 @@ export var Between: BooleanExpression = {
 
 export var Coalesce: ValueExpression = {
     template: [VALUE, SPACE, '??', SPACE, VALUE],
-    rule: (values: (string | number)[]) => (values[0] || values[1]).toString()
+    rule: (values: (string | number)[]) => (values[0] || values[1]).toString(),
+    suppressUndefinedVariableError: true
 };
 
 export var IterableOfUsing: IterableExpression = {
