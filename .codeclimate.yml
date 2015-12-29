@@ -1,0 +1,9 @@
+engines:
+  nodesecurity:
+    enabled: true
+  eslint:
+    enabled: true
+
+ratings:
+  paths:
+  - "**.ts"
