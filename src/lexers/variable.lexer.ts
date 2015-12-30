@@ -44,7 +44,7 @@ export class VariableLexer{
                     }
                     if(input.charAt(idx) === stringChar){
                         if(input.charAt(idx - 1) === this.options.stringEscapeChar){
-                            input = input.slice(0, idx) + input.slice(idx + 1);
+                            input = input.slice(0, idx - 1) + input.slice(idx);
                             // DO NOT increment the idx here as a character has been removed
                         }
                     }
@@ -60,7 +60,7 @@ export class VariableLexer{
                     }
                     if(input.charAt(idx) === stringChar){
                         if(input.charAt(idx - 1) === this.options.stringEscapeChar){
-                            input = input.slice(0, idx) + input.slice(idx + 1);
+                            input = input.slice(0, idx -1) + input.slice(idx);
                             // DO NOT increment the idx here as a character has been removed
                         }
                     }

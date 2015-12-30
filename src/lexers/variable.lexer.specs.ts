@@ -21,12 +21,12 @@ describe('VariableLexer', () => {
     it('should correctly handle a variable value that has an escaped single quote in the string', () => {
         const input = `key:'Dragon\\'s breath'`;
         const result = lexer.invoke(input);
-        result.value.should.equal(`'Dragon's breath`);
+        result.value.should.equal(`'Dragon's breath'`);
     });
 
     it('should correctly handle a variable value that has an escaped double quote in the string', () => {
-        const input = `key: "Dragon\\"s breath"`;
+        const input = `key:"Dragon\\"s breath"`;
         const result = lexer.invoke(input);
-        result.value.should.equal(`Dragon"s breath`);
+        result.value.should.equal(`"Dragon"s breath"`);
     });
 });
