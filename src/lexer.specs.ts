@@ -6,9 +6,9 @@ const should = require('should');
 describe('Lexer', () => {
 
     describe('options', () => {
-        //it('should throw an error if any options use the same character', () => {
-        //    (new Lexer({leftWrapperChar: '*', rightWrapperChar: '*'})).should.throwError();
-        //});
+        it('should throw an error if any options use the same character', () => {
+            (() => new Lexer({leftWrapperChar: '*', rightWrapperChar: '*'})).should.throwError();
+        });
 
         it('should be ok to change the left and right wrappers', () => {
             const lexer = new Lexer({leftWrapperChar: '(', rightWrapperChar: ')'});
