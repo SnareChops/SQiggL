@@ -5,8 +5,6 @@
 [![Test Coverage](https://codeclimate.com/github/SnareChops/SQiggL/badges/coverage.svg)](https://codeclimate.com/github/SnareChops/SQiggL/coverage)
 [![Issue Count](https://codeclimate.com/github/SnareChops/SQiggL/badges/issue_count.svg)](https://codeclimate.com/github/SnareChops/SQiggL)
 
-**This is the repo for the upcoming 0.3 release**
-
 ## What and Why?!?!?!
 
 SQiggL is in active development to become the best SQL templating tool for DBAs and developers.
