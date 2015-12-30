@@ -6,7 +6,8 @@
   "scripts": {
     "test": "./node_modules/.bin/tsc -p . && ./node_modules/.bin/mocha dist/test",
     "posttest": "npm run cover && ./node_modules/.bin/codeclimate-test-reporter < ./coverage/lcov.info",
-    "cover": "node_modules/.bin/istanbul cover node_modules/.bin/_mocha -- -R spec test"
+    "cover": "node_modules/.bin/istanbul cover node_modules/.bin/_mocha -- -R spec dist/test",
+    "postcover": "node_modules/.bin/mocha -R markdown dist/test > docs/tests.md && node_modules/.bin/mocha -R doc dist/test > docs/tests.html"
   },
   "repository": {
     "type": "git",
