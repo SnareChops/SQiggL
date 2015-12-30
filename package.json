@@ -1,8 +1,9 @@
 {
   "name": "sqiggl",
-  "version": "0.2.0",
-  "description": "",
-  "main": "dist/node/SQiggL.js",
+  "version": "0.3.0",
+  "description": "A SQL templating language with extensible support",
+  "main": "dist/index.js",
+  "typings": "dist/src/sqiggl",
   "scripts": {
     "test": "./node_modules/.bin/tsc -p . && ./node_modules/.bin/mocha dist/test",
     "posttest": "npm run cover && ./node_modules/.bin/codeclimate-test-reporter < ./coverage/lcov.info",
@@ -11,25 +12,29 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/SnareChops/SQiggL-js.git"
+    "url": "https://github.com/SnareChops/SQiggL.git"
   },
   "keywords": [
     "SQL",
+    "parser",
     "generation",
     "token",
-    "replacement"
+    "replacement",
+    "templating",
+    "template"
   ],
   "author": "SnareChops <snare_chops@yahoo.com>",
-  "license": "MIT",
+  "license": "ISC",
   "bugs": {
-    "url": "https://github.com/SnareChops/SQiggL-js/issues"
+    "url": "https://github.com/SnareChops/SQiggL/issues"
   },
-  "homepage": "https://github.com/SnareChops/SQiggL-js",
+  "homepage": "https://github.com/SnareChops/SQiggL",
   "devDependencies": {
     "codeclimate-test-reporter": "^0.1.1",
     "istanbul": "^0.4.1",
     "mocha": "^2.3.4",
     "should": "^8.0.2",
     "typescript": "^1.7.5"
-  }
+  },
+  "tonicExampleFilename": "example.js"
 }

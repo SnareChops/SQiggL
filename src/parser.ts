@@ -26,12 +26,33 @@ export const DEFAULT_PARSER_OPTIONS: ParserOptions = {
     falseString: '0'
 };
 
+/**
+ * The parent parser to all specific parsers
+ *
+ * @internal
+ */
 export class Parser{
+    /**
+     * @internal
+     */
     private options: ParserOptions = <ParserOptions>{};
+
+    /**
+     * Creates a new instance of Parser
+     *
+     * @internal
+     * @param options {ParserOptions}
+     */
     constructor(options: ParserOptions = {}){
         this.setOptions(options);
     }
 
+    /**
+     * Sets the options for the parser
+     *
+     * @internal
+     * @param options {ParserOptions}
+     */
     private setOptions(options: ParserOptions): Parser{
         for(var key of Object.keys(DEFAULT_PARSER_OPTIONS)){
             this.options[key] = options[key] || DEFAULT_PARSER_OPTIONS[key];

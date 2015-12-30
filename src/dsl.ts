@@ -2,6 +2,9 @@ import {Action, StartingAction, DependentAction} from './actions';
 import {Expression, BooleanExpression, ValueExpression, IterableExpression} from './expressions';
 import {Modifier} from './modifiers';
 
+/**
+ * @internal
+ */
 export enum DSLType{
     text,
     variable,
@@ -10,15 +13,24 @@ export enum DSLType{
     comment
 }
 
+/**
+ * @internal
+ */
 export enum DSLVariableType{
     key,
     value
 }
 
+/**
+ * @internal
+ */
 export interface DSLText{
     text: string;
 }
 
+/**
+ * @internal
+ */
 export interface DSLVariable{
     literal: string;
     key?: string;
@@ -26,16 +38,25 @@ export interface DSLVariable{
     resolved?: string;
 }
 
+/**
+ * @internal
+ */
 export interface DSLCommand extends DSLExpression{
     action: Action;
     expression: BooleanExpression | IterableExpression;
     failed?: boolean;
 }
 
+/**
+ * @internal
+ */
 export interface DSLReplacement extends DSLExpression{
     expression: Expression;
 }
 
+/**
+ * @internal
+ */
 export interface DSLExpression{
     literal: string;
     expression: Expression;
@@ -45,6 +66,9 @@ export interface DSLExpression{
     modifiers?: Modifier[];
 }
 
+/**
+ * @internal
+ */
 export interface DSL{
     text?: string;
     variable?: DSLVariable;
@@ -54,6 +78,9 @@ export interface DSL{
     scope?: DSL[];
 }
 
+/**
+ * @internal
+ */
 export interface LeveledDSL{
     level: number;
     dsl: DSL;

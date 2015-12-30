@@ -209,6 +209,8 @@ export class Lexer{
 
     /**
      * Choose the correct DSL representation for the found type and parse/generate it
+     *
+     * @internal
      * @param type {DSLType}
      * @param value {string}
      * @returns {DSL}
@@ -244,6 +246,7 @@ export class Lexer{
      *      - If the action is not a TerminatingAction, move the level back down for more nested items
      *  - If no action is found, save the item on the current level
      *
+     * @internal
      * @param dsls {DSL[]} - The current DSL array
      * @returns {LeveledDSL[]}
      */
@@ -278,6 +281,7 @@ export class Lexer{
      *  - If the item is down a level, cut/paste all direct siblings at or below
      *    the current level onto the previous item and then recursively scope those
      *
+     * @internal
      * @param leveledDSL - The leveled DSL returned from levelDSL
      * @returns {DSL[]}
      */
@@ -297,7 +301,9 @@ export class Lexer{
     /**
      * Split the found string into parts
      * A part is any set of characters, separated by a space.
-     * Words within a literal string are *not* split. They are treated as one "Part"
+     * Words within a literal string are *not* split. They are treated as one "Part".
+     *
+     * @internal
      * @param input {string}
      * @returns {string[]}
      */
@@ -319,6 +325,8 @@ export class Lexer{
     /**
      * Finds a single "part".
      * If the "part" is a literal string, use the `extractString` method instead.
+     *
+     * @internal
      * @param input {string}
      * @param start {number} - The starting index to search
      * @returns {string}
@@ -336,6 +344,8 @@ export class Lexer{
     /**
      * Finds a single "part" that is a literal string.
      * Honors escaped quotes.
+     *
+     * @internal
      * @param input {string}
      * @param start {number} - The starting index to search
      * @param stringChar {string} - Which type of quote was used

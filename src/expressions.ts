@@ -33,63 +33,99 @@ export var LOCALVARIABLE: string = '(l)';
 export var JOINER: string = '(j)';
 export var SPACE: string = ' ';
 
+/**
+ * @internal
+ */
 export var Equal: BooleanExpression = {
     template: [VALUE, SPACE,[{1: Not}], '=', [{0: OrEqual}], SPACE, VALUE],
     rule: (values: (string | number)[]) => values[0] == values[1]
 };
 
+/**
+ * @internal
+ */
 export var GreaterThan: BooleanExpression = {
     template: [VALUE, SPACE, [{1: Not}], '>', [{0: OrEqual}], SPACE, VALUE],
     rule: (values: (string | number)[]) => (+values[0]) > (+values[1])
 };
 
+/**
+ * @internal
+ */
 export var LessThan: BooleanExpression = {
     template: [VALUE, SPACE, [{1: Not}], '<', [{0: OrEqual}], SPACE, VALUE],
     rule: (values: (string | number)[]) => (+values[0]) < (+values[1])
 };
 
+/**
+ * @internal
+ */
 export var IsNull: BooleanExpression = {
     template: [VALUE, SPACE, 'is', SPACE, [{0: Not}], 'null'],
     rule: (values: (string | number)[]) => !values[0],
     suppressUndefinedVariableError: true
 };
 
+/**
+ * @internal
+ */
 export var LexicalGreaterThan: BooleanExpression = {
     template: [VALUE, SPACE, [{1: Not}], 'abc>', [{0: OrEqual}], SPACE, VALUE],
     rule: (values: string[]) => [values[0], values[1]].sort().indexOf(values[0]) > 0
 };
 
+/**
+ * @internal
+ */
 export var LexicalLessThan: BooleanExpression = {
     template: [VALUE, SPACE, [{1: Not}], 'abc<', [{0: OrEqual}], SPACE, VALUE],
     rule: (values: string[]) => values[0] === values[1] ? false : [values[0], values[1]].sort().indexOf(values[0]) === 0
 };
 
+/**
+ * @internal
+ */
 export var LengthGreaterThan: BooleanExpression = {
     template: [VALUE, SPACE, [{1: Not}], 'len>', [{0: LengthOrEqual}], SPACE, VALUE],
     rule: (values: string[]) => values[0].length > +values[1]
 };
 
+/**
+ * @internal
+ */
 export var LengthLessThan: BooleanExpression = {
     template: [VALUE, SPACE, [{1: Not}], 'len<', [{0: LengthOrEqual}], SPACE, VALUE],
     rule: (values: string[]) => values[0].length < +values[1]
 };
 
+/**
+ * @internal
+ */
 export var IsNaN: BooleanExpression = {
     template: [VALUE, SPACE, 'is', SPACE, [{0: Not}], 'NaN'],
     rule: (values: string[]) => isNaN(Number(values[0]))
 };
 
+/**
+ * @internal
+ */
 export var Between: BooleanExpression = {
     template: [VALUE, SPACE, VALUE, SPACE, '>', [{1: Not}], [{0: BetweenOrEqual}], '<', SPACE, VALUE],
     rule: (values: (string | number)[]) => values[1] < values[0] && values[2] > values[0]
 };
 
+/**
+ * @internal
+ */
 export var Coalesce: ValueExpression = {
     template: [VALUE, SPACE, '??', SPACE, VALUE],
     rule: (values: (string | number)[]) => (values[0] || values[1]).toString(),
     suppressUndefinedVariableError: true
 };
 
+/**
+ * @internal
+ */
 export var IterableOfUsing: IterableExpression = {
     template: [LOCALVARIABLE, SPACE, 'of', SPACE, VALUE, SPACE, 'using', SPACE, JOINER],
     rule: (values: ExpressionValue[]) => <string[]>values[0]

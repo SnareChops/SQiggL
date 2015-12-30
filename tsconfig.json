@@ -8,7 +8,8 @@
         "sourceMap": false,
         "moduleResolution": "node",
         "suppressImplicitAnyIndexErrors": true,
-        "noEmitOnError": true
+        "noEmitOnError": true,
+        "declaration": true
     },
     "exclude": [
         "node_modules"
