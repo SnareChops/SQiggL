@@ -8,6 +8,8 @@ import './src/modifiers.specs';
 import './src/actions.specs';
 
 // Lexers
+import './src/lexers/variable.lexer.specs';
+import './src/lexers/command.lexer.specs';
 import './src/lexers/expression.lexer.specs';
 import './src/lexer.specs';
 

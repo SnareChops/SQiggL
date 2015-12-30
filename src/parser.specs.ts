@@ -34,6 +34,18 @@ describe('Parser', () => {
         });
     });
 
+    describe('variable', () => {
+        it('should resolve a variable in SQiggL query without an error', () => {
+            const parser = new Parser();
+            parser.parse([{variable: {literal: 'cat:"meow"', key: 'cat', value: '"meow"'}}]);
+        });
+
+        it('should resolve a variable alias in a SQiggL query without an error', () => {
+            const parser = new Parser();
+            parser.parse([{variable: {literal: 'cat:sound', key: 'cat', value: 'sound'}}], {sound: 'meow'});
+        });
+    });
+
     describe('resolveValue', () => {
         it('should correctly output a string literal using single quotes', () => {
             const result = Parser.resolveValue('\'Hello\'', null);
@@ -55,8 +67,8 @@ describe('Parser', () => {
             result.should.equal('Dragon');
         });
 
-        //it('should throw an error if a variable value is undefined', (done) => {
-        //    Parser.resolveValue('cat', {dragon: 'Fish'})
-        //});
+        it('should throw an error if a variable value is undefined', () => {
+            (() => Parser.resolveValue('cat', {dragon: 'Fish'})).should.throw('SQiggLParserError: cat is not a defined variable in this scope');
+        });
     });
 });

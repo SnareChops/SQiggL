@@ -5,6 +5,55 @@ const should = require('should');
 
 describe('Lexer', () => {
 
+    it('should throw an error if a query contains an incomplete statement', () => {
+        const lexer = new Lexer();
+        (() => lexer.parse('SELECT * FROM {Table')).should.throw('SQiggLLexerError: Expected statement to complete before end of file.');
+    });
+
+    it('should throw an throw an error if a query does not close a statement before declaring another', () => {
+        const lexer = new Lexer();
+        (() => lexer.parse('SELECT * FROM {Table WHERE id = {12}')).should.throw('SQiggLLexerError: Unexpected \'{\' found in statement. Expected \'}\'.');
+    });
+
+    it('should throw an error if a query is incorrectly nested', () => {
+        const lexer = new Lexer();
+        const query = 'SELECT * FROM {% if 12 > 13} Test {% endif } {% endif }';
+        (() => lexer.parse(query)).should.throw('SQiggLLexerError: Your SQiggL is incorrectly nested.');
+    });
+
+    it('should throw an error if a query is incompletely nested', () => {
+        const lexer = new Lexer();
+        const query = 'SELECT * FROM {% if 12 > 13 } Test';
+        (() => lexer.parse(query)).should.throw('SQiggLLexerError: Your SQiggL query is nested but does not return to the top level before completing. Please check your nesting.');
+    });
+
+    it('should correctly handle escaped single quotes in strings', () => {
+        const lexer = new Lexer();
+        const query = `SELECT * FROM {'Dragon\\'s run'}`;
+        const result = lexer.parse(query);
+        result[1].replacement.literal.should.equal("'Dragon's run'");
+    });
+
+    it('should correctly handle escaped double quotes in strings', () => {
+        const lexer = new Lexer();
+        const query = `SELECT * FROM {"Dragon\\"s run"}`;
+        const result = lexer.parse(query);
+        result[1].replacement.literal.should.equal('"Dragon"s run"');
+    });
+
+    it('should correctly handle an escaped escape character in strings', () => {
+        const lexer = new Lexer();
+        const query = `SELECT * FROM {'Me\\\\You'}`;
+        const result = lexer.parse(query);
+        result[1].replacement.literal.should.equal("'Me\\You'");
+    });
+
+    it('should throw an error if an illegal escape character exists in a string', () => {
+        const lexer = new Lexer();
+        const query = `SELECT * FROM {'\\Something'}`;
+        (() => lexer.parse(query)).should.throw("SQiggLLexerError: Illegal escape character found in string '\\Something' at index 1");
+    });
+
     describe('options', () => {
         it('should throw an error if any options use the same character', () => {
             (() => new Lexer({leftWrapperChar: '*', rightWrapperChar: '*'})).should.throwError();
@@ -70,31 +119,31 @@ describe('Lexer', () => {
     describe('command', () => {
         it('should find a command in a given string', () => {
             const lexer = new Lexer();
-            const result = lexer.parse('{% if command }');
+            const result = lexer.parse('{% if command } {% endif}');
             result[0].should.have.property('command');
         });
 
         it('should return a literal for a command in a given string', () => {
             const lexer = new Lexer();
-            const result = lexer.parse('{%if command}');
+            const result = lexer.parse('{%if command} {%endif}');
             <DSL>result[0].command.should.have.property('literal', 'if command');
         });
 
         it('should trim whitespace on commands', () => {
             const lexer = new Lexer();
-            const result = lexer.parse('{% if command }');
+            const result = lexer.parse('{% if command } {%endif}');
             <DSL>result[0].command.should.have.property('literal', 'if command');
         });
 
         it('should remove newlines from commands', () => {
             const lexer = new Lexer();
-            const result = lexer.parse('{% if\ncommand}');
+            const result = lexer.parse('{% if\ncommand} {%endif}');
             <DSL>result[0].command.should.have.property('literal', 'if command');
         });
 
         it('should reduce multiple whitespace characters to a single space', () => {
             const lexer = new Lexer();
-            const result = lexer.parse('{% if      command}');
+            const result = lexer.parse('{% if      command} {%endif}');
             <DSL>result[0].command.should.have.property('literal', 'if command');
         });
 
@@ -108,7 +157,7 @@ describe('Lexer', () => {
 
         it('should correctly identify the action of a command in a given string', () => {
             const lexer = new Lexer();
-            const result = lexer.parse('SELECT * FROM {% if }');
+            const result = lexer.parse('SELECT * FROM {% if } {%endif}');
             const dsl: DSL = result[1];
             const command: DSLCommand = dsl.command;
             command.action.should.have.property('key', 'if');
@@ -116,7 +165,7 @@ describe('Lexer', () => {
 
         it('should correct identify the action of a command despite casing', () => {
             const lexer = new Lexer();
-            const result = lexer.parse('SELECT * FROM {% iF }');
+            const result = lexer.parse('SELECT * FROM {% iF } {%endif}');
             const dsl: DSL = result[1];
             const command: DSLCommand = dsl.command;
             command.action.should.have.property('key', 'if');
@@ -153,7 +202,7 @@ describe('Lexer', () => {
 
         it('should also remove newlines from variable declarations', () => {
             const lexer = new Lexer();
-            const result = lexer.parse('{+ key : \n value');
+            const result = lexer.parse('{+ key : \n value }');
             <DSL>result[0].variable.should.have.property('literal', 'key:value');
         });
 

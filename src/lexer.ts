@@ -151,7 +151,6 @@ export class Lexer{
         let dsl = this.identify(input);
         let leveledDSL: LeveledDSL[] = this.levelDSL(dsl);
         dsl = this.scopeDSL(leveledDSL);
-        //console.log(JSON.stringify(dsl));
         return dsl;
     }
 
@@ -172,6 +171,7 @@ export class Lexer{
         while(idx < input.length){
             switch(input.charAt(idx)){
                 case this.options.leftWrapperChar:
+                    if(currentType !== DSLType.text) throw new Error(`SQiggLLexerError: Unexpected '${this.options.leftWrapperChar}' found in statement. Expected '${this.options.rightWrapperChar}'.`);
                     if(idx !== 0) dsl.push(this.generateDSL(currentType, input.slice(startIdx, idx)));
                     switch(input.charAt(idx + 1)) {
                         case this.options.commandChar:
@@ -202,8 +202,8 @@ export class Lexer{
                     idx++;
             }
         }
+        if(currentType !== DSLType.text) throw new Error(`SQiggLLexerError: Expected statement to complete before end of file.`)
         if(startIdx !== idx) dsl.push(this.generateDSL(currentType, input.slice(startIdx)));
-        //console.log(dsl); //TODO
         return dsl;
     }
 
@@ -228,6 +228,7 @@ export class Lexer{
                 return <DSL>{command: new CommandLexer(this.options, this.actions, this.expressions).invoke(value, this.extractParts(value))};
             case DSLType.comment:
                 return <DSL>{comment: value.trim()};
+            /* istabnul ignore next */
             default:
                 throw new Error('SQiggL Lexer Error: Unrecognized DSLType');
         }
@@ -254,7 +255,7 @@ export class Lexer{
             if(dsl.command && dsl.command.action){
                 if((<DependentAction>dsl.command.action).dependents != null){
                     levels.push({level: --currentLevel, dsl: dsl});
-                    if(currentLevel < 0) throw new Error('SQiggL Parser Error: Your SQiggL is incorrectly nested.');
+                    if(currentLevel < 0) throw new Error('SQiggLLexerError: Your SQiggL is incorrectly nested.');
                     if(!!(<DependentAction>dsl.command.action).rule) currentLevel++;
                 } else {
                     levels.push({level: currentLevel++, dsl: dsl});
@@ -263,6 +264,7 @@ export class Lexer{
                 levels.push({level: currentLevel, dsl: dsl});
             }
         }
+        if(currentLevel > 0) throw new Error('SQiggLLexerError: Your SQiggL query is nested but does not return to the top level before completing. Please check your nesting.')
         return levels;
     }
 
@@ -310,6 +312,7 @@ export class Lexer{
                 idx++;
             }
         }
+        parts = this.removeEscapeCharactersFromStringParts(parts);
         return parts;
     }
 
@@ -356,5 +359,16 @@ export class Lexer{
             }
         }
         throw new Error(`SQiggLLexerError: Invalid string found in ${input}`);
+    }
+
+    private removeEscapeCharactersFromStringParts(parts: string[]): string[]{
+        for(var idx=0;idx<parts.length;idx++){
+            if(parts[idx][0] === "'" || parts[idx][0] === '"') {
+                parts[idx] = parts[idx].replace(`${this.options.stringEscapeChar}"`, '"')
+                    .replace(`${this.options.stringEscapeChar}'`, "'")
+                    .replace(`${this.options.stringEscapeChar}${this.options.stringEscapeChar}`, `${this.options.stringEscapeChar}`);
+            }
+        }
+        return parts;
     }
 }

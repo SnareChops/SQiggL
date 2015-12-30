@@ -19,6 +19,8 @@ export class VariableLexer{
     /**
      * Walk through a variable declaration and return a variable DSL
      *
+     * TODO: Add rules
+     *
      * @internal
      * @param input {string}
      * @returns {DSLVariable}
@@ -64,14 +66,6 @@ export class VariableLexer{
                     }
                     idx++;
                     break;
-                case ' ':
-                    if(!inString){
-                        input = input.slice(0, idx) + input.slice(idx + 1);
-                        // DO NOT increment the idx here as a character has been removed
-                        break;
-                    }
-                    idx++;
-                    break;
                 case this.options.variableAssignmentChar:
                     dsl = this.generateDSL(dsl, currentType, input.slice(startIdx, idx));
                     idx++;
@@ -103,6 +97,7 @@ export class VariableLexer{
             case DSLVariableType.value:
                 dsl.value = value;
                 break;
+            /* istanbul ignore next */
             default:
                 throw new Error('SQiggL Lexer Error: Unrecognized DSLVariableType');
         }

@@ -58,7 +58,7 @@ export class ExpressionLexer{
      *   against the length of the "Part". Splice out the "Part" completely if the lengths
      *   are equal, else remove only the characters that represent the Modifier directly
      *
-     * - Rule M4: If an operator has already been found in the template and a modifier was not
+     * - Rule M4: NO LONGER A RULE!! If an operator has already been found in the template and a modifier was not
      *   matched then move to the next "Part" of the clone. This is a side effect of rule M3
      *
      * - Rule M5: If a modifier is successfully matched then inject it into the clone for
@@ -75,7 +75,7 @@ export class ExpressionLexer{
      *   operator from the "Part" leaving what remains. This is because a modifier may occupy
      *   the same "Part" and that should be matched in the next cycle.
      *
-     * - Rule O4: If after applying Rule O3 the remaining "Part" is an empty string then
+     * - Rule O4: NO LONGER A RULE!! If after applying Rule O3 the remaining "Part" is an empty string then
      *   splice out the "Part" from the clone.
      *
      * - Rule O5: If rule O3 doesn't apply, remove the "Part" from the clone. This prevents
@@ -108,7 +108,6 @@ export class ExpressionLexer{
             clone = parts.slice(0); // Clone the array to protect original from modifications
             localVariable = null;
             joiner = null;
-            let oops: number = 0;
             while(eidx < expression.template.length) {
                 var ePart:string | OrderedModifier[] = expression.template[eidx];
                 if(ePart === LOCALVARIABLE) {
@@ -140,8 +139,6 @@ export class ExpressionLexer{
                     [foundIdentifier, foundOrderedMod] = this.compareOrderedModifier(<string>clone[pidx], ePart);
                     if(!foundIdentifier) {/* Rule: M1 */
                         eidx++;
-                        /* Rule: M4 */
-                        if(operatorResolved) pidx++;
                         continue;
                     }
                     /* Rule: M5 */
@@ -169,15 +166,12 @@ export class ExpressionLexer{
                     if(ePart.length !== (<string>clone[pidx]).length){
                         /* Rule: O3 */
                         clone.splice(pidx, 1, (<string>clone[pidx]).slice(ePart.length, (<string>clone[pidx]).length));
-                        /* Rule: O4 */
-                        if(clone[pidx] === '') clone.splice(pidx, 1);
                     } else {
                         /* Rule: O5 */
                         clone.splice(pidx, 1);
                     }
                     eidx++;
                 }
-                if(oops++ > 100) throw new Error('OOPS Expression');
             }
             if(isMatch){
                 /* Rule: L1 */

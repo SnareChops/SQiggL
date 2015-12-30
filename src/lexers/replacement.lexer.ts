@@ -23,6 +23,8 @@ export class ReplacementLexer{
      * Split the input into it's respective parts then compare them against expressions
      * or return the input if the contents are literal.
      *
+     * TODO: Add Rules
+     *
      * @internal
      * @param input {string}
      * @param parts {string[]} - The "Parts" of the input. {@see Lexer.extractParts} for more details on the definition of a "Part".
@@ -31,6 +33,7 @@ export class ReplacementLexer{
     public invoke(input: string, parts: string[]): DSLReplacement{
         let dsl: DSLReplacement = <DSLReplacement>{literal: input};
         if(parts.length > 1) dsl = new ExpressionLexer(this.options, this.expressions).invoke(dsl, parts);
+        else dsl.literal = parts[0];
         return dsl;
     }
 
