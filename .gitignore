@@ -1,10 +1,6 @@
 .idea
 node_modules
-src/**/*.js
+dist
 index.js
-test.js
-scenario.specs.js
 **.DS_Store
-index.js
-scenario.specs.js
 coverage
