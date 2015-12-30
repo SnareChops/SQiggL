@@ -1,4 +1,4 @@
-import SQiggL from './index';
+import * as SQiggL from './index';
 
 describe('Scenarios', () => {
     it('should correctly output a completely non-special query untouched', () => {

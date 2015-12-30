@@ -15,4 +15,4 @@ function parse(query: string, variables?: ScopedVariables, options?: SQiggLOptio
 }
 
 let SQiggL = {parse: parse};
-export default SQiggL;
+export = SQiggL

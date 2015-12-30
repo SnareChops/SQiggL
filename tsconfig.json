@@ -3,7 +3,7 @@
         "module": "commonjs",
         "target": "es5",
         "noImplicitAny": true,
-        "outDir": ".",
+        "outDir": "dist",
         "rootDir": ".",
         "sourceMap": false,
         "moduleResolution": "node",
@@ -11,8 +11,6 @@
         "noEmitOnError": true
     },
     "exclude": [
-        "node_modules",
-        "old-src",
-        "old-tests"
+        "node_modules"
     ]
 }
