@@ -1,6 +1,6 @@
 {
   "name": "sqiggl",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "A SQL templating language with extensible support",
   "main": "dist/index.js",
   "typings": "dist/src/sqiggl",
