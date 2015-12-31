@@ -1,4 +1,4 @@
-import {LexerOptions} from '../lexer';
+import {Lexer, LexerOptions} from '../lexer';
 import {DSLVariable, DSLVariableType} from '../dsl';
 
 /**
@@ -27,9 +27,11 @@ export class VariableLexer{
      */
     public invoke(input: string): DSLVariable{
         let currentType: DSLVariableType = DSLVariableType.key,
+            original: string = input,
             idx: number = 0,
             startIdx: number = 0,
             inString: boolean = false,
+            isArray: boolean = false,
             stringChar: string,
             dsl: DSLVariable = {literal: input};
         while(idx < input.length){
@@ -42,11 +44,11 @@ export class VariableLexer{
                         idx++;
                         break;
                     }
-                    if(input.charAt(idx) === stringChar){
-                        if(input.charAt(idx - 1) === this.options.stringEscapeChar){
+                    if(input[idx] === stringChar){
+                        if(input[idx - 1] === this.options.stringEscapeChar){
                             input = input.slice(0, idx - 1) + input.slice(idx);
-                            // DO NOT increment the idx here as a character has been removed
-                        }
+                            break;
+                        } else inString = false;
                     }
                     idx++;
                     break;
@@ -58,16 +60,34 @@ export class VariableLexer{
                         idx++;
                         break;
                     }
-                    if(input.charAt(idx) === stringChar){
-                        if(input.charAt(idx - 1) === this.options.stringEscapeChar){
+                    if(input[idx] === stringChar){
+                        if(input[idx - 1] === this.options.stringEscapeChar){
                             input = input.slice(0, idx -1) + input.slice(idx);
-                            // DO NOT increment the idx here as a character has been removed
+                            break;
                         }
+                        else inString = false;
                     }
                     idx++;
                     break;
+                case '[':
+                    if(currentType === DSLVariableType.key) throw new Error(`SQiggLLexerError: Invalid character found in variable key '[' in '${original}'.`);
+                    if(!inString){
+                        if (idx !== startIdx) throw new Error(`SQiggLLexerError: Arrays in variables cannot be nested. At '${original}'.`);
+                        input = input.slice(0, idx) + input.slice(idx + 1);
+                        isArray = true;
+                    }
+                    break;
+                case ']':
+                    if(currentType === DSLVariableType.key) throw new Error(`SQiggLLexerError: Invalid character found in variable key ']' in '${original}.`)
+                    if(!inString){
+                        if(idx !== input.length - 1) throw new Error(`SQiggLLexerError: Variables that define arrays must not include other values. At '${original}'.`);
+                        input = input.slice(0, idx) + input.slice(idx+1);
+                    }
+                    console.log(input);
+                    idx++;
+                    break;
                 case this.options.variableAssignmentChar:
-                    dsl = this.generateDSL(dsl, currentType, input.slice(startIdx, idx));
+                    dsl = this.generateDSL(dsl, currentType, input.slice(startIdx, idx), isArray);
                     idx++;
                     startIdx = idx;
                     currentType = DSLVariableType.value;
@@ -76,7 +96,7 @@ export class VariableLexer{
                     idx++;
             }
         }
-        if(startIdx !== 0) dsl = this.generateDSL(dsl, currentType, input.slice(startIdx));
+        if(startIdx !== 0) dsl = this.generateDSL(dsl, currentType, input.slice(startIdx), isArray);
         return dsl;
     }
 
@@ -87,21 +107,32 @@ export class VariableLexer{
      * @param dsl {DSLVariable}
      * @param type {DSLVariableType}
      * @param value {string}
+     * @param isArray {boolean}
      * @returns {DSLVariable}
      */
-    private generateDSL(dsl: DSLVariable, type: DSLVariableType, value: string): DSLVariable{
+    private generateDSL(dsl: DSLVariable, type: DSLVariableType, value: string, isArray: boolean): DSLVariable{
         switch(type){
             case DSLVariableType.key:
                 dsl.key = value;
                 break;
             case DSLVariableType.value:
-                dsl.value = value;
+                dsl.value = isArray ? this.convertCSVToArray(value) : value;
                 break;
             /* istanbul ignore next */
             default:
                 throw new Error('SQiggL Lexer Error: Unrecognized DSLVariableType');
         }
         return dsl;
+    }
+
+    private convertCSVToArray(input: string): string[]{
+        let items = input.split(','),
+            result: string[] = [];
+        for(var item of items){
+            item = item.trim();
+            result.push(Lexer.removeEscapeCharactersFromStringPart(item, this.options));
+        }
+        return result;
     }
 
     /**

@@ -1,7 +1,7 @@
-import {DSLExpression} from '../dsl';
-import {ExpressionLexer} from './expression.lexer';
-import {DEFAULT_LEXER_OPTIONS} from '../lexer';
-import {CORE_EXPRESSIONS, IterableOfUsing} from '../expressions';
+import {DSLExpression} from '../../src/dsl';
+import {ExpressionLexer} from './../../src/lexers/expression.lexer';
+import {DEFAULT_LEXER_OPTIONS} from '../../src/lexer';
+import {CORE_EXPRESSIONS, IterableOfUsing} from '../../src/expressions';
 
 describe('ExpressionLexer', () => {
     it('should return a DSLExpression with a local if an expression contains a local variable', () => {

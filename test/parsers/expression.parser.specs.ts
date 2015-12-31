@@ -1,8 +1,8 @@
-import {ExpressionParser} from './expression.parser';
-import {DSLExpression} from '../dsl';
-import {GreaterThan} from '../expressions';
-import {DEFAULT_PARSER_OPTIONS} from '../parser';
-import {Not} from "../modifiers";
+import {ExpressionParser} from './../../src/parsers/expression.parser';
+import {DSLExpression} from '../../src/dsl';
+import {GreaterThan} from '../../src/expressions';
+import {DEFAULT_PARSER_OPTIONS} from '../../src/parser';
+import {Not} from "../../src/modifiers";
 
 describe('ExpressionParser', () => {
     describe('parse', () => {

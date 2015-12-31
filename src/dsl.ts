@@ -34,7 +34,7 @@ export interface DSLText{
 export interface DSLVariable{
     literal: string;
     key?: string;
-    value?: string;
+    value?: string | string[];
     resolved?: string;
 }
 

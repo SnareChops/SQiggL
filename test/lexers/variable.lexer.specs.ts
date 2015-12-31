@@ -1,6 +1,6 @@
-import {DEFAULT_LEXER_OPTIONS} from "../lexer";
-import {VariableLexer} from "./variable.lexer";
-import {DSLVariable} from '../dsl';
+import {DEFAULT_LEXER_OPTIONS} from "../../src/lexer";
+import {VariableLexer} from "../../src/lexers/variable.lexer";
+import {DSLVariable} from '../../src/dsl';
 
 describe('VariableLexer', () => {
     let lexer: VariableLexer;
@@ -28,5 +28,13 @@ describe('VariableLexer', () => {
         const input = `key:"Dragon\\"s breath"`;
         const result = lexer.invoke(input);
         result.value.should.equal(`"Dragon"s breath"`);
+    });
+
+    it('should correctly handle a variable value of an array of strings', () => {
+        const input = `key:['one', 'two', 'three']`;
+        const result = lexer.invoke(input);
+        result.value[0].should.equal("'one'");
+        result.value[1].should.equal("'two'");
+        result.value[2].should.equal("'three'");
     });
 });

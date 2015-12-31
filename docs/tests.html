@@ -259,6 +259,13 @@ result.value.should.equal(&quot;'Dragon's breath'&quot;);</code></pre></dd>
         <dd><pre><code>var input = &quot;key:\&quot;Dragon\\\&quot;s breath\&quot;&quot;;
 var result = lexer.invoke(input);
 result.value.should.equal(&quot;\&quot;Dragon\&quot;s breath\&quot;&quot;);</code></pre></dd>
+key:'one', 'two', 'three'
+        <dt>should correctly handle a variable value of an array of strings</dt>
+        <dd><pre><code>var input = &quot;key:['one', 'two', 'three']&quot;;
+var result = lexer.invoke(input);
+result.value[0].should.equal(&quot;'one'&quot;);
+result.value[1].should.equal(&quot;'two'&quot;);
+result.value[2].should.equal(&quot;'three'&quot;);</code></pre></dd>
       </dl>
     </section>
     <section class="suite">

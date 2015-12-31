@@ -318,7 +318,7 @@ export class Lexer{
                 idx++;
             }
         }
-        parts = this.removeEscapeCharactersFromStringParts(parts);
+        parts = Lexer.removeEscapeCharactersFromStringParts(parts, this.options);
         return parts;
     }
 
@@ -371,14 +371,19 @@ export class Lexer{
         throw new Error(`SQiggLLexerError: Invalid string found in ${input}`);
     }
 
-    private removeEscapeCharactersFromStringParts(parts: string[]): string[]{
+    public static removeEscapeCharactersFromStringParts(parts: string[], options: LexerOptions): string[]{
         for(var idx=0;idx<parts.length;idx++){
-            if(parts[idx][0] === "'" || parts[idx][0] === '"') {
-                parts[idx] = parts[idx].replace(`${this.options.stringEscapeChar}"`, '"')
-                    .replace(`${this.options.stringEscapeChar}'`, "'")
-                    .replace(`${this.options.stringEscapeChar}${this.options.stringEscapeChar}`, `${this.options.stringEscapeChar}`);
-            }
+            parts[idx] = Lexer.removeEscapeCharactersFromStringPart(parts[idx], options);
         }
         return parts;
+    }
+
+    public static removeEscapeCharactersFromStringPart(part: string, options: LexerOptions): string{
+        if(part[0] === "'" || part[0] === '"') {
+            part = part.replace(`${options.stringEscapeChar}"`, '"')
+                .replace(`${options.stringEscapeChar}'`, "'")
+                .replace(`${options.stringEscapeChar}${options.stringEscapeChar}`, `${options.stringEscapeChar}`);
+        }
+        return part;
     }
 }

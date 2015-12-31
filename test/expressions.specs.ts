@@ -1,4 +1,4 @@
-import {Equal, GreaterThan, LessThan, IsNull, LexicalGreaterThan, LexicalLessThan, LengthGreaterThan, LengthLessThan, IsNaN, Between, Coalesce, IterableOfUsing} from './expressions';
+import {Equal, GreaterThan, LessThan, IsNull, LexicalGreaterThan, LexicalLessThan, LengthGreaterThan, LengthLessThan, IsNaN, Between, Coalesce, IterableOfUsing} from './../src/expressions';
 
 describe('Expressions', () => {
     describe('Equal', () => {

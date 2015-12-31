@@ -197,7 +197,7 @@ actual support for this will come when the API stabilizes*
 ## Milestone 0.4 features:
 
 This update will add a new concept to the language (though extremely familiar to us) `and, &&, or, ||`.
-These will do what you would expect: `{{% if myVar > 12 && myVar < 3 %}}`
+These will do what you would expect: `{{% if myVar > 12 || myVar < 3 %}}`
 
 new thing | rule
 ----------|-----
@@ -208,7 +208,7 @@ new thing | rule
 
 ## Milestone 0.5 features:
 
-This update will add turnary statements to the language `if myVar > 12 then myVar else otherVar`.
+This update will add ternary statements to the language `if myVar > 12 then myVar else otherVar`.
 The other common syntax will also be supported `myVar > 12 ? myVar : otherVar`.
 
 ## Milestone 0.6 features:

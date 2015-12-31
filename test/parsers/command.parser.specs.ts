@@ -1,8 +1,8 @@
-import {CommandParser} from './command.parser';
-import {DSLCommand, DSL, DSLText, DSLReplacement} from '../dsl';
-import {If, Else, For} from '../actions';
-import {GreaterThan, IterableOfUsing} from '../expressions';
-import {DEFAULT_PARSER_OPTIONS} from '../parser';
+import {CommandParser} from '../../src/parsers/command.parser';
+import {DSLCommand, DSL, DSLText, DSLReplacement} from '../../src/dsl';
+import {If, Else, For} from '../../src/actions';
+import {GreaterThan, IterableOfUsing} from '../../src/expressions';
+import {DEFAULT_PARSER_OPTIONS} from '../../src/parser';
 
 describe('Command Parser', () => {
     it('should correctly return a string in a StartingAction that is false', () => {

@@ -1,5 +1,5 @@
-import {Parser} from './parser';
-import {DSL} from './dsl';
+import {Parser} from './../src/parser';
+import {DSL} from './../src/dsl';
 import * as should from 'should';
 
 describe('Parser', () => {

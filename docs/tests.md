@@ -1,3 +1,4 @@
+key:'one', 'two', 'three'
 # TOC
    - [Expressions](#expressions)
      - [Equal](#expressions-equal)
@@ -502,6 +503,16 @@ should correctly handle a variable value that has an escaped double quote in the
 var input = "key:\"Dragon\\\"s breath\"";
 var result = lexer.invoke(input);
 result.value.should.equal("\"Dragon\"s breath\"");
+```
+
+should correctly handle a variable value of an array of strings.
+
+```js
+var input = "key:['one', 'two', 'three']";
+var result = lexer.invoke(input);
+result.value[0].should.equal("'one'");
+result.value[1].should.equal("'two'");
+result.value[2].should.equal("'three'");
 ```
 
 <a name="commandlexer"></a>

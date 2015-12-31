@@ -1,7 +1,7 @@
-import {If, Unless, Else, For} from './actions';
-import {DSL, DSLCommand} from './dsl';
-import {Parser, DEFAULT_PARSER_OPTIONS} from './parser';
-import {IterableOfUsing} from './expressions';
+import {If, Unless, Else, For} from './../src/actions';
+import {DSL, DSLCommand} from './../src/dsl';
+import {Parser, DEFAULT_PARSER_OPTIONS} from './../src/parser';
+import {IterableOfUsing} from './../src/expressions';
 import * as should from 'should';
 
 describe('Actions', () => {

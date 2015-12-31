@@ -1,7 +1,7 @@
-import {DEFAULT_LEXER_OPTIONS} from '../lexer';
-import {CommandLexer} from './command.lexer';
-import {CORE_ACTIONS} from '../actions';
-import {CORE_EXPRESSIONS} from '../expressions';
+import {DEFAULT_LEXER_OPTIONS} from '../../src/lexer';
+import {CommandLexer} from './../../src/lexers/command.lexer';
+import {CORE_ACTIONS} from '../../src/actions';
+import {CORE_EXPRESSIONS} from '../../src/expressions';
 
 describe('CommandLexer', () => {
     it('should throw an error if the first word of a command is not a known action', () => {

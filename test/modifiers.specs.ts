@@ -1,4 +1,4 @@
-import {Not, OrEqual, LengthOrEqual, BetweenOrEqual} from './modifiers';
+import {Not, OrEqual, LengthOrEqual, BetweenOrEqual} from './../src/modifiers';
 
 describe('Modifiers', () => {
     describe('Not', () => {

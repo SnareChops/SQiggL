@@ -1,8 +1,8 @@
-import {ReplacementParser} from './replacement.parser';
-import {DSLReplacement} from '../dsl';
-import {DEFAULT_PARSER_OPTIONS} from '../parser';
-import {GreaterThan} from '../expressions';
-import {IterableOfUsing} from "../expressions";
+import {ReplacementParser} from './../../src/parsers/replacement.parser';
+import {DSLReplacement} from '../../src/dsl';
+import {DEFAULT_PARSER_OPTIONS} from '../../src/parser';
+import {GreaterThan} from '../../src/expressions';
+import {IterableOfUsing} from "../../src/expressions";
 
 describe('ReplacementParser', () => {
     describe('parse', () => {
