@@ -8,6 +8,7 @@
 .codeclimate.yml
 .gitignore
 circle.yml
+browser-test.html
 index.js
 index.ts
 tsconfig.json
