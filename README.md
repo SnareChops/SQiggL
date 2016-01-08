@@ -197,14 +197,14 @@ actual support for this will come when the API stabilizes*
 ## Milestone 0.4 features:
 
 This update will add a new concept to the language (though extremely familiar to us) `and, &&, or, ||`.
-These will do what you would expect: `{{% if myVar > 12 || myVar < 3 %}}`
+These will do what you would expect: `{% if myVar > 12 || myVar < 3 %}`
 
-new thing | rule
-----------|-----
-`and`     | Only true if all conditions pass
-`&&`      | Same as `and`
-`or`      | True if any of the conditions pass
-`||`      | Same as `or`
+Conjunction | rule
+------------|-----
+`and`       | Only true if all conditions pass
+`&&`        | Same as `and`
+`or`        | True if any of the conditions pass
+`||`        | Same as `or`
 
 ## Milestone 0.5 features:
 
