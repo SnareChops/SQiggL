@@ -10,12 +10,12 @@ describe('VariableLexer', () => {
 
     it('should throw an error if a variable key is wrapped in double quotes', () => {
         const input = '"key":"value"';
-        (() => lexer.invoke(input)).should.throw('SQiggL Syntax Error: Variable keys should not be wrapped in quotes.');
+        (() => lexer.invoke(input)).should.throw('SQiggLError - LV2000: Variable keys should not be wrapped in quotes.');
     });
 
     it('should throw an error if a variable key is wrapped in single quotes', () => {
         const input = "'key':'value'";
-        (() => lexer.invoke(input)).should.throw('SQiggL Syntax Error: Variable keys should not be wrapped in quotes.');
+        (() => lexer.invoke(input)).should.throw('SQiggLError - LV2000: Variable keys should not be wrapped in quotes.');
     });
 
     it('should correctly handle a variable value that has an escaped single quote in the string', () => {

@@ -3,6 +3,9 @@ import {ScopedVariables} from './parser';
 import {DSL, DSLCommand} from './dsl';
 import {ExpressionResult, IterableExpressionResult} from './expressions';
 
+/**
+ * @internal
+ */
 export interface BaseAction{
     name?: string;
     key: string;
@@ -25,7 +28,6 @@ export interface IterableAction extends BaseAction{
     rule: (expressionResult: IterableExpressionResult, variables: ScopedVariables, scope: DSL[], parser: Parser) => string;
 }
 
-
 export type Action = StartingAction | DependentAction | TerminatingAction | IterableAction;
 
 /**
@@ -33,7 +35,7 @@ export type Action = StartingAction | DependentAction | TerminatingAction | Iter
  */
 export var If: StartingAction = {
     key: 'if',
-    rule: (expressionResult: ExpressionResult, variables: ScopedVariables, scope: DSL[], parser: Parser) => expressionResult ? parser.parse(scope, variables) : null
+    rule: (expressionResult: ExpressionResult, variables: ScopedVariables, scope: DSL[], parser: Parser) => expressionResult.value ? parser.parse(scope, variables) : null
 };
 
 /**
@@ -49,7 +51,7 @@ export var EndIf: TerminatingAction = {
  */
 export var Unless: StartingAction = {
     key: 'unless',
-    rule: (expressionResult: ExpressionResult, variables: ScopedVariables, scope: DSL[], parser: Parser) => !expressionResult ? parser.parse(scope, variables) : null
+    rule: (expressionResult: ExpressionResult, variables: ScopedVariables, scope: DSL[], parser: Parser) => !expressionResult.value ? parser.parse(scope, variables) : null
 };
 
 /**
@@ -92,6 +94,14 @@ export var EndFor: TerminatingAction = {
     dependents: [For]
 };
 
+/**
+ * @internal
+ */
+export var End: TerminatingAction = {
+    key: 'end',
+    dependents: [If, Unless, For]
+};
+
 export var CORE_ACTIONS: Action[] = [
     If,
     Else,
@@ -99,5 +109,6 @@ export var CORE_ACTIONS: Action[] = [
     Unless,
     EndUnless,
     For,
-    EndFor
+    EndFor,
+    End
 ];

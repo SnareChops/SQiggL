@@ -1,30 +1,30 @@
 import {Lexer} from '../src/lexer';
 import {DSL, DSLCommand} from "../src/dsl";
 import {Not} from '../src/modifiers';
-const should = require('should');
+import * as should from 'should';
 
 describe('Lexer', () => {
 
     it('should throw an error if a query contains an incomplete statement', () => {
         const lexer = new Lexer();
-        (() => lexer.parse('SELECT * FROM {Table')).should.throw('SQiggLLexerError: Expected statement to complete before end of file.');
+        (() => lexer.parse('SELECT * FROM {Table')).should.throw('SQiggLError - L1002: Expected statement to complete before end of file.');
     });
 
     it('should throw an throw an error if a query does not close a statement before declaring another', () => {
         const lexer = new Lexer();
-        (() => lexer.parse('SELECT * FROM {Table WHERE id = {12}')).should.throw('SQiggLLexerError: Unexpected \'{\' found in statement. Expected \'}\'.');
+        (() => lexer.parse('SELECT * FROM {Table WHERE id = {12}')).should.throw('SQiggLError - L1001: Unexpected \'{\' found in statement. Expected \'}\'.');
     });
 
     it('should throw an error if a query is incorrectly nested', () => {
         const lexer = new Lexer();
         const query = 'SELECT * FROM {% if 12 > 13} Test {% endif } {% endif }';
-        (() => lexer.parse(query)).should.throw('SQiggLLexerError: Your SQiggL is incorrectly nested.');
+        (() => lexer.parse(query)).should.throw('SQiggLError - L1003: Your SQiggL is incorrectly nested.');
     });
 
     it('should throw an error if a query is incompletely nested', () => {
         const lexer = new Lexer();
         const query = 'SELECT * FROM {% if 12 > 13 } Test';
-        (() => lexer.parse(query)).should.throw('SQiggLLexerError: Your SQiggL query is nested but does not return to the top level before completing. Please check your nesting.');
+        (() => lexer.parse(query)).should.throw('SQiggLError - L1004: Your SQiggL query is nested but does not return to the top level before completing. Please check your nesting.');
     });
 
     it('should correctly handle escaped single quotes in strings', () => {
@@ -51,7 +51,7 @@ describe('Lexer', () => {
     it('should throw an error if an illegal escape character exists in a string', () => {
         const lexer = new Lexer();
         const query = `SELECT * FROM {'\\Something'}`;
-        (() => lexer.parse(query)).should.throw("SQiggLLexerError: Illegal escape character found in string '\\Something' at index 1");
+        (() => lexer.parse(query)).should.throw('SQiggLError - L1005: Illegal escape character found in string \'\\Something\' at index 1');
     });
 
     describe('options', () => {
@@ -247,27 +247,27 @@ describe('Lexer', () => {
         it('should detect an expression in a replacement', () => {
             const lexer = new Lexer();
             const result = lexer.parse('{12 > 13}');
-            <DSL>result[0].replacement.should.have.property('expression');
+            <DSL>result[0].replacement.should.have.property('expressions');
         });
 
         it('should detect an expression in a replacement with a modifier', () => {
             const lexer = new Lexer();
             const result = lexer.parse('{12 !< 13}');
-            <DSL>result[0].replacement.should.have.property('expression');
+            <DSL>result[0].replacement.should.have.property('expressions');
         });
 
         it('should correctly identify a modifier in an expression', () => {
             const lexer = new Lexer();
             const result = lexer.parse('{12 !> 13}');
-            <DSL>result[0].replacement.should.have.property('modifiers');
-            <DSL>result[0].replacement.modifiers[0].should.equal(Not)
+            <DSL>result[0].replacement.expressions.branches[0].should.have.property('modifiers');
+            <DSL>result[0].replacement.expressions.branches[0].modifiers[0].should.equal(Not)
         });
 
         it('should correctly identify the values in an expression', () => {
             const lexer = new Lexer();
             const result = lexer.parse('{12 > 13}');
-            <DSL>result[0].replacement.values[0].should.equal('12');
-            <DSL>result[0].replacement.values[1].should.equal('13');
+            <DSL>result[0].replacement.expressions.branches[0].values[0].should.equal('12');
+            <DSL>result[0].replacement.expressions.branches[0].values[1].should.equal('13');
         });
     });
 });

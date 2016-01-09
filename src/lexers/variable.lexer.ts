@@ -1,5 +1,6 @@
 import {Lexer, LexerOptions} from '../lexer';
 import {DSLVariable, DSLVariableType} from '../dsl';
+import {SQiggLError} from "../error";
 
 /**
  * The Lexer responsible for all DSL generation of variable statements
@@ -37,7 +38,7 @@ export class VariableLexer{
         while(idx < input.length){
             switch(input.charAt(idx)){
                 case "'":
-                    if(currentType === DSLVariableType.key) throw new Error('SQiggL Syntax Error: Variable keys should not be wrapped in quotes.');
+                    if(currentType === DSLVariableType.key) throw SQiggLError('LV2000', 'Variable keys should not be wrapped in quotes.');
                     if(!inString){
                         inString = true;
                         stringChar = "'";
@@ -53,7 +54,7 @@ export class VariableLexer{
                     idx++;
                     break;
                 case '"':
-                    if(currentType === DSLVariableType.key) throw new Error('SQiggL Syntax Error: Variable keys should not be wrapped in quotes.');
+                    if(currentType === DSLVariableType.key) throw SQiggLError('LV2000', 'Variable keys should not be wrapped in quotes.');
                     if(!inString){
                         inString = true;
                         stringChar = '"';
@@ -70,17 +71,17 @@ export class VariableLexer{
                     idx++;
                     break;
                 case '[':
-                    if(currentType === DSLVariableType.key) throw new Error(`SQiggLLexerError: Invalid character found in variable key '[' in '${original}'.`);
+                    if(currentType === DSLVariableType.key) throw SQiggLError('LV2001', `Invalid character '[' found in variable key: '${original}'.`);
                     if(!inString){
-                        if (idx !== startIdx) throw new Error(`SQiggLLexerError: Arrays in variables cannot be nested. At '${original}'.`);
+                        if (idx !== startIdx) throw SQiggLError('LV2002', `Arrays in variables cannot be nested. At '${original}'.`);
                         input = input.slice(0, idx) + input.slice(idx + 1);
                         isArray = true;
                     }
                     break;
                 case ']':
-                    if(currentType === DSLVariableType.key) throw new Error(`SQiggLLexerError: Invalid character found in variable key ']' in '${original}.`)
+                    if(currentType === DSLVariableType.key) throw SQiggLError('LV2001', `Invalid character ']' found in variable key: '${original}.`);
                     if(!inString){
-                        if(idx !== input.length - 1) throw new Error(`SQiggLLexerError: Variables that define arrays must not include other values. At '${original}'.`);
+                        if(idx !== input.length - 1) throw SQiggLError('LV2003', `Variables that define arrays must not include other values: '${original}'.`);
                         input = input.slice(0, idx) + input.slice(idx+1);
                     }
                     console.log(input);
@@ -120,7 +121,8 @@ export class VariableLexer{
                 break;
             /* istanbul ignore next */
             default:
-                throw new Error('SQiggL Lexer Error: Unrecognized DSLVariableType');
+                /* istanbul ignore next */
+                throw SQiggLError('LV100', 'Unrecognized DSLVariableType');
         }
         return dsl;
     }

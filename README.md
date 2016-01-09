@@ -52,6 +52,19 @@ console.log(result);
 **SQiggL does NOT protect against SQL injection. Passing a dangerous string into a SQiggL variable will
 result in an unsafe query. NEVER trust user input, use SQiggL with caution!**
 
+## Error Support
+
+SQiggL is still young and new so error support is a little rough at the moment. Please create an issue if you receive an
+error that you feel is an issue with library or encountered something that SQiggL should have thrown an error for. Help
+SQiggL grow to have fantastic error support with error messages that actually help you instead of lead you down the wrong
+path.
+
+For the actual SQiggL error that you do receive at the moment, an [Error Guide](https://github.com/SnareChops/SQiggL/blob/master/errors.md)
+has been created with all of the errors listed by code and full explanations of what the errors mean as well as common
+mistakes that will cause them.
+
+_Error messages are very limited at the moment, but will become a top priority once the API stabilizes at 1.0.0._
+
 ## Current Features
 
 ### Commands
@@ -144,6 +157,19 @@ separated by the `<joiner>`
 * Arithmetic is not currently supported.
 * Expressions cannot currently be grouped or nested at this time
 
+### Conjunctions
+
+A Conjunction is a connector that combines multiple [Expressions](#expressions)
+into one outcome. Example: `{% if myVar > 12 || myVar < 3 %}`
+
+conjunction | rule
+------------|-----
+`and`       | Only true if all conditions pass
+`&&`        | Same as `and`
+`or`        | True if any of the conditions pass
+`||`        | Same as `or`
+
+
 ### Variables
 
 Variables be defined in the SQiggL query, or can be provided as the second argument to `SQiggL.parse`.
@@ -194,18 +220,6 @@ modifiers, and other core features. Once the official 1.0 release drops there wi
 here explaining how. *Technically it's possible to extend SQiggL now, the hooks are in the options, but
 actual support for this will come when the API stabilizes*
 
-## Milestone 0.4 features:
-
-This update will add a new concept to the language (though extremely familiar to us) `and, &&, or, ||`.
-These will do what you would expect: `{% if myVar > 12 || myVar < 3 %}`
-
-Conjunction | rule
-------------|-----
-`and`       | Only true if all conditions pass
-`&&`        | Same as `and`
-`or`        | True if any of the conditions pass
-`||`        | Same as `or`
-
 ## Milestone 0.5 features:
 
 This update will add ternary statements to the language `if myVar > 12 then myVar else otherVar`.
@@ -213,7 +227,7 @@ The other common syntax will also be supported `myVar > 12 ? myVar : otherVar`.
 
 ## Milestone 0.6 features:
 
-This update will add basic arithmatic to expressions and hopefully the ability to nest expressions within
+This update will add basic arithmetic to expressions and hopefully the ability to nest expressions within
 other expressions.
 
 ## Milestone 0.7 features:

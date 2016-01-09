@@ -2,6 +2,7 @@ import {LexerOptions} from '../lexer';
 import {Expression, OrderedModifier, SPACE, VALUE, LOCALVARIABLE, JOINER} from '../expressions';
 import {DSLExpression} from '../dsl';
 import {Modifier} from '../modifiers';
+import {SQiggLError} from "../error";
 
 /**
  * The lexer responsible for all Expression DSL generation.
@@ -88,8 +89,9 @@ export class ExpressionLexer{
      * @param parts {string} - The expression "Parts" as found in the replacement or command
      * @returns {DSLExpression} - The appended DSLExpression with all found expression properties.
      */
-    public invoke(dsl: DSLExpression, parts: string[]): DSLExpression{
-        let expression: Expression,
+    public invoke(parts: string[]): DSLExpression{
+        let dsl: DSLExpression = {literal: this.craftLiteralFromParts(parts), expression: null},
+            expression: Expression,
             pidx: number,
             eidx: number,
             foundOrderedMod: OrderedModifier,
@@ -184,8 +186,12 @@ export class ExpressionLexer{
                 break;
             }
         }
-        if(!isMatch) throw new Error(`SQiggLLexerError: Unable to determine expression type of '${parts.join('')}'`);
+        if(!isMatch) throw SQiggLError('LE2000', `Unable to determine expression type of '${parts.join('')}'`);
         return dsl;
+    }
+
+    private craftLiteralFromParts(parts: string[]): string{
+        return parts.reduce((a: string, b: string) => a + b, '');
     }
 
     /**

@@ -68,7 +68,7 @@ describe('Parser', () => {
         });
 
         it('should throw an error if a variable value is undefined', () => {
-            (() => Parser.resolveValue('cat', {dragon: 'Fish'})).should.throw('SQiggLParserError: cat is not a defined variable in this scope');
+            (() => Parser.resolveValue('cat', {dragon: 'Fish'})).should.throw('SQiggLError - P1000: cat is not a defined variable in this scope');
         });
     });
 });

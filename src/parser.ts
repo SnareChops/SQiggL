@@ -3,6 +3,7 @@ import {CommentParser} from './parsers/comment.parser';
 import {ReplacementParser} from "./parsers/replacement.parser";
 import {CommandParser} from "./parsers/command.parser";
 import {StartingAction, DependentAction} from "./actions";
+import {SQiggLError} from "./error";
 
 export interface ParserOptions{
     exportComments?: boolean;
@@ -74,7 +75,7 @@ export class Parser{
             if(dsl[idx].variable) variables = this.resolveVariable(dsl[idx].variable, variables);
             if(dsl[idx].command && !!(<DependentAction | StartingAction>dsl[idx].command.action).rule){
                 if((!!(<DependentAction>dsl[idx].command.action).dependents && dsl[idx-1].command.failed !== true)) continue;
-                output += new CommandParser(this.options).parse(dsl[idx], variables);
+                output += new CommandParser(this.options).parse(dsl[idx].command, dsl[idx].scope, variables);
             }
             if(dsl[idx].replacement){
                 output += new ReplacementParser(this.options).parse(dsl[idx].replacement, variables);
@@ -123,6 +124,6 @@ export class Parser{
         if(value[0] === `'` || value[0] === `"`) return (<string>value).slice(1, (<string>value).length - 1);
         if(!isNaN(+value)) return value.toString();
         if(!!variables && variables.hasOwnProperty(<string>value)) return variables[<string>value];
-        if(!suppressUndefinedVariableError) throw new Error(`SQiggLParserError: ${value} is not a defined variable in this scope`);
+        if(!suppressUndefinedVariableError) throw SQiggLError('P1000', `${value} is not a defined variable in this scope`);
     }
 }

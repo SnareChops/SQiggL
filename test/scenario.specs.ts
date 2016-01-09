@@ -60,6 +60,28 @@ describe('Scenarios', () => {
         const result = SQiggL.parse('SELECT * FROM Table {% if 12 > 13 } WHERE status = 1 {% else } WHERE status = 0 {% endif }');
         result.should.equal('SELECT * FROM Table  WHERE status = 0 ');
     });
+
+    it('should correctly output a SQiggL query containing a conjunction in an expression', () => {
+        const result = SQiggL.parse('SELECT * FROM Table {% if 13 > 12 and 15 < 100 } WHERE Status = 1 {% endif }');
+        result.should.equal('SELECT * FROM Table  WHERE Status = 1 ')
+    });
+
+    describe('generic \'end\'', () => {
+        it('should work with \'if\'', () => {
+            const result = SQiggL.parse('SELECT * FROM Table {% if 13 > 12} WHERE status = 0 {% end }');
+            result.should.equal('SELECT * FROM Table  WHERE status = 0 ');
+        });
+
+        it('should work with \'unless\'', () => {
+            const result = SQiggL.parse('SELECT * FROM Table {% unless 13 < 12} WHERE status = 0 {% end }');
+            result.should.equal('SELECT * FROM Table  WHERE status = 0 ');
+        });
+
+        it('should work with \'for\'', () => {
+            const result = SQiggL.parse('SELECT * FROM Table WHERE {% for var of array using \'AND\'} id = {var} {% end }', {array: ['1', '2', '3']});
+            result.should.equal('SELECT * FROM Table WHERE  id = 1 AND  id = 2 AND  id = 3 ');
+        });
+    });
 });
 
 describe('Full feature sweep: ', () => {

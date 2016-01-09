@@ -56,7 +56,7 @@ export interface DSLCommand{
  */
 export interface DSLReplacement{
     literal: string;
-    expressions: DSLReplacementExpressionTree;
+    expressions?: DSLReplacementExpressionTree;
 }
 
 /**
@@ -64,7 +64,7 @@ export interface DSLReplacement{
  */
 export interface DSLExpressionTree{
     branches: DSLExpression[];
-    conjunctions: Conjunction[];
+    conjunctions?: Conjunction[];
 }
 
 /**
@@ -84,7 +84,7 @@ export interface DSLCommandExpressionTree extends DSLExpressionTree{
 /**
  * @internal
  */
-export interface BaseDSLExpression{
+export interface DSLExpression{
     literal: string;
     expression: Expression;
     local?: string;
@@ -96,29 +96,22 @@ export interface BaseDSLExpression{
 /**
  * @internal
  */
-export interface DSLBooleanExpression extends BaseDSLExpression{
+export interface DSLBooleanExpression extends DSLExpression{
     expression: BooleanExpression;
 }
 
 /**
  * @internal
  */
-export interface DSLIterableExpression extends BaseDSLExpression{
+export interface DSLIterableExpression extends DSLExpression{
     expression: IterableExpression;
 }
 
 /**
  * @internal
  */
-export interface DSLValueExpression extends BaseDSLExpression{
+export interface DSLValueExpression extends DSLExpression{
     expression: ValueExpression;
-}
-
-/**
- * @internal
- */
-export interface DSLExpression extends BaseDSLExpression{
-
 }
 
 /**

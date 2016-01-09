@@ -1,11 +1,11 @@
-import {ExpressionResult} from './expressions';
+import {ExpressionResult, BooleanExpressionResult} from './expressions';
 
 export interface BaseModifier{
     identifiers: string[],
 }
 
 export interface BooleanModifier extends BaseModifier{
-    rule: (prevResult: ExpressionResult, values?: string[]) => boolean;
+    rule: (prevResult: boolean, values?: string[]) => boolean;
 }
 
 export type Modifier = BooleanModifier;
@@ -15,7 +15,7 @@ export type Modifier = BooleanModifier;
  */
 export var Not: BooleanModifier = {
     identifiers: ['!', 'not'],
-    rule: (prevResult: ExpressionResult, values: string[]) => !prevResult
+    rule: (prevResult: boolean, values: string[]) => !prevResult
 };
 
 /**
@@ -23,7 +23,7 @@ export var Not: BooleanModifier = {
  */
 export var OrEqual: BooleanModifier = {
     identifiers: ['='],
-    rule: (prevResult: ExpressionResult, values: string[]) => prevResult || values[0] === values[1]
+    rule: (prevResult: boolean, values: string[]) => prevResult || values[0] === values[1]
 };
 
 /**
@@ -31,7 +31,7 @@ export var OrEqual: BooleanModifier = {
  */
 export var LengthOrEqual: BooleanModifier = {
     identifiers: ['='],
-    rule: (prevResult: ExpressionResult, values: string[]) => prevResult || values[0].length === +values[1]
+    rule: (prevResult: boolean, values: string[]) => prevResult || values[0].length === +values[1]
 };
 
 /**
@@ -39,7 +39,7 @@ export var LengthOrEqual: BooleanModifier = {
  */
 export var BetweenOrEqual: BooleanModifier = {
     identifiers: ['='],
-    rule: (prevResult: ExpressionResult, values: string[]) => prevResult || +values[0] === +values[1] || +values[0] === +values[2]
+    rule: (prevResult: boolean, values: string[]) => prevResult || +values[0] === +values[1] || +values[0] === +values[2]
 };
 
 export var CORE_MODIFIERS: Modifier[] = [

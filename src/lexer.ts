@@ -5,7 +5,8 @@ import {Conjunction, CORE_CONJUNCTIONS} from './conjunctions';
 import {Modifier, CORE_MODIFIERS} from './modifiers';
 import {VariableLexer} from './lexers/variable.lexer';
 import {ReplacementLexer} from './lexers/replacement.lexer';
-import {CommandLexer} from "./lexers/command.lexer";
+import {CommandLexer} from './lexers/command.lexer';
+import {SQiggLError} from './error';
 
 export interface LexerOptions{
     leftWrapperChar?: string;
@@ -19,7 +20,7 @@ export interface LexerOptions{
     customExpressions?: Expression[];
     customModifiers?: Modifier[];
     customConjunctions?: Conjunction[];
-    includeCoreLibrary?: boolean; //TODO:Implement
+    includeCoreLibrary?: boolean;
 }
 
 export const DEFAULT_LEXER_OPTIONS: LexerOptions = {
@@ -111,7 +112,7 @@ export class Lexer{
             if(typeof options[key] === 'string') array.push(options[key]);
         }
         for(let i=0; i< array.length - 1; i++){
-            if(array[i] === array[i + 1]) throw new Error('SQiggL Lexer Options Error: All Lexer Options chars must be unique');
+            if(array[i] === array[i + 1]) throw SQiggLError('L1000', 'All LexerOption chars must be unique');
         }
         return this;
     }
@@ -182,7 +183,7 @@ export class Lexer{
         while(idx < input.length){
             switch(input.charAt(idx)){
                 case this.options.leftWrapperChar:
-                    if(currentType !== DSLType.text) throw new Error(`SQiggLLexerError: Unexpected '${this.options.leftWrapperChar}' found in statement. Expected '${this.options.rightWrapperChar}'.`);
+                    if(currentType !== DSLType.text) throw SQiggLError('L1001', `Unexpected '${this.options.leftWrapperChar}' found in statement. Expected '${this.options.rightWrapperChar}'.`);
                     if(idx !== 0) dsl.push(this.generateDSL(currentType, input.slice(startIdx, idx)));
                     switch(input.charAt(idx + 1)) {
                         case this.options.commandChar:
@@ -213,7 +214,7 @@ export class Lexer{
                     idx++;
             }
         }
-        if(currentType !== DSLType.text) throw new Error(`SQiggLLexerError: Expected statement to complete before end of file.`)
+        if(currentType !== DSLType.text) throw SQiggLError('L1002', `Expected statement to complete before end of file.`)
         if(startIdx !== idx) dsl.push(this.generateDSL(currentType, input.slice(startIdx)));
         return dsl;
     }
@@ -243,7 +244,8 @@ export class Lexer{
                 return <DSL>{comment: value.trim()};
             /* istabnul ignore next */
             default:
-                throw new Error('SQiggL Lexer Error: Unrecognized DSLType');
+                /* istanbul ignore next */
+                throw SQiggLError('L100', 'Unrecognized DSLType');
         }
     }
 
@@ -269,7 +271,7 @@ export class Lexer{
             if(dsl.command && dsl.command.action){
                 if((<DependentAction>dsl.command.action).dependents != null){
                     levels.push({level: --currentLevel, dsl: dsl});
-                    if(currentLevel < 0) throw new Error('SQiggLLexerError: Your SQiggL is incorrectly nested.');
+                    if(currentLevel < 0) throw SQiggLError('L1003', 'Your SQiggL is incorrectly nested.');
                     if(!!(<DependentAction>dsl.command.action).rule) currentLevel++;
                 } else {
                     levels.push({level: currentLevel++, dsl: dsl});
@@ -278,7 +280,7 @@ export class Lexer{
                 levels.push({level: currentLevel, dsl: dsl});
             }
         }
-        if(currentLevel > 0) throw new Error('SQiggLLexerError: Your SQiggL query is nested but does not return to the top level before completing. Please check your nesting.')
+        if(currentLevel > 0) throw SQiggLError('L1004', 'Your SQiggL query is nested but does not return to the top level before completing. Please check your nesting.')
         return levels;
     }
 
@@ -370,7 +372,7 @@ export class Lexer{
                     if(input[idx+1] === this.options.stringEscapeChar || input[idx+1] === stringChar){
                         idx+=2;
                     } else {
-                        throw new Error(`SQiggLLexerError: Illegal escape character found in string ${input} at index ${idx}`);
+                        throw SQiggLError('L1005', `Illegal escape character found in string ${input} at index ${idx}`);
                     }
                     break;
                 case stringChar:
@@ -379,9 +381,20 @@ export class Lexer{
                     idx++;
             }
         }
-        throw new Error(`SQiggLLexerError: Invalid string found in ${input}`);
+        throw SQiggLError('L1006', `Invalid string found in ${input}`);
     }
 
+    /**
+     * Removes the escape characters from strings leaving the raw string itself
+     *
+     * This method is the iterator for `Lexer.removeEscapeCharactersFromStringPart`
+     * which performs the actual removal.
+     *
+     * @internal
+     * @param parts {string[]} - The parts to check for strings and remove the escapes from.
+     * @param options {LexerOptions} - The LexerOptions to use for this operation.
+     * @returns {string[]}
+     */
     public static removeEscapeCharactersFromStringParts(parts: string[], options: LexerOptions): string[]{
         for(var idx=0;idx<parts.length;idx++){
             parts[idx] = Lexer.removeEscapeCharactersFromStringPart(parts[idx], options);
@@ -389,6 +402,17 @@ export class Lexer{
         return parts;
     }
 
+    /**
+     * Removes the escape characters from a string leaving the raw string itself
+     *
+     * This method **only** removes the escape characters that actually perform an escape,
+     * escaped escape characters are left intact.
+     *
+     * @internal
+     * @param part {string} - The part to check if is a string and remove escape characters from.
+     * @param options {LexerOptions} - The LexerOptions to use for this operation.
+     * @returns {string}
+     */
     public static removeEscapeCharactersFromStringPart(part: string, options: LexerOptions): string{
         if(part[0] === "'" || part[0] === '"') {
             part = part.replace(`${options.stringEscapeChar}"`, '"')
