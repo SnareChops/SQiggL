@@ -1,8 +1,8 @@
 import {Parser, ParserOptions, ScopedVariables} from '../parser';
 import {DSLCommand, DSL} from '../dsl';
-import {ExpressionParser} from './expression.parser';
 import {StartingAction, DependentAction, IterableAction} from '../actions';
-import {ExpressionResult} from '../expressions';
+import {ExpressionResult, IterableExpressionResult} from '../expressions';
+import {ExpressionTreeParser} from './expression.tree.parser';
 
 /**
  * The parser responsible for parsing all DSLCommands
@@ -30,12 +30,12 @@ export class CommandParser {
     public parse(dsl: DSL, variables: ScopedVariables = {}):string {
         const command: DSLCommand = dsl.command;
         const action: StartingAction | DependentAction | IterableAction = <StartingAction | DependentAction | IterableAction>command.action;
-        let expressionResult: ExpressionResult = null;
-        if(!!command.expression) expressionResult = new ExpressionParser(this.options).parse(command, variables);
+        let expressionResult: ExpressionResult | IterableExpressionResult = null;
+        if(!!command.expressions) expressionResult = new ExpressionTreeParser(this.options).parse(command.expressions, variables);
         let result: string;
         if(!!action.rule){
-            if(Array.isArray(expressionResult)) result = (<IterableAction>action).rule(<string[]>expressionResult, variables, dsl.scope, new Parser(this.options), command);
-            else result = (<StartingAction | DependentAction>action).rule(expressionResult, variables, dsl.scope, new Parser(this.options));
+            if(!!(<IterableExpressionResult>expressionResult).iterable) result = (<IterableAction>action).rule(<IterableExpressionResult>expressionResult, variables, dsl.scope, new Parser(this.options));
+            else result = (<StartingAction | DependentAction>action).rule(<ExpressionResult>expressionResult, variables, dsl.scope, new Parser(this.options));
         }
         if(result === null) dsl.command.failed = true;
         return result || '';

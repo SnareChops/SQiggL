@@ -14,19 +14,38 @@ export interface BaseExpression{
 export type ExpressionValue = string | number | (string | number)[];
 
 export interface BooleanExpression extends BaseExpression{
-    rule: (values?: ExpressionValue[], literal?: string) => boolean;
+    rule: (values?: ExpressionValue[], literal?: string) => BooleanExpressionResult;
 }
 
 export interface ValueExpression extends BaseExpression{
-    rule: (values?: ExpressionValue[], literal?: string) => string;
+    rule: (values?: ExpressionValue[], literal?: string) => ValueExpressionResult;
 }
 
 export interface IterableExpression extends BaseExpression{
-    rule: (values?: ExpressionValue[], literal?: string) => string[];
+    rule: (values?: ExpressionValue[], literal?: string) => IterableExpressionResult;
 }
 
 export type Expression = BooleanExpression | ValueExpression | IterableExpression;
-export type ExpressionResult = string | boolean | string[];
+
+export interface IterableExpressionParts{
+    local: string;
+    joiner: string;
+}
+
+export interface BooleanExpressionResult{
+    value: boolean;
+}
+
+export interface ValueExpressionResult{
+    value: string;
+}
+
+export interface IterableExpressionResult{
+    value: string[];
+    iterable: IterableExpressionParts;
+}
+
+export type ExpressionResult = BooleanExpressionResult | ValueExpressionResult | IterableExpressionResult;
 
 export var VALUE: string = '(v)';
 export var LOCALVARIABLE: string = '(l)';
@@ -38,7 +57,9 @@ export var SPACE: string = ' ';
  */
 export var Equal: BooleanExpression = {
     template: [VALUE, SPACE,[{1: Not}], '=', [{0: OrEqual}], SPACE, VALUE],
-    rule: (values: (string | number)[]) => values[0] == values[1]
+    rule: (values: (string | number)[]) => {
+        return {value: values[0] == values[1]};
+    }
 };
 
 /**
@@ -46,7 +67,9 @@ export var Equal: BooleanExpression = {
  */
 export var GreaterThan: BooleanExpression = {
     template: [VALUE, SPACE, [{1: Not}], '>', [{0: OrEqual}], SPACE, VALUE],
-    rule: (values: (string | number)[]) => (+values[0]) > (+values[1])
+    rule: (values: (string | number)[]) => {
+        return {value: (+values[0]) > (+values[1])};
+    }
 };
 
 /**
@@ -54,7 +77,9 @@ export var GreaterThan: BooleanExpression = {
  */
 export var LessThan: BooleanExpression = {
     template: [VALUE, SPACE, [{1: Not}], '<', [{0: OrEqual}], SPACE, VALUE],
-    rule: (values: (string | number)[]) => (+values[0]) < (+values[1])
+    rule: (values: (string | number)[]) => {
+        return {value: (+values[0]) < (+values[1])}
+    }
 };
 
 /**
@@ -62,7 +87,9 @@ export var LessThan: BooleanExpression = {
  */
 export var IsNull: BooleanExpression = {
     template: [VALUE, SPACE, 'is', SPACE, [{0: Not}], 'null'],
-    rule: (values: (string | number)[]) => !values[0],
+    rule: (values: (string | number)[]) => {
+        return {value: !values[0]};
+    },
     suppressUndefinedVariableError: true
 };
 
@@ -71,7 +98,9 @@ export var IsNull: BooleanExpression = {
  */
 export var LexicalGreaterThan: BooleanExpression = {
     template: [VALUE, SPACE, [{1: Not}], 'abc>', [{0: OrEqual}], SPACE, VALUE],
-    rule: (values: string[]) => [values[0], values[1]].sort().indexOf(values[0]) > 0
+    rule: (values: string[]) => {
+        return {value: [values[0], values[1]].sort().indexOf(values[0]) > 0};
+    }
 };
 
 /**
@@ -79,7 +108,9 @@ export var LexicalGreaterThan: BooleanExpression = {
  */
 export var LexicalLessThan: BooleanExpression = {
     template: [VALUE, SPACE, [{1: Not}], 'abc<', [{0: OrEqual}], SPACE, VALUE],
-    rule: (values: string[]) => values[0] === values[1] ? false : [values[0], values[1]].sort().indexOf(values[0]) === 0
+    rule: (values: string[]) => {
+        return {value: values[0] === values[1] ? false : [values[0], values[1]].sort().indexOf(values[0]) === 0};
+    }
 };
 
 /**
@@ -87,7 +118,9 @@ export var LexicalLessThan: BooleanExpression = {
  */
 export var LengthGreaterThan: BooleanExpression = {
     template: [VALUE, SPACE, [{1: Not}], 'len>', [{0: LengthOrEqual}], SPACE, VALUE],
-    rule: (values: string[]) => values[0].length > +values[1]
+    rule: (values: string[]) => {
+        return {value: values[0].length > +values[1]};
+    }
 };
 
 /**
@@ -95,7 +128,9 @@ export var LengthGreaterThan: BooleanExpression = {
  */
 export var LengthLessThan: BooleanExpression = {
     template: [VALUE, SPACE, [{1: Not}], 'len<', [{0: LengthOrEqual}], SPACE, VALUE],
-    rule: (values: string[]) => values[0].length < +values[1]
+    rule: (values: string[]) => {
+        return {value: values[0].length < +values[1]};
+    }
 };
 
 /**
@@ -103,7 +138,9 @@ export var LengthLessThan: BooleanExpression = {
  */
 export var IsNaN: BooleanExpression = {
     template: [VALUE, SPACE, 'is', SPACE, [{0: Not}], 'NaN'],
-    rule: (values: string[]) => isNaN(Number(values[0]))
+    rule: (values: string[]) => {
+        return {value: isNaN(Number(values[0]))};
+    }
 };
 
 /**
@@ -111,7 +148,9 @@ export var IsNaN: BooleanExpression = {
  */
 export var Between: BooleanExpression = {
     template: [VALUE, SPACE, VALUE, SPACE, '>', [{1: Not}], [{0: BetweenOrEqual}], '<', SPACE, VALUE],
-    rule: (values: (string | number)[]) => values[1] < values[0] && values[2] > values[0]
+    rule: (values: (string | number)[]) => {
+        return {value: values[1] < values[0] && values[2] > values[0]};
+    }
 };
 
 /**
@@ -119,7 +158,9 @@ export var Between: BooleanExpression = {
  */
 export var Coalesce: ValueExpression = {
     template: [VALUE, SPACE, '??', SPACE, VALUE],
-    rule: (values: (string | number)[]) => (values[0] || values[1]).toString(),
+    rule: (values: (string | number)[]) => {
+        return {value: (values[0] || values[1]).toString()};
+    },
     suppressUndefinedVariableError: true
 };
 
@@ -128,7 +169,14 @@ export var Coalesce: ValueExpression = {
  */
 export var IterableOfUsing: IterableExpression = {
     template: [LOCALVARIABLE, SPACE, 'of', SPACE, VALUE, SPACE, 'using', SPACE, JOINER],
-    rule: (values: ExpressionValue[]) => <string[]>values[0]
+    rule: (values: ExpressionValue[]) => {
+        return {
+            value: <string[]>values[0],
+            iterable: {
+                local:
+            }
+        };
+    }
 };
 
 export var CORE_EXPRESSIONS: Expression[] = [

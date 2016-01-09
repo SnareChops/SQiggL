@@ -1,8 +1,11 @@
 import {Action} from '../actions';
 import {LexerOptions} from '../lexer';
-import {DSLCommand} from '../dsl';
+import {DSLCommand, DSLCommandExpressionTree} from '../dsl';
 import {ExpressionLexer} from './expression.lexer';
+import {ExpressionTreeLexer} from "./expression.tree.lexer";
 import {Expression} from '../expressions';
+import {Conjunction} from '../conjunctions';
+import {SQiggLError} from '../error';
 
 /**
  * The lexer responsible for all DSL generation of Command statements
@@ -18,8 +21,9 @@ export class CommandLexer{
      * @param options {LexerOptions} - The {@link LexerOptions} used for DSL generation.
      * @param actions {Action[]} - List of all known actions for DSL generation.
      * @param expressions {Expression[]} - List of all known expressions for DSL generation.
+     * @param conjunctions {Conjunction[]} - List of all known conjunctions for DSL generation.
      */
-    constructor(private options: LexerOptions, private actions: Action[], private expressions: Expression[]){}
+    constructor(private options: LexerOptions, private actions: Action[], private expressions: Expression[], private conjunctions: Conjunction[]){}
 
     /**
      * Search for a matching action in the command and return a DSLCommand
@@ -43,15 +47,15 @@ export class CommandLexer{
      */
     public invoke(input: string, parts: string[]): DSLCommand{
         const potential = this.actions.map(x => x.key.toLowerCase()).indexOf(parts[0].toLowerCase());
-        if(potential < 0) throw new Error(`SQiggL No Action Error: Commands require the first word to be a known action. ${parts[0]} is not a recognized action.`);
+        if(potential < 0) throw SQiggLError('LC1000', `Commands require the first word to be a known action. ${parts[0]} is not a recognized action.`);
         let dsl = this.generateCommandDSL(this.actions[potential], input);
         if(parts.length > 1) {
             parts.splice(0, 2);
             if(parts.length > 1) {
-                dsl = <DSLCommand>new ExpressionLexer(this.options, this.expressions).invoke(dsl, parts);
+                dsl.expressions = new ExpressionTreeLexer(this.options, this.expressions, this.conjunctions).invoke<DSLCommandExpressionTree>(parts);
             } else {
-                dsl.expression = null;
-                dsl.values = [parts[0]];
+                dsl.expressions = null;
+                dsl.literalValue = parts[0];
             }
         }
         return dsl;

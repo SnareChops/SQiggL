@@ -24,4 +24,12 @@ describe('ExpressionLexer', () => {
         const parts: string[] = ['blah', ' ', 'blah', ' ', 'blah'];
         (() => lexer.invoke(dsl, parts)).should.throw("SQiggLLexerError: Unable to determine expression type of 'blah blah blah'");
     });
+
+    it('should return a DSLExpression with conjunctions if an expression contains any conjunctions', () => {
+
+    });
+
+    it('should return a DSLExpression with 2 expressions if an expression statement contains two expressions separated by a conjunction', () => {
+
+    });
 });

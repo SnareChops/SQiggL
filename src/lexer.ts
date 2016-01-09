@@ -1,6 +1,7 @@
 import {DSL, DSLType, DSLText, DSLVariable, DSLVariableType, DSLCommand, DSLReplacement, DSLExpression, LeveledDSL} from './dsl';
 import {Action, StartingAction, DependentAction, CORE_ACTIONS} from './actions';
 import {Expression, BooleanExpression, ValueExpression, BaseExpression, CORE_EXPRESSIONS, VALUE, SPACE, OrderedModifier} from './expressions';
+import {Conjunction, CORE_CONJUNCTIONS} from './conjunctions';
 import {Modifier, CORE_MODIFIERS} from './modifiers';
 import {VariableLexer} from './lexers/variable.lexer';
 import {ReplacementLexer} from './lexers/replacement.lexer';
@@ -17,6 +18,7 @@ export interface LexerOptions{
     customActions?: Action[];
     customExpressions?: Expression[];
     customModifiers?: Modifier[];
+    customConjunctions?: Conjunction[];
     includeCoreLibrary?: boolean; //TODO:Implement
 }
 
@@ -60,6 +62,13 @@ export class Lexer{
      * @internal
      */
     private modifiers: Modifier[];
+
+    /**
+     * A list of all known Conjunctions (including custom conjunctions defined and imported by plugins)
+     *
+     * @internal
+     */
+    private conjunctions: Conjunction[];
 
     /**
      * Creates a new instance of Lexer
@@ -120,6 +129,7 @@ export class Lexer{
             this.actions = CORE_ACTIONS;
             this.expressions = CORE_EXPRESSIONS;
             this.modifiers = CORE_MODIFIERS;
+            this.conjunctions = CORE_CONJUNCTIONS;
         }
         return this;
     }
@@ -132,9 +142,10 @@ export class Lexer{
      * @returns {Lexer} - The Lexer (For convenience chaining of startup methods)
      */
     private setCustomTypes(options: LexerOptions): Lexer{
-        if(options.customActions != null) this.actions = this.actions.concat(options.customActions);
-        if(options.customExpressions != null) this.expressions = this.expressions.concat(options.customExpressions);
-        if(options.customModifiers != null) this.modifiers = this.modifiers.concat(options.customModifiers);
+        if(!!options.customActions) this.actions = this.actions.concat(options.customActions);
+        if(!!options.customExpressions) this.expressions = this.expressions.concat(options.customExpressions);
+        if(!!options.customModifiers) this.modifiers = this.modifiers.concat(options.customModifiers);
+        if(!!options.customConjunctions) this.conjunctions = this.conjunctions.concat(options.customConjunctions);
         return this;
     }
 
@@ -224,10 +235,10 @@ export class Lexer{
                 return <DSL>{variable: new VariableLexer(this.options).invoke(value)};
             case DSLType.replacement:
                 value = ReplacementLexer.cleanStringForLexing(value);
-                return <DSL>{replacement: new ReplacementLexer(this.options, this.expressions).invoke(value, this.extractParts(value))};
+                return <DSL>{replacement: new ReplacementLexer(this.options, this.expressions, this.conjunctions).invoke(value, this.extractParts(value))};
             case DSLType.command:
                 value = CommandLexer.cleanStringForLexing(value);
-                return <DSL>{command: new CommandLexer(this.options, this.actions, this.expressions).invoke(value, this.extractParts(value))};
+                return <DSL>{command: new CommandLexer(this.options, this.actions, this.expressions, this.conjunctions).invoke(value, this.extractParts(value))};
             case DSLType.comment:
                 return <DSL>{comment: value.trim()};
             /* istabnul ignore next */

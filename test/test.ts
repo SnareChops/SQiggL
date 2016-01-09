@@ -7,6 +7,9 @@ import './modifiers.specs';
 // Actions
 import './actions.specs';
 
+// Conjunctions
+import './conjunctions.specs';
+
 // Lexers
 import './lexers/variable.lexer.specs';
 import './lexers/command.lexer.specs';
