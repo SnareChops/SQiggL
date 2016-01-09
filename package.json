@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "typings": "dist/index",
   "scripts": {
-    "test": "./node_modules/.bin/tsc -p . && ./node_modules/.bin/mocha test --reporter mocha-junit-reporter dist/test/test.js mochaFile=$CIRCLE_TEST_REPORTS/junit.xml",
+    "test": "./node_modules/.bin/tsc -p . && ./node_modules/.bin/mocha test --reporter mocha-junit-reporter mochaFile=$CIRCLE_TEST_REPORTS/junit.xml dist/test/test.js",
     "posttest": "npm run cover && ./node_modules/.bin/codeclimate-test-reporter < ./coverage/lcov.info",
     "cover": "node_modules/.bin/istanbul cover node_modules/.bin/_mocha -- -R spec dist/test/test.js",
     "postcover": "node_modules/.bin/mocha -R markdown dist/test/test.js > docs/tests.md && node_modules/.bin/mocha -R doc dist/test/test.js > docs/tests.html",
