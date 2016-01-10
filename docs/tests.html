@@ -287,10 +287,6 @@ result.joiner.should.equal('\',\'');</code></pre></dd>
         <dt>should throw an error if an expression cannot be found</dt>
         <dd><pre><code>var parts = ['blah', ' ', 'blah', ' ', 'blah'];
 (function () { return instance.invoke(parts); }).should.throw(&quot;SQiggLError - LE2000: Unable to determine expression type of 'blah blah blah'&quot;);</code></pre></dd>
-        <dt>should return a DSLExpression with conjunctions if an expression contains any conjunctions</dt>
-        <dd><pre><code></code></pre></dd>
-        <dt>should return a DSLExpression with 2 expressions if an expression statement contains two expressions separated by a conjunction</dt>
-        <dd><pre><code></code></pre></dd>
       </dl>
     </section>
     <section class="suite">
@@ -318,6 +314,18 @@ result.branches[2].expression.should.equal(expressions_1.IsNull);</code></pre></
         <dt>should throw an error if a variable key is wrapped in single quotes</dt>
         <dd><pre><code>var input = &quot;'key':'value'&quot;;
 (function () { return lexer.invoke(input); }).should.throw('SQiggLError - LV2000: Variable keys should not be wrapped in quotes.');</code></pre></dd>
+        <dt>should throw an error if a variable key contains a '['</dt>
+        <dd><pre><code>var input = 'ke[y:\'value\'';
+(function () { return lexer.invoke(input); }).should.throw(&quot;SQiggLError - LV2001: Invalid character '[' found in variable key: 'ke[y:'value''.&quot;);</code></pre></dd>
+        <dt>should throw an error if a variable key contains a ']'</dt>
+        <dd><pre><code>var input = 'ke]y:\'value\'';
+(function () { return lexer.invoke(input); }).should.throw(&quot;SQiggLError - LV2001: Invalid character ']' found in variable key: 'ke]y:'value''.&quot;);</code></pre></dd>
+        <dt>should throw an error if a variable value contains a multi-dimensional array</dt>
+        <dd><pre><code>var input = 'key: [[\'hello\']]';
+(function () { return lexer.invoke(input); }).should.throw(&quot;SQiggLError - LV2002: Arrays in variables cannot be nested. At 'key: [['hello']]'.&quot;);</code></pre></dd>
+        <dt>should throw an error if a variable value that contains an array contains other values</dt>
+        <dd><pre><code>var input = 'key: [\'hello\'], \'test\'';
+(function () { return lexer.invoke(input); }).should.throw(&quot;SQiggLError - LV2002: Arrays in variables cannot be nested. At 'key: ['hello'], 'test''.&quot;);</code></pre></dd>
         <dt>should correctly handle a variable value that has an escaped single quote in the string</dt>
         <dd><pre><code>var input = &quot;key:'Dragon\\'s breath'&quot;;
 var result = lexer.invoke(input);
@@ -362,6 +370,53 @@ var query = 'SELECT * FROM {% if 12 &gt; 13} Test {% endif } {% endif }';
         <dd><pre><code>var lexer = new lexer_1.Lexer();
 var query = 'SELECT * FROM {% if 12 &gt; 13 } Test';
 (function () { return lexer.parse(query); }).should.throw('SQiggLError - L1004: Your SQiggL query is nested but does not return to the top level before completing. Please check your nesting.');</code></pre></dd>
+        <dt>should throw an error if an invalid string is found in a part</dt>
+        <dd><pre><code>var query = 'SELECT * FROM {\'Table}';
+(function () { return instance.parse(query); }).should.throw('SQiggLError - L1006: Invalid string found in \'Table');</code></pre></dd>
+        <dt>should correctly handle a custom action</dt>
+        <dd><pre><code>var replaceAction = {
+    key: 'replace',
+    rule: function (expressionResult, variables, scope, parser) {
+        return parser.parse([{ text: expressionResult.value }]);
+    }
+};
+var endAction = { key: 'endreplace', dependents: [replaceAction] };
+var lexer = new lexer_1.Lexer({ customActions: [replaceAction, endAction] });
+var query = '{% replace \'Hello World\'} SELECT * FROM Table {%endreplace}';
+var result = lexer.parse(query);
+result[0].command.action.should.equal(replaceAction);
+result[1].command.action.should.equal(endAction);</code></pre></dd>
+        <dt>should correctly handle a custom expression</dt>
+        <dd><pre><code>var testExpression = {
+    template: [expressions_1.VALUE, expressions_2.SPACE, 'blah', expressions_2.SPACE, expressions_1.VALUE],
+    rule: function (values) { return (+values[0]) &gt; (+values[1]); }
+};
+var lexer = new lexer_1.Lexer({ customExpressions: [testExpression] });
+var query = '{12 blah 13}';
+var result = lexer.parse(query);
+result[0].replacement.expressions.branches[0].expression.should.equal(testExpression);</code></pre></dd>
+        <dt>should correctly handle a custom modifier</dt>
+        <dd><pre><code>var testModifier = {
+    identifiers: ['!'],
+    rule: function (prevResult, values) { return !prevResult; }
+};
+var testExpression = {
+    template: [expressions_1.VALUE, expressions_2.SPACE, [{ 0: testModifier }], 'blah', expressions_2.SPACE, expressions_1.VALUE],
+    rule: function (values) { return (+values[0]) &gt; (+values[1]); }
+};
+var lexer = new lexer_1.Lexer({ customExpressions: [testExpression], customModifiers: [testModifier] });
+var query = '{12 !blah 13}';
+var result = lexer.parse(query);
+result[0].replacement.expressions.branches[0].modifiers[0].should.equal(testModifier);</code></pre></dd>
+        <dt>should correctly handle a custom conjunction</dt>
+        <dd><pre><code>var testConjunction = {
+    keys: ['blah'],
+    rule: function (expressionResults) { return expressionResults[0] &amp;&amp; expressionResults[1]; }
+};
+var lexer = new lexer_1.Lexer({ customConjunctions: [testConjunction] });
+var query = '{12 &gt; 13 blah 13 &lt; 12}';
+var result = lexer.parse(query);
+result[0].replacement.expressions.conjunctions[0].should.equal(testConjunction);</code></pre></dd>
         <dt>should correctly handle escaped single quotes in strings</dt>
         <dd><pre><code>var lexer = new lexer_1.Lexer();
 var query = &quot;SELECT * FROM {'Dragon\\'s run'}&quot;;

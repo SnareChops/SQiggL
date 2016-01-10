@@ -79,7 +79,7 @@ export class VariableLexer{
                     }
                     break;
                 case ']':
-                    if(currentType === DSLVariableType.key) throw SQiggLError('LV2001', `Invalid character ']' found in variable key: '${original}.`);
+                    if(currentType === DSLVariableType.key) throw SQiggLError('LV2001', `Invalid character ']' found in variable key: '${original}'.`);
                     if(!inString){
                         if(idx !== input.length - 1) throw SQiggLError('LV2003', `Variables that define arrays must not include other values: '${original}'.`);
                         input = input.slice(0, idx) + input.slice(idx+1);

@@ -2,8 +2,23 @@ import {Lexer} from '../src/lexer';
 import {DSL, DSLCommand} from "../src/dsl";
 import {Not} from '../src/modifiers';
 import * as should from 'should';
+import {StartingAction} from "../src/actions";
+import {ExpressionResult} from "../src/expressions";
+import {ScopedVariables} from "../src/parser";
+import {Parser} from "../src/parser";
+import {TerminatingAction} from "../src/actions";
+import {BooleanExpression} from "../src/expressions";
+import {VALUE} from "../src/expressions";
+import {SPACE} from "../src/expressions";
+import {ExpressionValue} from "../src/expressions";
+import {BooleanModifier} from "../src/modifiers";
+import {Conjunction} from "../src/conjunctions";
 
 describe('Lexer', () => {
+    let instance: Lexer;
+    beforeEach(() => {
+        instance = new Lexer();
+    });
 
     it('should throw an error if a query contains an incomplete statement', () => {
         const lexer = new Lexer();
@@ -25,6 +40,63 @@ describe('Lexer', () => {
         const lexer = new Lexer();
         const query = 'SELECT * FROM {% if 12 > 13 } Test';
         (() => lexer.parse(query)).should.throw('SQiggLError - L1004: Your SQiggL query is nested but does not return to the top level before completing. Please check your nesting.');
+    });
+
+    it('should throw an error if an invalid string is found in a part', () => {
+        const query = 'SELECT * FROM {\'Table}';
+        (() => instance.parse(query)).should.throw('SQiggLError - L1006: Invalid string found in \'Table');
+    });
+
+    it('should correctly handle a custom action', () => {
+        const replaceAction: StartingAction = {
+            key: 'replace',
+            rule: (expressionResult: ExpressionResult, variables: ScopedVariables, scope: DSL[], parser: Parser) => {
+                return parser.parse([{text: <string>expressionResult.value}]);
+            }
+        };
+        const endAction: TerminatingAction = {key: 'endreplace', dependents: [replaceAction]};
+        const lexer = new Lexer({customActions: [replaceAction, endAction]});
+        const query = '{% replace \'Hello World\'} SELECT * FROM Table {%endreplace}';
+        const result = lexer.parse(query);
+        result[0].command.action.should.equal(replaceAction);
+        result[1].command.action.should.equal(endAction);
+    });
+
+    it('should correctly handle a custom expression', () => {
+        const testExpression: BooleanExpression = {
+            template: [VALUE, SPACE, 'blah', SPACE, VALUE],
+            rule: (values: ExpressionValue[]) => (+values[0]) > (+values[1])
+        };
+        const lexer = new Lexer({customExpressions: [testExpression]});
+        const query = '{12 blah 13}';
+        const result = lexer.parse(query);
+        result[0].replacement.expressions.branches[0].expression.should.equal(testExpression);
+    });
+
+    it('should correctly handle a custom modifier', () => {
+        const testModifier: BooleanModifier = {
+            identifiers: ['!'],
+            rule: (prevResult: boolean, values: string[]) => !prevResult
+        };
+        const testExpression: BooleanExpression = {
+            template: [VALUE, SPACE, [{0: testModifier}], 'blah', SPACE, VALUE],
+            rule: (values: ExpressionValue[]) => (+values[0]) > (+values[1])
+        };
+        const lexer = new Lexer({customExpressions: [testExpression], customModifiers: [testModifier]});
+        const query = '{12 !blah 13}';
+        const result = lexer.parse(query);
+        result[0].replacement.expressions.branches[0].modifiers[0].should.equal(testModifier);
+    });
+
+    it('should correctly handle a custom conjunction', () => {
+        const testConjunction: Conjunction = {
+            keys: ['blah'],
+            rule: (expressionResults: boolean[]) => expressionResults[0] && expressionResults[1]
+        };
+        const lexer = new Lexer({customConjunctions: [testConjunction]});
+        const query = '{12 > 13 blah 13 < 12}';
+        const result = lexer.parse(query);
+        result[0].replacement.expressions.conjunctions[0].should.equal(testConjunction);
     });
 
     it('should correctly handle escaped single quotes in strings', () => {
