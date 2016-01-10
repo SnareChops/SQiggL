@@ -1,6 +1,8 @@
 import {Action, StartingAction, DependentAction} from './actions';
 import {Expression, BooleanExpression, ValueExpression, IterableExpression} from './expressions';
 import {Modifier} from './modifiers';
+import {Conjunction} from './conjunctions';
+import {ExpressionResult} from "./expressions";
 
 /**
  * @internal
@@ -41,17 +43,42 @@ export interface DSLVariable{
 /**
  * @internal
  */
-export interface DSLCommand extends DSLExpression{
+export interface DSLCommand{
+    literal: string;
     action: Action;
-    expression: BooleanExpression | IterableExpression;
+    expressions?: DSLCommandExpressionTree;
+    literalValue?: string;
     failed?: boolean;
 }
 
 /**
  * @internal
  */
-export interface DSLReplacement extends DSLExpression{
-    expression: Expression;
+export interface DSLReplacement{
+    literal: string;
+    expressions?: DSLReplacementExpressionTree;
+}
+
+/**
+ * @internal
+ */
+export interface DSLExpressionTree{
+    branches: DSLExpression[];
+    conjunctions?: Conjunction[];
+}
+
+/**
+ * @internal
+ */
+export interface DSLReplacementExpressionTree extends DSLExpressionTree{
+
+}
+
+/**
+ * @internal
+ */
+export interface DSLCommandExpressionTree extends DSLExpressionTree{
+    branches: (DSLBooleanExpression | DSLIterableExpression)[];
 }
 
 /**
@@ -64,6 +91,27 @@ export interface DSLExpression{
     joiner?: string;
     values?: any[];
     modifiers?: Modifier[];
+}
+
+/**
+ * @internal
+ */
+export interface DSLBooleanExpression extends DSLExpression{
+    expression: BooleanExpression;
+}
+
+/**
+ * @internal
+ */
+export interface DSLIterableExpression extends DSLExpression{
+    expression: IterableExpression;
+}
+
+/**
+ * @internal
+ */
+export interface DSLValueExpression extends DSLExpression{
+    expression: ValueExpression;
 }
 
 /**

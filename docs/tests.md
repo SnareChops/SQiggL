@@ -23,9 +23,13 @@ key:'one', 'two', 'three'
      - [Unless](#actions-unless)
      - [Else](#actions-else)
      - [For](#actions-for)
+   - [Conjunctions](#conjunctions)
+     - [AndConjunction](#conjunctions-andconjunction)
+     - [OrConjunction](#conjunctions-orconjunction)
+   - [ExpressionLexer](#expressionlexer)
+   - [ExpressionTreeLexer](#expressiontreelexer)
    - [VariableLexer](#variablelexer)
    - [CommandLexer](#commandlexer)
-   - [ExpressionLexer](#expressionlexer)
    - [Lexer](#lexer)
      - [options](#lexer-options)
      - [text](#lexer-text)
@@ -37,7 +41,8 @@ key:'one', 'two', 'three'
      - [expressions](#lexer-expressions)
    - [ExpressionParser](#expressionparser)
      - [parse](#expressionparser-parse)
-   - [Command Parser](#command-parser)
+   - [ExpressionTreeParser](#expressiontreeparser)
+   - [CommandParser](#commandparser)
    - [ReplacementParser](#replacementparser)
      - [parse](#replacementparser-parse)
    - [Parser](#parser)
@@ -46,6 +51,7 @@ key:'one', 'two', 'three'
      - [variable](#parser-variable)
      - [resolveValue](#parser-resolvevalue)
    - [Scenarios](#scenarios)
+     - [generic 'end'](#scenarios-generic-end)
    - [Full feature sweep: ](#full-feature-sweep-)
      - [if](#full-feature-sweep-if)
        - [is null](#full-feature-sweep-if-is-null)
@@ -405,7 +411,7 @@ should return the inner scope if the expression is true.
 
 ```js
 var dsl = [{ text: 'Hello World' }];
-var result = actions_1.If.rule(true, null, dsl, new parser_1.Parser(parser_1.DEFAULT_PARSER_OPTIONS));
+var result = actions_1.If.rule({ value: true }, null, dsl, new parser_1.Parser(parser_1.DEFAULT_PARSER_OPTIONS));
 result.should.equal('Hello World');
 ```
 
@@ -413,7 +419,7 @@ should return null if the expression is false.
 
 ```js
 var dsl = [{ text: 'Hello World' }];
-var result = actions_1.If.rule(false, null, dsl, new parser_1.Parser(parser_1.DEFAULT_PARSER_OPTIONS));
+var result = actions_1.If.rule({ value: false }, null, dsl, new parser_1.Parser(parser_1.DEFAULT_PARSER_OPTIONS));
 should(result).equal(null);
 ```
 
@@ -423,7 +429,7 @@ should return null if the expression is true.
 
 ```js
 var dsl = [{ text: 'Hello World' }];
-var result = actions_1.Unless.rule(true, null, dsl, new parser_1.Parser(parser_1.DEFAULT_PARSER_OPTIONS));
+var result = actions_1.Unless.rule({ value: true }, null, dsl, new parser_1.Parser(parser_1.DEFAULT_PARSER_OPTIONS));
 should(result).equal(null);
 ```
 
@@ -431,7 +437,7 @@ should return the inner scope if the expression is false.
 
 ```js
 var dsl = [{ text: 'Hello World' }];
-var result = actions_1.Unless.rule(false, null, dsl, new parser_1.Parser(parser_1.DEFAULT_PARSER_OPTIONS));
+var result = actions_1.Unless.rule({ value: false }, null, dsl, new parser_1.Parser(parser_1.DEFAULT_PARSER_OPTIONS));
 result.should.equal('Hello World');
 ```
 
@@ -441,7 +447,7 @@ should return the inner scope if the expression is true.
 
 ```js
 var dsl = [{ text: 'Hello World' }];
-var result = actions_1.Else.rule(true, null, dsl, new parser_1.Parser(parser_1.DEFAULT_PARSER_OPTIONS));
+var result = actions_1.Else.rule({ value: true }, null, dsl, new parser_1.Parser(parser_1.DEFAULT_PARSER_OPTIONS));
 result.should.equal('Hello World');
 ```
 
@@ -449,7 +455,7 @@ should return the inner scope if the expression is false.
 
 ```js
 var dsl = [{ text: 'Hello World' }];
-var result = actions_1.Else.rule(false, null, dsl, new parser_1.Parser(parser_1.DEFAULT_PARSER_OPTIONS));
+var result = actions_1.Else.rule({ value: false }, null, dsl, new parser_1.Parser(parser_1.DEFAULT_PARSER_OPTIONS));
 result.should.equal('Hello World');
 ```
 
@@ -458,19 +464,111 @@ result.should.equal('Hello World');
 should return the inner scope as many times as there are values and combining them with the joiner.
 
 ```js
-var commandDSL = { literal: 'for var of vars using \',\'', action: actions_1.For, expression: expressions_1.IterableOfUsing, local: 'var', joiner: '\',\'', values: [['1', '2', '3']] };
 var dsl = [{ text: 'Hello World' }];
-var result = actions_1.For.rule(['1', '2', '3'], void 0, dsl, new parser_1.Parser(parser_1.DEFAULT_PARSER_OPTIONS), commandDSL);
+var result = actions_1.For.rule({ value: ['1', '2', '3'], iterable: { local: 'var', joiner: '\',\'' } }, void 0, dsl, new parser_1.Parser(parser_1.DEFAULT_PARSER_OPTIONS));
 result.should.equal('Hello World, Hello World, Hello World');
 ```
 
 should iterate the inner scope and correctly replace the inner values using the expressionResult.
 
 ```js
-var commandDSL = { literal: 'for var of vars using \',\'', action: actions_1.For, expression: expressions_1.IterableOfUsing, local: 'var', joiner: '\',\'', values: [['1', '2', '3']] };
-var dsl = [{ text: 'Iteration ' }, { replacement: { literal: 'var', expression: null } }];
-var result = actions_1.For.rule(['1', '2', '3'], void 0, dsl, new parser_1.Parser(parser_1.DEFAULT_PARSER_OPTIONS), commandDSL);
+var dsl = [{ text: 'Iteration ' }, { replacement: { literal: 'var' } }];
+var result = actions_1.For.rule({ value: ['1', '2', '3'], iterable: { local: 'var', joiner: '\',\'' } }, void 0, dsl, new parser_1.Parser(parser_1.DEFAULT_PARSER_OPTIONS));
 result.should.equal('Iteration 1, Iteration 2, Iteration 3');
+```
+
+<a name="conjunctions"></a>
+# Conjunctions
+<a name="conjunctions-andconjunction"></a>
+## AndConjunction
+should return false if the first expressionResult is false.
+
+```js
+var result = conjunctions_1.AndConjunction.rule([false, true]);
+result.should.equal(false);
+```
+
+should return false if the second expressionResult is false (and the first is true).
+
+```js
+var result = conjunctions_1.AndConjunction.rule([true, false]);
+result.should.equal(false);
+```
+
+should return true if both expressionResults are true.
+
+```js
+var result = conjunctions_1.AndConjunction.rule([true, true]);
+result.should.equal(true);
+```
+
+<a name="conjunctions-orconjunction"></a>
+## OrConjunction
+should return false if both expressionResults are false.
+
+```js
+var result = conjunctions_1.OrConjunction.rule([false, false]);
+result.should.equal(false);
+```
+
+should return true if the first expressionResult is true.
+
+```js
+var result = conjunctions_1.OrConjunction.rule([true, false]);
+result.should.equal(true);
+```
+
+should return true if the first expressionResult is false and the second is true.
+
+```js
+var result = conjunctions_1.OrConjunction.rule([false, true]);
+result.should.equal(true);
+```
+
+<a name="expressionlexer"></a>
+# ExpressionLexer
+should return a DSLExpression with a local if an expression contains a local variable.
+
+```js
+var parts = ['cat', ' ', 'of', ' ', 'catType', ' ', 'using', ' ', '\',\''];
+var result = instance.invoke(parts);
+result.local.should.equal('cat');
+```
+
+should return a DSLExpression with a joiner if an expression contains a joiner value.
+
+```js
+var parts = ['cat', ' ', 'of', ' ', 'catType', ' ', 'using', ' ', '\',\''];
+var result = instance.invoke(parts);
+result.joiner.should.equal('\',\'');
+```
+
+should throw an error if an expression cannot be found.
+
+```js
+var parts = ['blah', ' ', 'blah', ' ', 'blah'];
+(function () { return instance.invoke(parts); }).should.throw("SQiggLError - LE2000: Unable to determine expression type of 'blah blah blah'");
+```
+
+<a name="expressiontreelexer"></a>
+# ExpressionTreeLexer
+should split expressions by conjunctions and save the conjunctions in order in the DSL.
+
+```js
+var parts = ['12', ' ', '>', ' ', '13', ' ', 'and', ' ', '15', ' ', '<', ' ', '100', ' ', 'or', ' ', 'var', ' ', 'is', ' ', 'null'];
+var result = instance.invoke(parts);
+result.conjunctions[0].should.equal(conjunctions_1.AndConjunction);
+result.conjunctions[1].should.equal(conjunctions_1.OrConjunction);
+```
+
+should split expressions by conjunctions and save the expressions in order in the DSL.
+
+```js
+var parts = ['12', ' ', '>', ' ', '13', ' ', 'and', ' ', '15', ' ', '<', ' ', '100', ' ', 'or', ' ', 'var', ' ', 'is', ' ', 'null'];
+var result = instance.invoke(parts);
+result.branches[0].expression.should.equal(expressions_1.GreaterThan);
+result.branches[1].expression.should.equal(expressions_1.LessThan);
+result.branches[2].expression.should.equal(expressions_1.IsNull);
 ```
 
 <a name="variablelexer"></a>
@@ -479,14 +577,42 @@ should throw an error if a variable key is wrapped in double quotes.
 
 ```js
 var input = '"key":"value"';
-(function () { return lexer.invoke(input); }).should.throw('SQiggL Syntax Error: Variable keys should not be wrapped in quotes.');
+(function () { return lexer.invoke(input); }).should.throw('SQiggLError - LV2000: Variable keys should not be wrapped in quotes.');
 ```
 
 should throw an error if a variable key is wrapped in single quotes.
 
 ```js
 var input = "'key':'value'";
-(function () { return lexer.invoke(input); }).should.throw('SQiggL Syntax Error: Variable keys should not be wrapped in quotes.');
+(function () { return lexer.invoke(input); }).should.throw('SQiggLError - LV2000: Variable keys should not be wrapped in quotes.');
+```
+
+should throw an error if a variable key contains a '['.
+
+```js
+var input = 'ke[y:\'value\'';
+(function () { return lexer.invoke(input); }).should.throw("SQiggLError - LV2001: Invalid character '[' found in variable key: 'ke[y:'value''.");
+```
+
+should throw an error if a variable key contains a ']'.
+
+```js
+var input = 'ke]y:\'value\'';
+(function () { return lexer.invoke(input); }).should.throw("SQiggLError - LV2001: Invalid character ']' found in variable key: 'ke]y:'value''.");
+```
+
+should throw an error if a variable value contains a multi-dimensional array.
+
+```js
+var input = 'key: [[\'hello\']]';
+(function () { return lexer.invoke(input); }).should.throw("SQiggLError - LV2002: Arrays in variables cannot be nested. At 'key: [['hello']]'.");
+```
+
+should throw an error if a variable value that contains an array contains other values.
+
+```js
+var input = 'key: [\'hello\'], \'test\'';
+(function () { return lexer.invoke(input); }).should.throw("SQiggLError - LV2002: Arrays in variables cannot be nested. At 'key: ['hello'], 'test''.");
 ```
 
 should correctly handle a variable value that has an escaped single quote in the string.
@@ -520,39 +646,10 @@ result.value[2].should.equal("'three'");
 should throw an error if the first word of a command is not a known action.
 
 ```js
-var lexer = new command_lexer_1.CommandLexer(lexer_1.DEFAULT_LEXER_OPTIONS, actions_1.CORE_ACTIONS, expressions_1.CORE_EXPRESSIONS);
+var lexer = new command_lexer_1.CommandLexer(lexer_1.DEFAULT_LEXER_OPTIONS, actions_1.CORE_ACTIONS, expressions_1.CORE_EXPRESSIONS, conjunctions_1.CORE_CONJUNCTIONS);
 var input = 'not a command';
 var parts = ['not', ' ', 'a', ' ', 'command'];
-(function () { return lexer.invoke(input, parts); }).should.throw('SQiggL No Action Error: Commands require the first word to be a known action. not is not a recognized action.');
-```
-
-<a name="expressionlexer"></a>
-# ExpressionLexer
-should return a DSLExpression with a local if an expression contains a local variable.
-
-```js
-var dsl = { literal: 'cat of catType using \',\'', expression: null };
-var parts = ['cat', ' ', 'of', ' ', 'catType', ' ', 'using', ' ', '\',\''];
-var result = new expression_lexer_1.ExpressionLexer(lexer_1.DEFAULT_LEXER_OPTIONS, expressions_1.CORE_EXPRESSIONS).invoke(dsl, parts);
-result.local.should.equal('cat');
-```
-
-should return a DSLExpression with a joiner if an expression contains a joiner value.
-
-```js
-var dsl = { literal: 'cat of catType using \',\'', expression: null };
-var parts = ['cat', ' ', 'of', ' ', 'catType', ' ', 'using', ' ', '\',\''];
-var result = new expression_lexer_1.ExpressionLexer(lexer_1.DEFAULT_LEXER_OPTIONS, expressions_1.CORE_EXPRESSIONS).invoke(dsl, parts);
-result.joiner.should.equal('\',\'');
-```
-
-should throw an error if an expression cannot be found.
-
-```js
-var lexer = new expression_lexer_1.ExpressionLexer(lexer_1.DEFAULT_LEXER_OPTIONS, expressions_1.CORE_EXPRESSIONS);
-var dsl = { literal: 'blah blah blah', expression: null };
-var parts = ['blah', ' ', 'blah', ' ', 'blah'];
-(function () { return lexer.invoke(dsl, parts); }).should.throw("SQiggLLexerError: Unable to determine expression type of 'blah blah blah'");
+(function () { return lexer.invoke(input, parts); }).should.throw('SQiggLError - LC1000: Commands require the first word to be a known action. not is not a recognized action.');
 ```
 
 <a name="lexer"></a>
@@ -561,14 +658,14 @@ should throw an error if a query contains an incomplete statement.
 
 ```js
 var lexer = new lexer_1.Lexer();
-(function () { return lexer.parse('SELECT * FROM {Table'); }).should.throw('SQiggLLexerError: Expected statement to complete before end of file.');
+(function () { return lexer.parse('SELECT * FROM {Table'); }).should.throw('SQiggLError - L1002: Expected statement to complete before end of file.');
 ```
 
 should throw an throw an error if a query does not close a statement before declaring another.
 
 ```js
 var lexer = new lexer_1.Lexer();
-(function () { return lexer.parse('SELECT * FROM {Table WHERE id = {12}'); }).should.throw('SQiggLLexerError: Unexpected \'{\' found in statement. Expected \'}\'.');
+(function () { return lexer.parse('SELECT * FROM {Table WHERE id = {12}'); }).should.throw('SQiggLError - L1001: Unexpected \'{\' found in statement. Expected \'}\'.');
 ```
 
 should throw an error if a query is incorrectly nested.
@@ -576,7 +673,7 @@ should throw an error if a query is incorrectly nested.
 ```js
 var lexer = new lexer_1.Lexer();
 var query = 'SELECT * FROM {% if 12 > 13} Test {% endif } {% endif }';
-(function () { return lexer.parse(query); }).should.throw('SQiggLLexerError: Your SQiggL is incorrectly nested.');
+(function () { return lexer.parse(query); }).should.throw('SQiggLError - L1003: Your SQiggL is incorrectly nested.');
 ```
 
 should throw an error if a query is incompletely nested.
@@ -584,7 +681,74 @@ should throw an error if a query is incompletely nested.
 ```js
 var lexer = new lexer_1.Lexer();
 var query = 'SELECT * FROM {% if 12 > 13 } Test';
-(function () { return lexer.parse(query); }).should.throw('SQiggLLexerError: Your SQiggL query is nested but does not return to the top level before completing. Please check your nesting.');
+(function () { return lexer.parse(query); }).should.throw('SQiggLError - L1004: Your SQiggL query is nested but does not return to the top level before completing. Please check your nesting.');
+```
+
+should throw an error if an invalid string is found in a part.
+
+```js
+var query = 'SELECT * FROM {\'Table}';
+(function () { return instance.parse(query); }).should.throw('SQiggLError - L1006: Invalid string found in \'Table');
+```
+
+should correctly handle a custom action.
+
+```js
+var replaceAction = {
+    key: 'replace',
+    rule: function (expressionResult, variables, scope, parser) {
+        return parser.parse([{ text: expressionResult.value }]);
+    }
+};
+var endAction = { key: 'endreplace', dependents: [replaceAction] };
+var lexer = new lexer_1.Lexer({ customActions: [replaceAction, endAction] });
+var query = '{% replace \'Hello World\'} SELECT * FROM Table {%endreplace}';
+var result = lexer.parse(query);
+result[0].command.action.should.equal(replaceAction);
+result[1].command.action.should.equal(endAction);
+```
+
+should correctly handle a custom expression.
+
+```js
+var testExpression = {
+    template: [expressions_1.VALUE, expressions_2.SPACE, 'blah', expressions_2.SPACE, expressions_1.VALUE],
+    rule: function (values) { return (+values[0]) > (+values[1]); }
+};
+var lexer = new lexer_1.Lexer({ customExpressions: [testExpression] });
+var query = '{12 blah 13}';
+var result = lexer.parse(query);
+result[0].replacement.expressions.branches[0].expression.should.equal(testExpression);
+```
+
+should correctly handle a custom modifier.
+
+```js
+var testModifier = {
+    identifiers: ['!'],
+    rule: function (prevResult, values) { return !prevResult; }
+};
+var testExpression = {
+    template: [expressions_1.VALUE, expressions_2.SPACE, [{ 0: testModifier }], 'blah', expressions_2.SPACE, expressions_1.VALUE],
+    rule: function (values) { return (+values[0]) > (+values[1]); }
+};
+var lexer = new lexer_1.Lexer({ customExpressions: [testExpression], customModifiers: [testModifier] });
+var query = '{12 !blah 13}';
+var result = lexer.parse(query);
+result[0].replacement.expressions.branches[0].modifiers[0].should.equal(testModifier);
+```
+
+should correctly handle a custom conjunction.
+
+```js
+var testConjunction = {
+    keys: ['blah'],
+    rule: function (expressionResults) { return expressionResults[0] && expressionResults[1]; }
+};
+var lexer = new lexer_1.Lexer({ customConjunctions: [testConjunction] });
+var query = '{12 > 13 blah 13 < 12}';
+var result = lexer.parse(query);
+result[0].replacement.expressions.conjunctions[0].should.equal(testConjunction);
 ```
 
 should correctly handle escaped single quotes in strings.
@@ -619,7 +783,7 @@ should throw an error if an illegal escape character exists in a string.
 ```js
 var lexer = new lexer_1.Lexer();
 var query = "SELECT * FROM {'\\Something'}";
-(function () { return lexer.parse(query); }).should.throw("SQiggLLexerError: Illegal escape character found in string '\\Something' at index 1");
+(function () { return lexer.parse(query); }).should.throw('SQiggLError - L1005: Illegal escape character found in string \'\\Something\' at index 1');
 ```
 
 <a name="lexer-options"></a>
@@ -869,7 +1033,7 @@ should detect an expression in a replacement.
 ```js
 var lexer = new lexer_1.Lexer();
 var result = lexer.parse('{12 > 13}');
-result[0].replacement.should.have.property('expression');
+result[0].replacement.should.have.property('expressions');
 ```
 
 should detect an expression in a replacement with a modifier.
@@ -877,7 +1041,7 @@ should detect an expression in a replacement with a modifier.
 ```js
 var lexer = new lexer_1.Lexer();
 var result = lexer.parse('{12 !< 13}');
-result[0].replacement.should.have.property('expression');
+result[0].replacement.should.have.property('expressions');
 ```
 
 should correctly identify a modifier in an expression.
@@ -885,8 +1049,8 @@ should correctly identify a modifier in an expression.
 ```js
 var lexer = new lexer_1.Lexer();
 var result = lexer.parse('{12 !> 13}');
-result[0].replacement.should.have.property('modifiers');
-result[0].replacement.modifiers[0].should.equal(modifiers_1.Not);
+result[0].replacement.expressions.branches[0].should.have.property('modifiers');
+result[0].replacement.expressions.branches[0].modifiers[0].should.equal(modifiers_1.Not);
 ```
 
 should correctly identify the values in an expression.
@@ -894,8 +1058,8 @@ should correctly identify the values in an expression.
 ```js
 var lexer = new lexer_1.Lexer();
 var result = lexer.parse('{12 > 13}');
-result[0].replacement.values[0].should.equal('12');
-result[0].replacement.values[1].should.equal('13');
+result[0].replacement.expressions.branches[0].values[0].should.equal('12');
+result[0].replacement.expressions.branches[0].values[1].should.equal('13');
 ```
 
 <a name="expressionparser"></a>
@@ -906,16 +1070,16 @@ should correctly return false if an expression should be false.
 
 ```js
 var dsl = { expression: expressions_1.GreaterThan, values: ['12', '13'], literal: '12 > 13' };
-var result = new expression_parser_1.ExpressionParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl);
-result.should.eql(false);
+var result = new expression_parser_1.ExpressionParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, {});
+result.value.should.equal(false);
 ```
 
 should correctly return true if an expression should be true.
 
 ```js
 var dsl = { literal: '13 > 12', expression: expressions_1.GreaterThan, values: ['13', '12'] };
-var result = new expression_parser_1.ExpressionParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl);
-result.should.eql(true);
+var result = new expression_parser_1.ExpressionParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, {});
+result.value.should.eql(true);
 ```
 
 should output the result of a boolean expression with variables.
@@ -923,51 +1087,81 @@ should output the result of a boolean expression with variables.
 ```js
 var dsl = { literal: 'high > low', expression: expressions_1.GreaterThan, values: ['high', 'low'] };
 var result = new expression_parser_1.ExpressionParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, { high: 13, low: 12 });
-result.should.eql(true);
+result.value.should.eql(true);
 ```
 
 should correctly return true if an expression is false but then negated with a modifier.
 
 ```js
 var dsl = { literal: '12 > 13', expression: expressions_1.GreaterThan, values: ['12', '13'], modifiers: [modifiers_1.Not] };
-var result = new expression_parser_1.ExpressionParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl);
-result.should.equal(true);
+var result = new expression_parser_1.ExpressionParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, {});
+result.value.should.eql(true);
 ```
 
-<a name="command-parser"></a>
-# Command Parser
+<a name="expressiontreeparser"></a>
+# ExpressionTreeParser
+should return an ExpressionResult.
+
+```js
+var expression = { literal: '13 > 12', expression: expressions_1.GreaterThan, values: ['13', '12'] };
+var dsl = { branches: [expression] };
+var result = instance.parse(dsl, {});
+result.value.should.equal(true);
+```
+
+should return a correct result of an expression with a conjunction.
+
+```js
+var expression1 = { literal: '13 > 12', expression: expressions_1.GreaterThan, values: ['13', '12'] };
+var expression2 = { literal: '13 < 12', expression: expressions_1.LessThan, values: ['13', '12'] };
+var dsl = { branches: [expression1, expression2], conjunctions: [conjunctions_1.AndConjunction] };
+var result = instance.parse(dsl, {});
+result.value.should.equal(false);
+```
+
+<a name="commandparser"></a>
+# CommandParser
 should correctly return a string in a StartingAction that is false.
 
 ```js
-var dsl = { command: { literal: 'if 12 > 13', action: actions_1.If, expression: expressions_1.GreaterThan, values: ['12', '13'] } };
-var result = new command_parser_1.CommandParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl);
+var booleanExpression = { literal: '12 > 13', expression: expressions_1.GreaterThan, values: ['12', '13'] };
+var expressionTree = { branches: [booleanExpression] };
+var dsl = { literal: 'if 12 > 13', action: actions_1.If, expressions: expressionTree };
+var scope = [{ text: 'Hello World' }];
+var result = new command_parser_1.CommandParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, scope, {});
 result.should.equal('');
 ```
 
 should correctly return a string in a StartingAction that is true.
 
 ```js
-var dsl = { command: { literal: 'if 13 > 12', action: actions_1.If, expression: expressions_1.GreaterThan, values: ['13', '12'] }, scope: [{ text: 'Hello World' }] };
-var result = new command_parser_1.CommandParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl);
+var booleanExpression = { literal: '13 > 12', expression: expressions_1.GreaterThan, values: ['13', '12'] };
+var expressionTree = { branches: [booleanExpression] };
+var dsl = { literal: 'if 13 > 12', action: actions_1.If, expressions: expressionTree };
+var scope = [{ text: 'Hello World' }];
+var result = new command_parser_1.CommandParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, scope, {});
 result.should.equal('Hello World');
 ```
 
 should correctly return a string in a DependentAction.
 
 ```js
-var dsl = { command: { literal: 'else', action: actions_1.Else, expression: null }, scope: [{ text: 'Merry Christmas' }] };
-var result = new command_parser_1.CommandParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl);
+var dsl = { literal: 'else', action: actions_1.Else };
+var scope = [{ text: 'Merry Christmas' }];
+var result = new command_parser_1.CommandParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, scope, {});
 result.should.equal('Merry Christmas');
 ```
 
 should correctly return a string for an IterableCommand.
 
 ```js
-var commandDSL = { literal: 'for cat of catTypes using \', \'', action: actions_1.For, expression: expressions_1.IterableOfUsing, local: 'cat', values: [['hairy', 'furry', 'fuzzy']], joiner: '\',\'' };
+var iterableExpression = { literal: 'cat of catTypes using \',\'', expression: expressions_1.IterableOfUsing, local: 'cat', values: [['hairy', 'furry', 'fuzzy']], joiner: '\',\'' };
+var expressionTreeDSL = { branches: [iterableExpression] };
+var commandDSL = { literal: 'for cat of catTypes using \', \'', action: actions_1.For, expressions: expressionTreeDSL };
 var textDSL = { text: 'Hello ' };
-var replacementDSL = { literal: 'cat', expression: null };
-var dsl = { command: commandDSL, scope: [textDSL, { replacement: replacementDSL }] };
-var result = new command_parser_1.CommandParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl);
+var replacementDSL = { literal: 'cat', expressions: null };
+var scope = [textDSL, { replacement: replacementDSL }];
+var result = new command_parser_1.CommandParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(commandDSL, scope, {});
 result.should.equal('Hello hairy, Hello furry, Hello fuzzy');
 ```
 
@@ -978,7 +1172,7 @@ result.should.equal('Hello hairy, Hello furry, Hello fuzzy');
 should output a literal string.
 
 ```js
-var dsl = { literal: '\'Test string\'', expression: null };
+var dsl = { literal: '\'Test string\'' };
 var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl);
 result.should.eql('Test string');
 ```
@@ -986,7 +1180,7 @@ result.should.eql('Test string');
 should output a literal number.
 
 ```js
-var dsl = { literal: '12', expression: null };
+var dsl = { literal: '12' };
 var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl);
 result.should.eql('12');
 ```
@@ -994,7 +1188,7 @@ result.should.eql('12');
 should output a variable value.
 
 ```js
-var dsl = { literal: 'dragon', expression: null };
+var dsl = { literal: 'dragon' };
 var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, { dragon: 'Pet' });
 result.should.eql('Pet');
 ```
@@ -1002,7 +1196,9 @@ result.should.eql('Pet');
 should output the result of a boolean expression.
 
 ```js
-var dsl = { literal: '12 > 13', expression: expressions_1.GreaterThan, values: ['12', '13'] };
+var booleanExpression = { literal: '12 > 13', expression: expressions_1.GreaterThan, values: ['12', '13'] };
+var expressionTree = { branches: [booleanExpression] };
+var dsl = { literal: '12 > 13', expressions: expressionTree };
 var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl);
 result.should.eql('0');
 ```
@@ -1010,7 +1206,9 @@ result.should.eql('0');
 should output the result of a boolean expression with variables.
 
 ```js
-var dsl = { literal: 'high > low', expression: expressions_1.GreaterThan, values: ['high', 'low'] };
+var booleanExpression = { literal: 'high > low', expression: expressions_1.GreaterThan, values: ['high', 'low'] };
+var expressionTree = { branches: [booleanExpression] };
+var dsl = { literal: 'high > low', expressions: expressionTree };
 var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, { high: 13, low: 12 });
 result.should.eql('1');
 ```
@@ -1018,7 +1216,9 @@ result.should.eql('1');
 should output the result of an IterableExpression correctly.
 
 ```js
-var dsl = { literal: 'cat of catTypes using \',\'', expression: expressions_2.IterableOfUsing, local: 'cat', values: [['hairy', 'furry', 'fuzzy']], joiner: '\',\'' };
+var iterableExpression = { literal: 'cat of catTypes using \',\'', expression: expressions_2.IterableOfUsing, local: 'cat', values: [['hairy', 'furry', 'fuzzy']], joiner: '\',\'' };
+var expressionTree = { branches: [iterableExpression] };
+var dsl = { literal: 'cat of catTypes using \',\'', expressions: expressionTree };
 var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl);
 result.should.equal('hairy, furry, fuzzy');
 ```
@@ -1026,7 +1226,9 @@ result.should.equal('hairy, furry, fuzzy');
 should output the result of an IterableExpression correctly using variables.
 
 ```js
-var dsl = { literal: 'cat of catTypes using \',\'', expression: expressions_2.IterableOfUsing, local: 'cat', values: ['array'], joiner: 'joiner' };
+var iterableExpression = { literal: 'cat of catTypes using \',\'', expression: expressions_2.IterableOfUsing, local: 'cat', values: ['array'], joiner: 'joiner' };
+var expressionTree = { branches: [iterableExpression] };
+var dsl = { literal: 'cat of catTypes using \',\'', expressions: expressionTree };
 var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, { array: ['hairy', 'furry', 'fuzzy'], joiner: ',' });
 result.should.equal('hairy, furry, fuzzy');
 ```
@@ -1118,7 +1320,7 @@ result.should.equal('Dragon');
 should throw an error if a variable value is undefined.
 
 ```js
-(function () { return parser_1.Parser.resolveValue('cat', { dragon: 'Fish' }); }).should.throw('SQiggLParserError: cat is not a defined variable in this scope');
+(function () { return parser_1.Parser.resolveValue('cat', { dragon: 'Fish' }); }).should.throw('SQiggLError - P1000: cat is not a defined variable in this scope');
 ```
 
 <a name="scenarios"></a>
@@ -1205,6 +1407,36 @@ should correctly output a SQiggL query containing a StartingAction, DependentAct
 ```js
 var result = SQiggL.parse('SELECT * FROM Table {% if 12 > 13 } WHERE status = 1 {% else } WHERE status = 0 {% endif }');
 result.should.equal('SELECT * FROM Table  WHERE status = 0 ');
+```
+
+should correctly output a SQiggL query containing a conjunction in an expression.
+
+```js
+var result = SQiggL.parse('SELECT * FROM Table {% if 13 > 12 and 15 < 100 } WHERE Status = 1 {% endif }');
+result.should.equal('SELECT * FROM Table  WHERE Status = 1 ');
+```
+
+<a name="scenarios-generic-end"></a>
+## generic 'end'
+should work with 'if'.
+
+```js
+var result = SQiggL.parse('SELECT * FROM Table {% if 13 > 12} WHERE status = 0 {% end }');
+result.should.equal('SELECT * FROM Table  WHERE status = 0 ');
+```
+
+should work with 'unless'.
+
+```js
+var result = SQiggL.parse('SELECT * FROM Table {% unless 13 < 12} WHERE status = 0 {% end }');
+result.should.equal('SELECT * FROM Table  WHERE status = 0 ');
+```
+
+should work with 'for'.
+
+```js
+var result = SQiggL.parse('SELECT * FROM Table WHERE {% for var of array using \'AND\'} id = {var} {% end }', { array: ['1', '2', '3'] });
+result.should.equal('SELECT * FROM Table WHERE  id = 1 AND  id = 2 AND  id = 3 ');
 ```
 
 <a name="full-feature-sweep-"></a>

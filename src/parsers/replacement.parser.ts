@@ -1,7 +1,8 @@
 import {ParserOptions, ScopedVariables, Parser} from '../parser';
 import {DSLReplacement} from '../dsl';
 import {ExpressionParser} from './expression.parser';
-import {ExpressionResult} from '../expressions';
+import {ExpressionResult, IterableExpressionResult} from '../expressions';
+import {ExpressionTreeParser} from './expression.tree.parser';
 
 /**
  * The parser responsible for all DSLReplacements.
@@ -27,17 +28,20 @@ export class ReplacementParser{
      * @returns {string} - The final output string for this replacement.
      */
     public parse(dsl: DSLReplacement, variables?: ScopedVariables): string{
-        let result: ExpressionResult;
-        if(!!dsl.expression) {
-            result = new ExpressionParser(this.options).parse(dsl, variables);
-            if(Array.isArray(result)){
-                result = (<string[]>result).join(`${Parser.resolveValue(dsl.joiner, variables)} `);
+        let output: string | boolean,
+            result: ExpressionResult;
+        if(!!dsl.expressions) {
+            result = new ExpressionTreeParser(this.options).parse(dsl.expressions, variables);
+            if(!!(<IterableExpressionResult>result).iterable){
+                output = (<string[]>result.value).join(`${Parser.resolveValue((<IterableExpressionResult>result).iterable.joiner, variables)} `);
+            } else {
+                output = <string | boolean>result.value;
             }
         } else {
-            result = Parser.resolveValue(dsl.literal, variables).toString();
+            output = Parser.resolveValue(dsl.literal, variables).toString();
         }
-        if(result === true) return this.options.trueString;
-        if(result === false) return this.options.falseString;
-        return <string>result;
+        if(output === true) return this.options.trueString;
+        if(output === false) return this.options.falseString;
+        return <string>output;
     }
 }

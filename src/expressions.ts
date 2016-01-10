@@ -26,7 +26,26 @@ export interface IterableExpression extends BaseExpression{
 }
 
 export type Expression = BooleanExpression | ValueExpression | IterableExpression;
-export type ExpressionResult = string | boolean | string[];
+
+export interface IterableExpressionParts{
+    local: string;
+    joiner: string;
+}
+
+export interface BooleanExpressionResult{
+    value: boolean;
+}
+
+export interface ValueExpressionResult{
+    value: string;
+}
+
+export interface IterableExpressionResult{
+    value: string[];
+    iterable?: IterableExpressionParts;
+}
+
+export type ExpressionResult = BooleanExpressionResult | ValueExpressionResult | IterableExpressionResult;
 
 export var VALUE: string = '(v)';
 export var LOCALVARIABLE: string = '(l)';
@@ -62,7 +81,7 @@ export var LessThan: BooleanExpression = {
  */
 export var IsNull: BooleanExpression = {
     template: [VALUE, SPACE, 'is', SPACE, [{0: Not}], 'null'],
-    rule: (values: (string | number)[]) => !values[0],
+    rule: (values: (string | number)[]) => values[0] == null,
     suppressUndefinedVariableError: true
 };
 

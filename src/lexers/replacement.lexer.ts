@@ -1,7 +1,8 @@
 import {LexerOptions} from '../lexer';
-import {ExpressionLexer} from './expression.lexer';
-import {DSLReplacement} from '../dsl';
+import {DSLReplacement, DSLReplacementExpressionTree} from '../dsl';
 import {Expression, SPACE} from '../expressions';
+import {ExpressionTreeLexer} from "./expression.tree.lexer";
+import {Conjunction} from "../conjunctions";
 
 /**
  * The lexer responsible for DSL generation of all Replacement statements
@@ -16,8 +17,9 @@ export class ReplacementLexer{
      * @internal
      * @param options {LexerOptions} - The LexerOptions to use for all DSL generation.
      * @param expressions {Expression[]} - A list of all known expressions to use when generating DSL.
+     * @param conjunctions {Conjunction[]} - A list of all known conjunctions to use when generating DSL.
      */
-    constructor(private options: LexerOptions, private expressions: Expression[]){}
+    constructor(private options: LexerOptions, private expressions: Expression[], private conjunctions: Conjunction[]){}
 
     /**
      * Split the input into it's respective parts then compare them against expressions
@@ -32,7 +34,7 @@ export class ReplacementLexer{
      */
     public invoke(input: string, parts: string[]): DSLReplacement{
         let dsl: DSLReplacement = <DSLReplacement>{literal: input};
-        if(parts.length > 1) dsl = new ExpressionLexer(this.options, this.expressions).invoke(dsl, parts);
+        if(parts.length > 1) dsl.expressions = new ExpressionTreeLexer(this.options, this.expressions, this.conjunctions).invoke<DSLReplacementExpressionTree>(parts);
         else dsl.literal = parts[0];
         return dsl;
     }

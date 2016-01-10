@@ -1,40 +1,45 @@
-import {ExpressionResult} from './expressions';
+import {ExpressionResult, BooleanExpressionResult} from './expressions';
 
-export interface Modifier{
+export interface BaseModifier{
     identifiers: string[],
-    rule: (prevResult: ExpressionResult, values?: string[]) => ExpressionResult;
 }
 
+export interface BooleanModifier extends BaseModifier{
+    rule: (prevResult: boolean, values?: string[]) => boolean;
+}
+
+export type Modifier = BooleanModifier;
+
 /**
  * @internal
  */
-export var Not: Modifier = {
+export var Not: BooleanModifier = {
     identifiers: ['!', 'not'],
-    rule: (prevResult: ExpressionResult, values: string[]) => !prevResult
+    rule: (prevResult: boolean, values: string[]) => !prevResult
 };
 
 /**
  * @internal
  */
-export var OrEqual: Modifier = {
+export var OrEqual: BooleanModifier = {
     identifiers: ['='],
-    rule: (prevResult: ExpressionResult, values: string[]) => prevResult || values[0] === values[1]
+    rule: (prevResult: boolean, values: string[]) => prevResult || values[0] === values[1]
 };
 
 /**
  * @internal
  */
-export var LengthOrEqual: Modifier = {
+export var LengthOrEqual: BooleanModifier = {
     identifiers: ['='],
-    rule: (prevResult: ExpressionResult, values: string[]) => prevResult || values[0].length === +values[1]
+    rule: (prevResult: boolean, values: string[]) => prevResult || values[0].length === +values[1]
 };
 
 /**
  * @internal
  */
-export var BetweenOrEqual: Modifier = {
+export var BetweenOrEqual: BooleanModifier = {
     identifiers: ['='],
-    rule: (prevResult: ExpressionResult, values: string[]) => prevResult || +values[0] === +values[1] || +values[0] === +values[2]
+    rule: (prevResult: boolean, values: string[]) => prevResult || +values[0] === +values[1] || +values[0] === +values[2]
 };
 
 export var CORE_MODIFIERS: Modifier[] = [
