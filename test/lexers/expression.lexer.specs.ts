@@ -25,4 +25,10 @@ describe('ExpressionLexer', () => {
         const parts: string[] = ['blah', ' ', 'blah', ' ', 'blah'];
         (() => instance.invoke(parts)).should.throw(`SQiggLError - LE2000: Unable to determine expression type of 'blah blah blah'`);
     });
+
+    it('should locate a sub expression in a value field and generate the DSL in the values array', () => {
+        const parts: string[] = ['if', ' ', '12', ' ', '>', ' ', '13', ' ', 'then', ' ', '\'Hello\'', ' ', 'else', ' ', '\'World\''];
+        const result: DSLExpression = instance.invoke(parts);
+        (<DSLExpression>result.values[0]).expression.should.not.equal(void 0);
+    });
 });

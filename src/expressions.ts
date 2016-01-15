@@ -11,7 +11,7 @@ export interface BaseExpression{
     suppressUndefinedVariableError?: boolean;
 }
 
-export type ExpressionValue = string | number | (string | number)[];
+export type ExpressionValue = string | number | boolean | (string | number | boolean)[];
 
 export interface BooleanExpression extends BaseExpression{
     rule: (values?: ExpressionValue[], literal?: string) => boolean;
@@ -150,6 +150,16 @@ export var IterableOfUsing: IterableExpression = {
     rule: (values: ExpressionValue[]) => <string[]>values[0]
 };
 
+export var VerboseTernary: ValueExpression = {
+    template: ['if', SPACE, VALUE, SPACE, 'then', SPACE, VALUE, SPACE, 'else', SPACE, VALUE],
+    rule: (values: ExpressionValue[]) => values[0] === true ? <string>values[1] : <string>values[2]
+};
+
+export var Ternary: ValueExpression = {
+    template: [VALUE, SPACE, '?', SPACE, VALUE, SPACE, ':', SPACE, VALUE],
+    rule: (values: ExpressionValue[]) => values[0] === true ? <string>values[1] : <string>values[2]
+};
+
 export var CORE_EXPRESSIONS: Expression[] = [
     Equal,
     GreaterThan,
@@ -162,5 +172,7 @@ export var CORE_EXPRESSIONS: Expression[] = [
     IsNaN,
     Between,
     Coalesce,
-    IterableOfUsing
+    IterableOfUsing,
+    VerboseTernary,
+    Ternary
 ];

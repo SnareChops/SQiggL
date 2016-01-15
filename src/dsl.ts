@@ -2,7 +2,7 @@ import {Action, StartingAction, DependentAction} from './actions';
 import {Expression, BooleanExpression, ValueExpression, IterableExpression} from './expressions';
 import {Modifier} from './modifiers';
 import {Conjunction} from './conjunctions';
-import {ExpressionResult} from "./expressions";
+import {ExpressionResult, ExpressionValue} from "./expressions";
 
 /**
  * @internal
@@ -89,7 +89,7 @@ export interface DSLExpression{
     expression: Expression;
     local?: string;
     joiner?: string;
-    values?: any[];
+    values?: (ExpressionValue | DSLExpression)[];
     modifiers?: Modifier[];
 }
 

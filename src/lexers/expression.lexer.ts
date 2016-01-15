@@ -3,6 +3,7 @@ import {Expression, OrderedModifier, SPACE, VALUE, LOCALVARIABLE, JOINER} from '
 import {DSLExpression} from '../dsl';
 import {Modifier} from '../modifiers';
 import {SQiggLError} from "../error";
+import {ExpressionValue} from "../expressions";
 
 /**
  * The lexer responsible for all Expression DSL generation.
@@ -125,6 +126,8 @@ export class ExpressionLexer{
                     clone.splice(pidx, 1);
                     eidx++;
                 } else if(ePart === VALUE) {
+                    let expressionDSL: DSLExpression = this.extractExpressionFromValue(expression.template, clone, eidx, pidx);
+                    if(!!expressionDSL) clone[pidx] = expressionDSL;
                     /* Rule: V1 */
                     eidx++;
                     pidx++;
@@ -181,8 +184,8 @@ export class ExpressionLexer{
                 /* Rule: J1 */
                 if(!!joiner) dsl.joiner = joiner;
                 dsl.expression = expression;
-                dsl.values = clone.filter(x => typeof x === 'string');
-                dsl.modifiers = this.sortAndExtractModifiers(<OrderedModifier[]>clone.filter(x => typeof x === 'object'));
+                dsl.values = <ExpressionValue[]>clone.filter(x => typeof x !== 'object');
+                dsl.modifiers = this.sortAndExtractModifiers(<OrderedModifier[]><any[]>clone.filter(x => typeof x === 'object'));
                 break;
             }
         }
@@ -192,6 +195,23 @@ export class ExpressionLexer{
 
     private craftLiteralFromParts(parts: string[]): string{
         return parts.reduce((a: string, b: string) => a + b, '');
+    }
+
+    private extractExpressionFromValue(template: (string | OrderedModifier[])[], parts: (string | OrderedModifier[])[], eidx: number, pidx: number): DSLExpression{
+        let identifier: string,
+            end: number;
+        for(++eidx; eidx<template.length; eidx++){
+            if(template[eidx] !== SPACE && template[eidx] !== VALUE){
+                if(typeof template[eidx] !== 'string') continue;
+                identifier = <string>template[eidx];
+                end = parts.indexOf(identifier, pidx) > 0;
+                if(end > 0){
+                    return new ExpressionLexer(this.options, this.expressions).invoke(parts.splice(pidx, end));
+                }
+                return void 0;
+            }
+        }
+        return void 0;
     }
 
     /**

@@ -1,4 +1,4 @@
-import {Equal, GreaterThan, LessThan, IsNull, LexicalGreaterThan, LexicalLessThan, LengthGreaterThan, LengthLessThan, IsNaN, Between, Coalesce, IterableOfUsing} from './../src/expressions';
+import {Equal, GreaterThan, LessThan, IsNull, LexicalGreaterThan, LexicalLessThan, LengthGreaterThan, LengthLessThan, IsNaN, Between, Coalesce, IterableOfUsing, VerboseTernary, Ternary} from './../src/expressions';
 
 describe('Expressions', () => {
     describe('Equal', () => {
@@ -128,7 +128,7 @@ describe('Expressions', () => {
         });
 
         it('should return the second value if the first is null', () => {
-            const result = Coalesce.rule([null, 'World']);
+            const result = Coalesce.rule([void 0, 'World']);
             result.should.equal('World');
         });
     });
@@ -139,6 +139,30 @@ describe('Expressions', () => {
             result[0].should.equal('hairy');
             result[1].should.equal('furry');
             result[2].should.equal('fuzzy');
+        });
+    });
+
+    describe('VerboseTernary', () => {
+        it('should return the second value if true', () => {
+            const result = VerboseTernary.rule([true, 'Hello', 'World']);
+            result.should.equal('Hello');
+        });
+
+        it('should return the third value if false', () => {
+            const result = VerboseTernary.rule([false, 'Hello', 'World']);
+            result.should.equal('World');
+        });
+    });
+
+    describe('Ternary', () => {
+        it('should return the second value if true', () => {
+            const result = Ternary.rule([true, 'Hello', 'World']);
+            result.should.equal('Hello');
+        });
+
+        it('should return the third value if false', () => {
+            const result = Ternary.rule([false, 'Hello', 'World']);
+            result.should.equal('World');
         });
     });
 });

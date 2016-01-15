@@ -120,6 +120,7 @@ export class Parser{
      * @returns {string} - The resolved value.
      */
     public static resolveValue(value: string | number | string[], variables: ScopedVariables, suppressUndefinedVariableError: boolean = false): string | string[]{
+        if(typeof value === 'object' && !!value.expression) return new ExpressionParser(this.options,)
         if(Array.isArray(value)) return value;
         if(value[0] === `'` || value[0] === `"`) return (<string>value).slice(1, (<string>value).length - 1);
         if(!isNaN(+value)) return value.toString();
