@@ -56,13 +56,13 @@ describe('Actions', () => {
     describe('For', () => {
         it('should return the inner scope as many times as there are values and combining them with the joiner', () => {
             const dsl: DSL[] = [{text: 'Hello World'}];
-            const result = For.rule({value: ['1', '2', '3'], iterable: {local: 'var', joiner: '\',\''}}, variables, getScopeResolver(DEFAULT_PARSER_OPTIONS, dsl, variables));
+            const result = For.rule({value: ['1', '2', '3'], iterable: {local: 'var', joiner: ','}}, variables, getScopeResolver(DEFAULT_PARSER_OPTIONS, dsl, variables));
             result.should.equal('Hello World, Hello World, Hello World');
         });
 
         it('should iterate the inner scope and correctly replace the inner values using the expressionResult', () => {
             const dsl: DSL[] = [{text: 'Iteration '}, {replacement: {literal: 'var'}}];
-            const result = For.rule({value: ['1', '2', '3'], iterable: {local: 'var', joiner: '\',\''}}, variables, getScopeResolver(DEFAULT_PARSER_OPTIONS, dsl, variables));
+            const result = For.rule({value: ['1', '2', '3'], iterable: {local: 'var', joiner: ','}}, variables, getScopeResolver(DEFAULT_PARSER_OPTIONS, dsl, variables));
             result.should.equal('Iteration 1, Iteration 2, Iteration 3');
         });
     });

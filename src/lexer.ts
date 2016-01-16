@@ -346,8 +346,11 @@ export class Lexer{
         let nextSpace: number;
         if(input[start] === "'" || input[start] === '"'){
             return this.extractString(input, start, input[start]);
+        } else if(input[start] === '(' || input[start] === ')') {
+            return input[start];
         } else {
             nextSpace = input.indexOf(' ', start);
+            if(input[nextSpace-1] === ')') return input[nextSpace-1];
             return input.slice(start, nextSpace > 0 ? nextSpace : input.length);
         }
     }

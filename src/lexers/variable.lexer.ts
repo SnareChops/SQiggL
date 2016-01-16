@@ -84,7 +84,6 @@ export class VariableLexer{
                         if(idx !== input.length - 1) throw SQiggLError('LV2003', `Variables that define arrays must not include other values: '${original}'.`);
                         input = input.slice(0, idx) + input.slice(idx+1);
                     }
-                    console.log(input);
                     idx++;
                     break;
                 case this.options.variableAssignmentChar:

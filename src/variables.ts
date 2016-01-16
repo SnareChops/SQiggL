@@ -4,7 +4,7 @@ export class ScopedVariables{
     private collection: {[key: string]: SQiggLValue} = {};
 
     constructor(obj?: Object){
-        if(!!obj) this.concat(obj);
+        this.concat(obj);
     }
 
     public get(key: string): SQiggLValue{
@@ -24,6 +24,7 @@ export class ScopedVariables{
     }
 
     public concat(obj: Object): void{
+        if(!obj) return;
         for(var key of Object.keys(obj)){
             this.set(key, obj[key]);
         }

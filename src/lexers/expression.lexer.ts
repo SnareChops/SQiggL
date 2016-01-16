@@ -4,6 +4,7 @@ import {DSLExpression} from '../dsl';
 import {Modifier} from '../modifiers';
 import {SQiggLError} from "../error";
 import {ExpressionValue} from "../expressions";
+import {IterableExpression} from '../expressions';
 
 /**
  * The lexer responsible for all Expression DSL generation.
@@ -125,8 +126,10 @@ export class ExpressionLexer{
                     clone.splice(pidx, 1);
                     eidx++;
                 } else if(ePart === VALUE) {
-                    let expressionDSL: DSLExpression = this.extractExpressionFromValue(expression.template, <string[]>clone, eidx, pidx);
-                    if(!!expressionDSL) clone[pidx] = expressionDSL;
+                    if(clone[pidx] === '('){
+                        let expressionDSL: DSLExpression = this.resolveExpressionAsValue(<string[]>clone, pidx);
+                        if(!!expressionDSL) clone.splice(pidx, 0, expressionDSL);
+                    }
                     /* Rule: V1 */
                     eidx++;
                     pidx++;
@@ -196,21 +199,14 @@ export class ExpressionLexer{
         return parts.reduce((a: string, b: string) => a + b, '');
     }
 
-    private extractExpressionFromValue(template: (string | OrderedModifier[])[], parts: string[], eidx: number, pidx: number): DSLExpression{
-        let identifier: string,
-            end: number;
-        for(++eidx; eidx<template.length; eidx++){
-            if(template[eidx] !== SPACE && template[eidx] !== VALUE){
-                if(typeof template[eidx] !== 'string') continue;
-                identifier = <string>template[eidx];
-                end = parts.indexOf(identifier, pidx);
-                if(end > 0){
-                    return new ExpressionLexer(this.options, this.expressions).invoke(parts.splice(pidx, end));
-                }
-                return void 0;
-            }
-        }
-        return void 0;
+    private resolveExpressionAsValue(parts: string[], pidx: number): DSLExpression{
+        let end = parts.indexOf(')', pidx);
+        if(end < 0) throw SQiggLError('PE2001', `Nested expression missing closing parenthesis in '${this.craftLiteralFromParts(parts)}'.`);
+        let nestedParts = parts.splice(pidx, end-pidx+1);
+        nestedParts.splice(0,1);
+        nestedParts.splice(nestedParts.length-1, 1);
+        let result = new ExpressionLexer(this.options, this.expressions).invoke(nestedParts);
+        return result;
     }
 
     /**

@@ -15,13 +15,15 @@ export function getScopeResolver(options: ParserOptions, scope: DSL[], variables
     return (additionalVariables?: {[key: string]: ExpressionValue}) => {
         const parser = new Parser(options);
         variables.concat(additionalVariables);
-        return parser.parse.bind(parser, scope, variables);
+        return parser.parse(scope, variables);
     }
 }
+
 /**
  * Resolves a value as either a literal string, literal number,
  * or a variable value and then returns that value as a string.
  *
+ * - If the value is a DSLExpression, parse the expression and return the result.
  * - If the value is an array, return it unchanged
  * - If the value starts with a quote, then it must be a string literal.
  *   Strip the quotes and return the literal value.
@@ -43,6 +45,6 @@ export function resolveValue(value: DSLValue, variables: ScopedVariables, option
     if(Array.isArray(value)) return value;
     if(value[0] === `'` || value[0] === `"`) return (<string>value).slice(1, (<string>value).length - 1);
     if(!isNaN(+value)) return value.toString();
-    if(!!variables && variables.hasOwnProperty(<string>value)) return variables[<string>value];
+    if(variables.has(<string>value)) return variables.get(<string>value);
     if(!suppressUndefinedVariableError) throw SQiggLError('P1000', `${value} is not a defined variable in this scope`);
 }

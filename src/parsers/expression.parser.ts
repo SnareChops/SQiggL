@@ -30,7 +30,7 @@ export class ExpressionParser {
      * @returns {ExpressionResult} - The result of the expression.
      */
     public parse(dsl: DSLExpression, variables: ScopedVariables): ExpressionResult{
-        validateExpression(dsl);
+        //validateExpression(dsl);
         let idx: number,
             result: ExpressionResult = {value: void 0};
         for (idx=0; idx < dsl.values.length; idx++) {
