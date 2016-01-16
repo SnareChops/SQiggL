@@ -40,7 +40,7 @@ var SQiggL = require('sqiggl');
 Supply a query to be parsed and any variables
 
 ```
-var result = SQiggL.parse("UPDATE Names {% if example is not null } SET Name = '{example}' {% else } SET Name = 'Cow' {% endif } WHERE Name = 'Awesome'", {example: 'Dragon'});
+var result = SQiggL.invoke("UPDATE Names {% if example is not null } SET Name = '{example}' {% else } SET Name = 'Cow' {% endif } WHERE Name = 'Awesome'", {example: 'Dragon'});
 ``` 
 
 Finally log your result, or use it in a database request
@@ -173,7 +173,7 @@ conjunction | rule
 
 ### Variables
 
-Variables be defined in the SQiggL query, or can be provided as the second argument to `SQiggL.parse`.
+Variables be defined in the SQiggL query, or can be provided as the second argument to `SQiggL.invoke`.
 Variables also honor their scope within a query. For example a variable defined in an `if` action will
 be undefined outside of that action.
 
@@ -216,7 +216,7 @@ features are coming soon.
 
 ## Configuration
 
-SQiggL can be configured and includes the following options that can be passed in as an object in the third argument to `parse()`.
+SQiggL can be configured and includes the following options that can be passed in as an object in the third argument to `invoke()`.
 
  option                  | type            | default | description
 -------------------------|-----------------|---------|-

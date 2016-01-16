@@ -1,46 +1,31 @@
-import {ExpressionResult, BooleanExpressionResult} from './expressions';
+import {ExpressionResult, BooleanExpressionResult, ExpressionValue} from './expressions';
 
-export interface BaseModifier{
-    identifiers: string[],
+export type ModifierRule = (prevResult: boolean, values?: ExpressionValue[]) => boolean;
+
+export abstract class Modifier{
+    public identifiers: string[];
+    public rule: ModifierRule;
 }
 
-export interface BooleanModifier extends BaseModifier{
-    rule: (prevResult: boolean, values?: string[]) => boolean;
+export class BooleanModifier extends Modifier{
+    constructor(public identifiers: string[], public rule: ModifierRule){super();}
 }
 
-export type Modifier = BooleanModifier;
+export var Not: BooleanModifier = new BooleanModifier(['!', 'not'], (prevResult: boolean) => {
+    return !prevResult;
+});
 
-/**
- * @internal
- */
-export var Not: BooleanModifier = {
-    identifiers: ['!', 'not'],
-    rule: (prevResult: boolean, values: string[]) => !prevResult
-};
+export var OrEqual: BooleanModifier = new BooleanModifier(['='], (prevResult: boolean, values: string[]) => {
+    return prevResult || values[0] === values[1];
+});
 
-/**
- * @internal
- */
-export var OrEqual: BooleanModifier = {
-    identifiers: ['='],
-    rule: (prevResult: boolean, values: string[]) => prevResult || values[0] === values[1]
-};
+export var LengthOrEqual: BooleanModifier = new BooleanModifier(['='], (prevResult: boolean, values: string[]) => {
+    return prevResult || values[0].length === +values[1];
+});
 
-/**
- * @internal
- */
-export var LengthOrEqual: BooleanModifier = {
-    identifiers: ['='],
-    rule: (prevResult: boolean, values: string[]) => prevResult || values[0].length === +values[1]
-};
-
-/**
- * @internal
- */
-export var BetweenOrEqual: BooleanModifier = {
-    identifiers: ['='],
-    rule: (prevResult: boolean, values: string[]) => prevResult || +values[0] === +values[1] || +values[0] === +values[2]
-};
+export var BetweenOrEqual: BooleanModifier = new BooleanModifier(['='], (prevResult: boolean, values: string[]) => {
+    return prevResult || +values[0] === +values[1] || +values[0] === +values[2];
+});
 
 export var CORE_MODIFIERS: Modifier[] = [
     Not,

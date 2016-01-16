@@ -1,9 +1,13 @@
 import {DSL, DSLVariable, DSLReplacement} from './dsl';
 import {CommentParser} from './parsers/comment.parser';
-import {ReplacementParser} from "./parsers/replacement.parser";
-import {CommandParser} from "./parsers/command.parser";
-import {StartingAction, DependentAction} from "./actions";
-import {SQiggLError} from "./error";
+import {ReplacementParser} from './parsers/replacement.parser';
+import {CommandParser} from './parsers/command.parser';
+import {StartingAction, DependentAction} from './actions';
+import {SQiggLError} from './error';
+import {Expression} from './expressions';
+import {ExpressionParser} from './parsers/expression.parser';
+import {ScopedVariables} from './variables';
+import {DSLValue, DSLExpression} from './dsl';
 
 export interface ParserOptions{
     exportComments?: boolean;
@@ -12,10 +16,6 @@ export interface ParserOptions{
     stringEscapeChar?: string;
     trueString?: string;
     falseString?: string;
-}
-
-export interface ScopedVariables{
-    [key: string]: any;
 }
 
 export const DEFAULT_PARSER_OPTIONS: ParserOptions = {
@@ -69,10 +69,10 @@ export class Parser{
      * @param variables {ScopedVariables}
      * @returns {string} - The final SQL output
      */
-    public parse(dsl: DSL[], variables: ScopedVariables = {}): string{
+    public parse(dsl: DSL[], variables: ScopedVariables = new ScopedVariables()): string{
         let output: string = '', idx: number;
         for(idx=0; idx < dsl.length; idx++){
-            if(dsl[idx].variable) variables = this.resolveVariable(dsl[idx].variable, variables);
+            if(dsl[idx].variable) variables.set(dsl[idx].variable.key, dsl[idx].variable.value);
             if(dsl[idx].command && !!(<DependentAction | StartingAction>dsl[idx].command.action).rule){
                 if((!!(<DependentAction>dsl[idx].command.action).dependents && dsl[idx-1].command.failed !== true)) continue;
                 output += new CommandParser(this.options).parse(dsl[idx].command, dsl[idx].scope, variables);
@@ -86,45 +86,5 @@ export class Parser{
             if(dsl[idx].text) output += dsl[idx].text;
         }
         return output;
-    }
-
-    /**
-     * Resolve the known variables within the scope and return the modified collection
-     *
-     * @param dsl {DSLVariable}
-     * @param scopedVariables {ScopedVariables}
-     * @returns {ScopedVariables}
-     */
-    private resolveVariable(dsl: DSLVariable, scopedVariables: ScopedVariables): ScopedVariables{
-        scopedVariables[dsl.key] = Parser.resolveValue(dsl.value, scopedVariables);
-        return scopedVariables;
-    }
-
-    /**
-     * Resolves a value as either a literal string, literal number,
-     * or a variable value and then returns that value as a string.
-     *
-     * - If the value is an array, return it unchanged
-     * - If the value starts with a quote, then it must be a string literal.
-     *   Strip the quotes and return the literal value.
-     * - If the value is a number, then it must be a literal number.
-     *   Return the number unchanged.
-     * - If a variable has the same name as the value, then resolve the
-     *   value to the variable and return the value of the variable.
-     * - Throw an error if none of the above.
-     *
-     * @internal
-     * @param value {string | number | string[]} - The value to resolve.
-     * @param variables {ScopedVariables} - The list of known variables for this scope.
-     * @param suppressUndefinedVariableError {boolean} - Do not throw an error if a value cannot be resolved.
-     * @returns {string} - The resolved value.
-     */
-    public static resolveValue(value: string | number | string[], variables: ScopedVariables, suppressUndefinedVariableError: boolean = false): string | string[]{
-        if(typeof value === 'object' && !!value.expression) return new ExpressionParser(this.options,)
-        if(Array.isArray(value)) return value;
-        if(value[0] === `'` || value[0] === `"`) return (<string>value).slice(1, (<string>value).length - 1);
-        if(!isNaN(+value)) return value.toString();
-        if(!!variables && variables.hasOwnProperty(<string>value)) return variables[<string>value];
-        if(!suppressUndefinedVariableError) throw SQiggLError('P1000', `${value} is not a defined variable in this scope`);
     }
 }

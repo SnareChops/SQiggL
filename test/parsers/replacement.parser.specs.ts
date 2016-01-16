@@ -1,30 +1,26 @@
 import {ReplacementParser} from './../../src/parsers/replacement.parser';
-import {DSLReplacement} from '../../src/dsl';
+import {DSLReplacement, DSLExpression, DSLValueExpression, DSLBooleanExpression, DSLExpressionTree, DSLIterableExpression} from '../../src/dsl';
 import {DEFAULT_PARSER_OPTIONS} from '../../src/parser';
-import {GreaterThan} from '../../src/expressions';
-import {IterableOfUsing} from "../../src/expressions";
-import {DSLValueExpression} from "../../src/dsl";
-import {DSLBooleanExpression} from "../../src/dsl";
-import {DSLExpressionTree} from "../../src/dsl";
-import {DSLIterableExpression} from "../../src/dsl";
+import {GreaterThan, IterableOfUsing} from '../../src/expressions';
+import {ScopedVariables} from '../../src/variables';
 
 describe('ReplacementParser', () => {
-    describe('parse', () => {
+    describe('invoke', () => {
         it('should output a literal string', () => {
             const dsl: DSLReplacement = {literal: '\'Test string\''};
-            const result: string = new ReplacementParser(DEFAULT_PARSER_OPTIONS).parse(dsl);
+            const result: string = new ReplacementParser(DEFAULT_PARSER_OPTIONS).parse(dsl, new ScopedVariables());
             result.should.eql('Test string');
         });
 
         it('should output a literal number', () => {
             const dsl: DSLReplacement = {literal: '12'};
-            const result: string = new ReplacementParser(DEFAULT_PARSER_OPTIONS).parse(dsl);
+            const result: string = new ReplacementParser(DEFAULT_PARSER_OPTIONS).parse(dsl, new ScopedVariables());
             result.should.eql('12');
         });
 
         it('should output a variable value', () => {
             const dsl: DSLReplacement = {literal: 'dragon'};
-            const result: string = new ReplacementParser(DEFAULT_PARSER_OPTIONS).parse(dsl, {dragon: 'Pet'});
+            const result: string = new ReplacementParser(DEFAULT_PARSER_OPTIONS).parse(dsl, new ScopedVariables({dragon: 'Pet'}));
             result.should.eql('Pet');
         });
 
@@ -32,7 +28,7 @@ describe('ReplacementParser', () => {
             const booleanExpression: DSLBooleanExpression = {literal: '12 > 13', expression: GreaterThan, values: ['12', '13']};
             const expressionTree: DSLExpressionTree = {branches: [booleanExpression]};
             const dsl: DSLReplacement = {literal: '12 > 13', expressions: expressionTree};
-            const result: string = new ReplacementParser(DEFAULT_PARSER_OPTIONS).parse(dsl);
+            const result: string = new ReplacementParser(DEFAULT_PARSER_OPTIONS).parse(dsl, new ScopedVariables());
             result.should.eql('0');
         });
 
@@ -40,7 +36,7 @@ describe('ReplacementParser', () => {
             const booleanExpression: DSLBooleanExpression = {literal: 'high > low', expression: GreaterThan, values: ['high', 'low']};
             const expressionTree: DSLExpressionTree = {branches: [booleanExpression]};
             const dsl: DSLReplacement = {literal: 'high > low', expressions: expressionTree};
-            const result: string = new ReplacementParser(DEFAULT_PARSER_OPTIONS).parse(dsl, {high: 13, low: 12});
+            const result: string = new ReplacementParser(DEFAULT_PARSER_OPTIONS).parse(dsl, new ScopedVariables({high: 13, low: 12}));
             result.should.eql('1');
         });
 
@@ -48,7 +44,7 @@ describe('ReplacementParser', () => {
             const iterableExpression: DSLIterableExpression = {literal: 'cat of catTypes using \',\'', expression: IterableOfUsing, local: 'cat', values: [['hairy', 'furry', 'fuzzy']], joiner: '\',\''};
             const expressionTree: DSLExpressionTree = {branches: [iterableExpression]};
             const dsl: DSLReplacement = {literal: 'cat of catTypes using \',\'', expressions: expressionTree};
-            const result: string = new ReplacementParser(DEFAULT_PARSER_OPTIONS).parse(dsl);
+            const result: string = new ReplacementParser(DEFAULT_PARSER_OPTIONS).parse(dsl, new ScopedVariables());
             result.should.equal('hairy, furry, fuzzy');
         });
 
@@ -56,7 +52,7 @@ describe('ReplacementParser', () => {
             const iterableExpression: DSLIterableExpression = {literal: 'cat of catTypes using \',\'', expression: IterableOfUsing, local: 'cat', values: ['array'], joiner: 'joiner'};
             const expressionTree: DSLExpressionTree = {branches: [iterableExpression]};
             const dsl: DSLReplacement = {literal: 'cat of catTypes using \',\'', expressions: expressionTree};
-            const result: string = new ReplacementParser(DEFAULT_PARSER_OPTIONS).parse(dsl, {array: ['hairy', 'furry', 'fuzzy'], joiner: ','});
+            const result: string = new ReplacementParser(DEFAULT_PARSER_OPTIONS).parse(dsl, new ScopedVariables({array: ['hairy', 'furry', 'fuzzy'], joiner: ','}));
             result.should.equal('hairy, furry, fuzzy');
         });
     });

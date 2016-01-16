@@ -1,108 +1,64 @@
 import {Parser} from './parser';
-import {ScopedVariables} from './parser';
+import {ScopedVariables} from './variables';
 import {DSL, DSLCommand} from './dsl';
 import {ExpressionResult, IterableExpressionResult} from './expressions';
+import {ScopeResolver} from './resolvers';
 
-/**
- * @internal
- */
-export interface BaseAction{
-    name?: string;
-    key: string;
+export type ActionRule = (expressionResult:ExpressionResult, variables:ScopedVariables, resolveScope:ScopeResolver) => string;
+
+export abstract class Action {
+    public name:string;
+    public key:string;
 }
 
-export interface StartingAction extends BaseAction{
-    rule: (expressionResult: ExpressionResult, variables: ScopedVariables, scope: DSL[], parser: Parser) => string;
+export class StartingAction extends Action {
+    constructor(public name:string, public key:string, public rule:ActionRule) {super();}
 }
 
-export interface DependentAction extends BaseAction{
-    dependents: StartingAction[];
-    rule: (expressionResult: ExpressionResult, variables: ScopedVariables, scope: DSL[], parser: Parser) => string;
+export class DependentAction extends Action {
+    constructor(public name:string, public key:string, public dependents:StartingAction | IterableAction[], public rule:ActionRule) {super();}
 }
 
-export interface TerminatingAction extends BaseAction{
-    dependents: (StartingAction | IterableAction)[];
+export class TerminatingAction extends Action {
+    constructor(public name:string, public key:string, public dependents:StartingAction | IterableAction[]) {super();}
 }
 
-export interface IterableAction extends BaseAction{
-    rule: (expressionResult: IterableExpressionResult, variables: ScopedVariables, scope: DSL[], parser: Parser) => string;
+export class IterableAction extends Action {
+    constructor(public name:string, public key:string, public rule:(expressionResult:IterableExpressionResult, variables:ScopedVariables, resolveScope:ScopeResolver) => string) {super();}
 }
 
-export type Action = StartingAction | DependentAction | TerminatingAction | IterableAction;
+export var If:StartingAction = new StartingAction('IfAction', 'if', (expressionResult:ExpressionResult, variables:ScopedVariables, resolveScope:ScopeResolver) => {
+    return expressionResult.value ? resolveScope() : null
+});
 
-/**
- * @internal
- */
-export var If: StartingAction = {
-    key: 'if',
-    rule: (expressionResult: ExpressionResult, variables: ScopedVariables, scope: DSL[], parser: Parser) => expressionResult.value ? parser.parse(scope, variables) : null
-};
+export var EndIf:TerminatingAction = new TerminatingAction('EndIfAction', 'endif', [If]);
 
-/**
- * @internal
- */
-export var EndIf: TerminatingAction = {
-    key: 'endif',
-    dependents: [If],
-};
+export var Unless:StartingAction = new StartingAction('UnlessAction', 'unless', (expressionResult:ExpressionResult, variables:ScopedVariables, resolveScope:ScopeResolver) => {
+    return !expressionResult.value ? resolveScope() : null
+});
 
-/**
- * @internal
- */
-export var Unless: StartingAction = {
-    key: 'unless',
-    rule: (expressionResult: ExpressionResult, variables: ScopedVariables, scope: DSL[], parser: Parser) => !expressionResult.value ? parser.parse(scope, variables) : null
-};
+export var EndUnless:TerminatingAction = new TerminatingAction('EndUnlessAction', 'endunless', [Unless]);
 
-/**
- * @internal
- */
-export var EndUnless: TerminatingAction = {
-    key: 'endunless',
-    dependents: [Unless],
-};
+export var Else:DependentAction = new DependentAction('ElseAction', 'else', [If, Unless], (expressionResult:ExpressionResult, variables:ScopedVariables, resolveScope:ScopeResolver) => {
+    return resolveScope();
+});
 
-/**
- * @internal
- */
-export var Else: DependentAction = {
-    key: 'else',
-    dependents: [If, Unless],
-    rule: (expressionResult: ExpressionResult, variables: ScopedVariables, scope: DSL[], parser: Parser) => parser.parse(scope, variables)
-};
-
-/**
- * @internal
- */
-export var For: IterableAction = {
-    key: 'for',
-    rule: (expressionResult: IterableExpressionResult, variables: ScopedVariables = {}, scope: DSL[], parser: Parser) => {
-        let output: string[] = [];
-        for(var value of expressionResult.value){
-            variables[expressionResult.iterable.local] = value;
-            output.push(parser.parse(scope, variables));
-        }
-        return output.join(`${Parser.resolveValue(expressionResult.iterable.joiner, variables)} `);
+export var For:IterableAction = new IterableAction('ForAction', 'for', (expressionResult:IterableExpressionResult, variables:ScopedVariables, resolveScope:ScopeResolver) => {
+    let output:string[] = [],
+        additionalVariables:any = {};
+    for (var value of expressionResult.value) {
+        additionalVariables[expressionResult.iterable.local] = value;
+        output.push(resolveScope(additionalVariables));
     }
-};
+    return output.join(`${expressionResult.iterable.joiner} `);
 
-/**
- * @internal
- */
-export var EndFor: TerminatingAction = {
-    key: 'endfor',
-    dependents: [For]
-};
+});
 
-/**
- * @internal
- */
-export var End: TerminatingAction = {
-    key: 'end',
-    dependents: [If, Unless, For]
-};
+export var EndFor:TerminatingAction = new TerminatingAction('EndForAction', 'endfor', [For]);
 
-export var CORE_ACTIONS: Action[] = [
+export var End:TerminatingAction = new TerminatingAction('EndAction', 'end', [If, Unless, For]);
+
+export var CORE_ACTIONS:Action[] = [
     If,
     Else,
     EndIf,

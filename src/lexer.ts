@@ -1,6 +1,6 @@
 import {DSL, DSLType, DSLText, DSLVariable, DSLVariableType, DSLCommand, DSLReplacement, DSLExpression, LeveledDSL} from './dsl';
 import {Action, StartingAction, DependentAction, CORE_ACTIONS} from './actions';
-import {Expression, BooleanExpression, ValueExpression, BaseExpression, CORE_EXPRESSIONS, VALUE, SPACE, OrderedModifier} from './expressions';
+import {Expression, BooleanExpression, ValueExpression, IterableExpression, CORE_EXPRESSIONS, VALUE, SPACE, OrderedModifier} from './expressions';
 import {Conjunction, CORE_CONJUNCTIONS} from './conjunctions';
 import {Modifier, CORE_MODIFIERS} from './modifiers';
 import {VariableLexer} from './lexers/variable.lexer';
@@ -151,15 +151,15 @@ export class Lexer{
     }
 
     /**
-     * Beginning the parsing process, this method will guide the inputted string
-     * through the parsing process and output the full DSL used to then execute
+     * Beginning the lexing process, this method will guide the inputted string
+     * through the lxing process and output the full DSL used to then execute
      * by the "Parser"
      *
      * @internal
      * @param input {string} - The string to generate DSL for.
      * @returns {DSL[]} - The final DSL to be passed to the Parser.
      */
-    public parse(input: string): DSL[] {
+    public invoke(input: string): DSL[] {
         let dsl = this.identify(input);
         let leveledDSL: LeveledDSL[] = this.levelDSL(dsl);
         dsl = this.scopeDSL(leveledDSL);
@@ -220,7 +220,7 @@ export class Lexer{
     }
 
     /**
-     * Choose the correct DSL representation for the found type and parse/generate it
+     * Choose the correct DSL representation for the found type and invoke/generate it
      *
      * @internal
      * @param type {DSLType}
@@ -265,11 +265,10 @@ export class Lexer{
      */
     private levelDSL(dsls: DSL[]): LeveledDSL[]{
         let currentLevel: number = 0,
-            levels: LeveledDSL[] = [],
-            dsl: DSL;
-        for(dsl of dsls){
+            levels: LeveledDSL[] = [];
+        for(var dsl of dsls){
             if(dsl.command && dsl.command.action){
-                if((<DependentAction>dsl.command.action).dependents != null){
+                if(!!(<DependentAction>dsl.command.action).dependents){
                     levels.push({level: --currentLevel, dsl: dsl});
                     if(currentLevel < 0) throw SQiggLError('L1003', 'Your SQiggL is incorrectly nested.');
                     if(!!(<DependentAction>dsl.command.action).rule) currentLevel++;
@@ -322,7 +321,6 @@ export class Lexer{
      */
     private extractParts(input: string): string[]{
         let idx: number = 0, parts: string[] = [];
-        let oops: number = 0;
         while(idx < input.length){
             parts.push(this.extractWord(input, idx));
             idx += parts[parts.length-1].length;

@@ -84,7 +84,7 @@ describe('Scenarios', () => {
     });
 });
 
-describe('Full feature sweep: ', () => {
+describe.skip('Full feature sweep: ', () => {
     describe('if', () => {
         describe('is null', () => {
             const query = `UPDATE Names {% if example is null } SET Name = 'Cow' {% else } SET Name = '{example}' {% endif } WHERE Name = 'Awesome'`;

@@ -23,6 +23,8 @@ export enum DSLVariableType{
     value
 }
 
+export type DSLValue = string | number | boolean | (string | number | boolean)[] | DSLExpression;
+
 /**
  * @internal
  */
@@ -89,7 +91,7 @@ export interface DSLExpression{
     expression: Expression;
     local?: string;
     joiner?: string;
-    values?: (ExpressionValue | DSLExpression)[];
+    values?: DSLValue[];
     modifiers?: Modifier[];
 }
 

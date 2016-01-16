@@ -1,6 +1,7 @@
 import {Parser} from './../src/parser';
 import {DSL} from './../src/dsl';
 import * as should from 'should';
+import {ScopedVariables} from '../src/variables';
 
 describe('Parser', () => {
 
@@ -42,33 +43,7 @@ describe('Parser', () => {
 
         it('should resolve a variable alias in a SQiggL query without an error', () => {
             const parser = new Parser();
-            parser.parse([{variable: {literal: 'cat:sound', key: 'cat', value: 'sound'}}], {sound: 'meow'});
-        });
-    });
-
-    describe('resolveValue', () => {
-        it('should correctly output a string literal using single quotes', () => {
-            const result = Parser.resolveValue('\'Hello\'', null);
-            result.should.equal('Hello');
-        });
-
-        it('should correctly output a string literal using double quotes', () => {
-            const result = Parser.resolveValue('"Hello"', null);
-            result.should.equal('Hello');
-        });
-
-        it('should correctly output a number literal', () => {
-            const result = Parser.resolveValue('12', null);
-            result.should.equal('12');
-        });
-
-        it('should correctly output a found variable value', () => {
-            const result = Parser.resolveValue('cat', {cat: 'Dragon'});
-            result.should.equal('Dragon');
-        });
-
-        it('should throw an error if a variable value is undefined', () => {
-            (() => Parser.resolveValue('cat', {dragon: 'Fish'})).should.throw('SQiggLError - P1000: cat is not a defined variable in this scope');
+            parser.parse([{variable: {literal: 'cat:sound', key: 'cat', value: 'sound'}}], new ScopedVariables({sound: 'meow'}));
         });
     });
 });

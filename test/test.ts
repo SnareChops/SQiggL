@@ -10,6 +10,9 @@ import './actions.specs';
 // Conjunctions
 import './conjunctions.specs';
 
+// Resolvers
+import './resolvers.specs';
+
 // Lexers
 import './lexers/expression.lexer.specs';
 import './lexers/expression.tree.lexer.specs';

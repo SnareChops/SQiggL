@@ -92,17 +92,16 @@ export class ExpressionLexer{
      */
     public invoke(parts: string[]): DSLExpression{
         let dsl: DSLExpression = {literal: this.craftLiteralFromParts(parts), expression: null},
-            expression: Expression,
             pidx: number,
             eidx: number,
             foundOrderedMod: OrderedModifier,
             foundIdentifier: string,
-            clone: (string | OrderedModifier)[],
+            clone: (string | OrderedModifier | DSLExpression)[],
             isMatch: boolean,
             operatorResolved: boolean,
             localVariable: string,
             joiner: string;
-        for(expression of this.expressions){
+        for(var expression of this.expressions){
             // Set initial state for matching
             pidx = 0;
             eidx = 0;
@@ -126,7 +125,7 @@ export class ExpressionLexer{
                     clone.splice(pidx, 1);
                     eidx++;
                 } else if(ePart === VALUE) {
-                    let expressionDSL: DSLExpression = this.extractExpressionFromValue(expression.template, clone, eidx, pidx);
+                    let expressionDSL: DSLExpression = this.extractExpressionFromValue(expression.template, <string[]>clone, eidx, pidx);
                     if(!!expressionDSL) clone[pidx] = expressionDSL;
                     /* Rule: V1 */
                     eidx++;
@@ -184,7 +183,7 @@ export class ExpressionLexer{
                 /* Rule: J1 */
                 if(!!joiner) dsl.joiner = joiner;
                 dsl.expression = expression;
-                dsl.values = <ExpressionValue[]>clone.filter(x => typeof x !== 'object');
+                dsl.values = <ExpressionValue[]><any>clone.filter(x => typeof x !== 'object');
                 dsl.modifiers = this.sortAndExtractModifiers(<OrderedModifier[]><any[]>clone.filter(x => typeof x === 'object'));
                 break;
             }
@@ -197,14 +196,14 @@ export class ExpressionLexer{
         return parts.reduce((a: string, b: string) => a + b, '');
     }
 
-    private extractExpressionFromValue(template: (string | OrderedModifier[])[], parts: (string | OrderedModifier[])[], eidx: number, pidx: number): DSLExpression{
+    private extractExpressionFromValue(template: (string | OrderedModifier[])[], parts: string[], eidx: number, pidx: number): DSLExpression{
         let identifier: string,
             end: number;
         for(++eidx; eidx<template.length; eidx++){
             if(template[eidx] !== SPACE && template[eidx] !== VALUE){
                 if(typeof template[eidx] !== 'string') continue;
                 identifier = <string>template[eidx];
-                end = parts.indexOf(identifier, pidx) > 0;
+                end = parts.indexOf(identifier, pidx);
                 if(end > 0){
                     return new ExpressionLexer(this.options, this.expressions).invoke(parts.splice(pidx, end));
                 }
@@ -227,12 +226,9 @@ export class ExpressionLexer{
      * @returns {{string, OrderedModifier]} - A tuple of the identifier and matching OrderedModifier found.
      */
     private compareOrderedModifier(part: string, ePart: OrderedModifier[]): [string, OrderedModifier] {
-        let ord: OrderedModifier,
-            key: string,
-            identifier: string;
-        for(ord of ePart){
-            for(key of Object.keys(ord)){
-                for(identifier of ord[key].identifiers){
+        for(var ord of ePart){
+            for(var key of Object.keys(ord)){
+                for(var identifier of ord[key].identifiers){
                     if(part.length >= identifier.length && identifier === part.slice(0, identifier.length)){
                         // match
                         return [identifier, ord];

@@ -3,6 +3,7 @@ import {DEFAULT_PARSER_OPTIONS} from '../../src/parser';
 import {DSLExpressionTree, DSLExpression} from '../../src/dsl';
 import {ExpressionResult, GreaterThan, LessThan} from '../../src/expressions';
 import {AndConjunction} from '../../src/conjunctions';
+import {ScopedVariables} from '../../src/variables';
 
 describe('ExpressionTreeParser', () => {
     let instance: ExpressionTreeParser;
@@ -13,7 +14,7 @@ describe('ExpressionTreeParser', () => {
     it('should return an ExpressionResult', () => {
         const expression: DSLExpression = {literal: '13 > 12', expression: GreaterThan, values: ['13', '12']};
         const dsl: DSLExpressionTree = {branches: [expression]};
-        const result: ExpressionResult = instance.parse(dsl, {});
+        const result: ExpressionResult = instance.parse(dsl, new ScopedVariables());
         result.value.should.equal(true);
     });
 
@@ -21,7 +22,7 @@ describe('ExpressionTreeParser', () => {
         const expression1: DSLExpression = {literal: '13 > 12', expression: GreaterThan, values: ['13', '12']};
         const expression2: DSLExpression = {literal: '13 < 12', expression: LessThan, values: ['13', '12']};
         const dsl: DSLExpressionTree = {branches: [expression1, expression2], conjunctions: [AndConjunction]};
-        const result: ExpressionResult = instance.parse(dsl, {});
+        const result: ExpressionResult = instance.parse(dsl, new ScopedVariables());
         result.value.should.equal(false);
     });
 });

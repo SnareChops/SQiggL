@@ -1,7 +1,8 @@
-import {ParserOptions, ScopedVariables} from '../parser';
+import {ParserOptions} from '../parser';
 import {DSLExpressionTree} from '../dsl';
 import {ExpressionResult, BooleanExpressionResult, ValueExpressionResult, IterableExpressionResult} from '../expressions';
 import {ExpressionParser} from './expression.parser';
+import {ScopedVariables} from '../variables';
 
 /**
  * The parser responsible for parsing all DSLExpressionTrees
@@ -18,11 +19,11 @@ export class ExpressionTreeParser{
     constructor(private options: ParserOptions){}
 
     /**
-     * Take a DSLExpressionTree and parse each of the expressions contained in it, joining the
+     * Take a DSLExpressionTree and invoke each of the expressions contained in it, joining the
      * results with the conjunctions used and outputting an ExpressionResult to be used by a
      * {@link Replacement} or a {@link Command}
      *
-     * @param dsl {DSLExpressionTree} - The DSLExpressionTree to parse.
+     * @param dsl {DSLExpressionTree} - The DSLExpressionTree to invoke.
      * @param variables {ScopedVariables} - The ScopedVariables to use for parsing.
      * @returns {ExpressionResult} - The final result of evaluating the expression tree.
      */

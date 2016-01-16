@@ -40,11 +40,11 @@ key:'one', 'two', 'three'
      - [scope](#lexer-scope)
      - [expressions](#lexer-expressions)
    - [ExpressionParser](#expressionparser)
-     - [parse](#expressionparser-parse)
+     - [invoke](#expressionparser-invoke)
    - [ExpressionTreeParser](#expressiontreeparser)
    - [CommandParser](#commandparser)
    - [ReplacementParser](#replacementparser)
-     - [parse](#replacementparser-parse)
+     - [invoke](#replacementparser-invoke)
    - [Parser](#parser)
      - [comments](#parser-comments)
      - [text](#parser-text)
@@ -658,14 +658,14 @@ should throw an error if a query contains an incomplete statement.
 
 ```js
 var lexer = new lexer_1.Lexer();
-(function () { return lexer.parse('SELECT * FROM {Table'); }).should.throw('SQiggLError - L1002: Expected statement to complete before end of file.');
+(function () { return lexer.invoke('SELECT * FROM {Table'); }).should.throw('SQiggLError - L1002: Expected statement to complete before end of file.');
 ```
 
 should throw an throw an error if a query does not close a statement before declaring another.
 
 ```js
 var lexer = new lexer_1.Lexer();
-(function () { return lexer.parse('SELECT * FROM {Table WHERE id = {12}'); }).should.throw('SQiggLError - L1001: Unexpected \'{\' found in statement. Expected \'}\'.');
+(function () { return lexer.invoke('SELECT * FROM {Table WHERE id = {12}'); }).should.throw('SQiggLError - L1001: Unexpected \'{\' found in statement. Expected \'}\'.');
 ```
 
 should throw an error if a query is incorrectly nested.
@@ -673,7 +673,7 @@ should throw an error if a query is incorrectly nested.
 ```js
 var lexer = new lexer_1.Lexer();
 var query = 'SELECT * FROM {% if 12 > 13} Test {% endif } {% endif }';
-(function () { return lexer.parse(query); }).should.throw('SQiggLError - L1003: Your SQiggL is incorrectly nested.');
+(function () { return lexer.invoke(query); }).should.throw('SQiggLError - L1003: Your SQiggL is incorrectly nested.');
 ```
 
 should throw an error if a query is incompletely nested.
@@ -681,14 +681,14 @@ should throw an error if a query is incompletely nested.
 ```js
 var lexer = new lexer_1.Lexer();
 var query = 'SELECT * FROM {% if 12 > 13 } Test';
-(function () { return lexer.parse(query); }).should.throw('SQiggLError - L1004: Your SQiggL query is nested but does not return to the top level before completing. Please check your nesting.');
+(function () { return lexer.invoke(query); }).should.throw('SQiggLError - L1004: Your SQiggL query is nested but does not return to the top level before completing. Please check your nesting.');
 ```
 
 should throw an error if an invalid string is found in a part.
 
 ```js
 var query = 'SELECT * FROM {\'Table}';
-(function () { return instance.parse(query); }).should.throw('SQiggLError - L1006: Invalid string found in \'Table');
+(function () { return instance.invoke(query); }).should.throw('SQiggLError - L1006: Invalid string found in \'Table');
 ```
 
 should correctly handle a custom action.
@@ -697,13 +697,13 @@ should correctly handle a custom action.
 var replaceAction = {
     key: 'replace',
     rule: function (expressionResult, variables, scope, parser) {
-        return parser.parse([{ text: expressionResult.value }]);
+        return parser.invoke([{ text: expressionResult.value }]);
     }
 };
 var endAction = { key: 'endreplace', dependents: [replaceAction] };
 var lexer = new lexer_1.Lexer({ customActions: [replaceAction, endAction] });
 var query = '{% replace \'Hello World\'} SELECT * FROM Table {%endreplace}';
-var result = lexer.parse(query);
+var result = lexer.invoke(query);
 result[0].command.action.should.equal(replaceAction);
 result[1].command.action.should.equal(endAction);
 ```
@@ -717,7 +717,7 @@ var testExpression = {
 };
 var lexer = new lexer_1.Lexer({ customExpressions: [testExpression] });
 var query = '{12 blah 13}';
-var result = lexer.parse(query);
+var result = lexer.invoke(query);
 result[0].replacement.expressions.branches[0].expression.should.equal(testExpression);
 ```
 
@@ -734,7 +734,7 @@ var testExpression = {
 };
 var lexer = new lexer_1.Lexer({ customExpressions: [testExpression], customModifiers: [testModifier] });
 var query = '{12 !blah 13}';
-var result = lexer.parse(query);
+var result = lexer.invoke(query);
 result[0].replacement.expressions.branches[0].modifiers[0].should.equal(testModifier);
 ```
 
@@ -747,7 +747,7 @@ var testConjunction = {
 };
 var lexer = new lexer_1.Lexer({ customConjunctions: [testConjunction] });
 var query = '{12 > 13 blah 13 < 12}';
-var result = lexer.parse(query);
+var result = lexer.invoke(query);
 result[0].replacement.expressions.conjunctions[0].should.equal(testConjunction);
 ```
 
@@ -756,7 +756,7 @@ should correctly handle escaped single quotes in strings.
 ```js
 var lexer = new lexer_1.Lexer();
 var query = "SELECT * FROM {'Dragon\\'s run'}";
-var result = lexer.parse(query);
+var result = lexer.invoke(query);
 result[1].replacement.literal.should.equal("'Dragon's run'");
 ```
 
@@ -765,7 +765,7 @@ should correctly handle escaped double quotes in strings.
 ```js
 var lexer = new lexer_1.Lexer();
 var query = "SELECT * FROM {\"Dragon\\\"s run\"}";
-var result = lexer.parse(query);
+var result = lexer.invoke(query);
 result[1].replacement.literal.should.equal('"Dragon"s run"');
 ```
 
@@ -774,7 +774,7 @@ should correctly handle an escaped escape character in strings.
 ```js
 var lexer = new lexer_1.Lexer();
 var query = "SELECT * FROM {'Me\\\\You'}";
-var result = lexer.parse(query);
+var result = lexer.invoke(query);
 result[1].replacement.literal.should.equal("'Me\\You'");
 ```
 
@@ -783,7 +783,7 @@ should throw an error if an illegal escape character exists in a string.
 ```js
 var lexer = new lexer_1.Lexer();
 var query = "SELECT * FROM {'\\Something'}";
-(function () { return lexer.parse(query); }).should.throw('SQiggLError - L1005: Illegal escape character found in string \'\\Something\' at index 1');
+(function () { return lexer.invoke(query); }).should.throw('SQiggLError - L1005: Illegal escape character found in string \'\\Something\' at index 1');
 ```
 
 <a name="lexer-options"></a>
@@ -798,7 +798,7 @@ should be ok to change the left and right wrappers.
 
 ```js
 var lexer = new lexer_1.Lexer({ leftWrapperChar: '(', rightWrapperChar: ')' });
-var result = lexer.parse('SELECT * FROM (table)');
+var result = lexer.invoke('SELECT * FROM (table)');
 result[0].should.have.property('text');
 result[1].should.have.property('replacement');
 ```
@@ -810,7 +810,7 @@ should return a non-special query unaltered.
 ```js
 var lexer = new lexer_1.Lexer();
 var query = 'SELECT * FROM Table';
-var result = lexer.parse(query);
+var result = lexer.invoke(query);
 result[0].should.have.property('text', query);
 ```
 
@@ -819,7 +819,7 @@ should retain whitespace on text.
 ```js
 var lexer = new lexer_1.Lexer();
 var query = ' SELECT * FROM Table   ';
-var result = lexer.parse(query);
+var result = lexer.invoke(query);
 result[0].should.have.property('text', query);
 ```
 
@@ -828,7 +828,7 @@ should respect newlines in non-special areas.
 ```js
 var lexer = new lexer_1.Lexer();
 var query = 'SELECT * \nFROM Table';
-var result = lexer.parse(query);
+var result = lexer.invoke(query);
 result[0].should.have.property('text', query);
 ```
 
@@ -838,7 +838,7 @@ should find a replacement in a given string.
 
 ```js
 var lexer = new lexer_1.Lexer();
-var result = lexer.parse('SELECT * FROM {table}');
+var result = lexer.invoke('SELECT * FROM {table}');
 result[1].should.have.property('replacement');
 ```
 
@@ -846,7 +846,7 @@ should return a literal for a replacement in a given string.
 
 ```js
 var lexer = new lexer_1.Lexer();
-var result = lexer.parse('SELECT * FROM {table}');
+var result = lexer.invoke('SELECT * FROM {table}');
 result[1].should.have.property('replacement', { literal: 'table' });
 ```
 
@@ -854,7 +854,7 @@ should trim whitespace on replacements.
 
 ```js
 var lexer = new lexer_1.Lexer();
-var result = lexer.parse('{ table }');
+var result = lexer.invoke('{ table }');
 result[0].should.have.property('replacement', { literal: 'table' });
 ```
 
@@ -862,7 +862,7 @@ should remove newlines from replacements.
 
 ```js
 var lexer = new lexer_1.Lexer();
-var result = lexer.parse('{\n something }');
+var result = lexer.invoke('{\n something }');
 result[0].should.have.property('replacement', { literal: 'something' });
 ```
 
@@ -872,7 +872,7 @@ should find a command in a given string.
 
 ```js
 var lexer = new lexer_1.Lexer();
-var result = lexer.parse('{% if command } {% endif}');
+var result = lexer.invoke('{% if command } {% endif}');
 result[0].should.have.property('command');
 ```
 
@@ -880,7 +880,7 @@ should return a literal for a command in a given string.
 
 ```js
 var lexer = new lexer_1.Lexer();
-var result = lexer.parse('{%if command} {%endif}');
+var result = lexer.invoke('{%if command} {%endif}');
 result[0].command.should.have.property('literal', 'if command');
 ```
 
@@ -888,7 +888,7 @@ should trim whitespace on commands.
 
 ```js
 var lexer = new lexer_1.Lexer();
-var result = lexer.parse('{% if command } {%endif}');
+var result = lexer.invoke('{% if command } {%endif}');
 result[0].command.should.have.property('literal', 'if command');
 ```
 
@@ -896,7 +896,7 @@ should remove newlines from commands.
 
 ```js
 var lexer = new lexer_1.Lexer();
-var result = lexer.parse('{% if\ncommand} {%endif}');
+var result = lexer.invoke('{% if\ncommand} {%endif}');
 result[0].command.should.have.property('literal', 'if command');
 ```
 
@@ -904,7 +904,7 @@ should reduce multiple whitespace characters to a single space.
 
 ```js
 var lexer = new lexer_1.Lexer();
-var result = lexer.parse('{% if      command} {%endif}');
+var result = lexer.invoke('{% if      command} {%endif}');
 result[0].command.should.have.property('literal', 'if command');
 ```
 
@@ -912,7 +912,7 @@ should find multiple commands in a given string.
 
 ```js
 var lexer = new lexer_1.Lexer();
-var result = lexer.parse('SELECT * FROM {% if table = \'Test\' } TestTable {% else } ProdTable {% endif }');
+var result = lexer.invoke('SELECT * FROM {% if table = \'Test\' } TestTable {% else } ProdTable {% endif }');
 result[1].command.should.have.property('literal', 'if table = \'Test\'');
 result[2].command.should.have.property('literal', 'else');
 result[3].command.should.have.property('literal', 'endif');
@@ -922,7 +922,7 @@ should correctly identify the action of a command in a given string.
 
 ```js
 var lexer = new lexer_1.Lexer();
-var result = lexer.parse('SELECT * FROM {% if } {%endif}');
+var result = lexer.invoke('SELECT * FROM {% if } {%endif}');
 var dsl = result[1];
 var command = dsl.command;
 command.action.should.have.property('key', 'if');
@@ -932,7 +932,7 @@ should correct identify the action of a command despite casing.
 
 ```js
 var lexer = new lexer_1.Lexer();
-var result = lexer.parse('SELECT * FROM {% iF } {%endif}');
+var result = lexer.invoke('SELECT * FROM {% iF } {%endif}');
 var dsl = result[1];
 var command = dsl.command;
 command.action.should.have.property('key', 'if');
@@ -944,7 +944,7 @@ should find a comment in a given string.
 
 ```js
 var lexer = new lexer_1.Lexer();
-var result = lexer.parse('SELECT * FROM {# something }');
+var result = lexer.invoke('SELECT * FROM {# something }');
 result[1].should.have.property('comment', 'something');
 ```
 
@@ -952,7 +952,7 @@ should trim whitespace on comments.
 
 ```js
 var lexer = new lexer_1.Lexer();
-var result = lexer.parse('{# test comment }');
+var result = lexer.invoke('{# test comment }');
 result[0].should.have.property('comment', 'test comment');
 ```
 
@@ -962,7 +962,7 @@ should find variable declarations in a given string.
 
 ```js
 var lexer = new lexer_1.Lexer();
-var result = lexer.parse('{+ key:value }');
+var result = lexer.invoke('{+ key:value }');
 result[0].should.have.property('variable');
 ```
 
@@ -970,7 +970,7 @@ should remove all whitespace from variable declarations.
 
 ```js
 var lexer = new lexer_1.Lexer();
-var result = lexer.parse('{+ key : value }');
+var result = lexer.invoke('{+ key : value }');
 result[0].variable.should.have.property('literal', 'key:value');
 ```
 
@@ -978,7 +978,7 @@ should also remove newlines from variable declarations.
 
 ```js
 var lexer = new lexer_1.Lexer();
-var result = lexer.parse('{+ key : \n value }');
+var result = lexer.invoke('{+ key : \n value }');
 result[0].variable.should.have.property('literal', 'key:value');
 ```
 
@@ -986,7 +986,7 @@ should correctly set a key and value.
 
 ```js
 var lexer = new lexer_1.Lexer();
-var result = lexer.parse("{+ dragon:'cat' }");
+var result = lexer.invoke("{+ dragon:'cat' }");
 result[0].variable.should.have.property('key');
 result[0].variable.should.have.property('value');
 ```
@@ -995,7 +995,7 @@ should correctly set the value of key and value.
 
 ```js
 var lexer = new lexer_1.Lexer();
-var result = lexer.parse("{+ dragon:'cat' }");
+var result = lexer.invoke("{+ dragon:'cat' }");
 result[0].variable.should.have.property('key', 'dragon');
 result[0].variable.should.have.property('value', "'cat'");
 ```
@@ -1004,7 +1004,7 @@ should correctly handle a variable with an opposite quote inside a string value.
 
 ```js
 var lexer = new lexer_1.Lexer();
-var result = lexer.parse("{+ dragon: \"Felix's pet\" }");
+var result = lexer.invoke("{+ dragon: \"Felix's pet\" }");
 result[0].variable.should.have.property('key', 'dragon');
 result[0].variable.should.have.property('value', "\"Felix's pet\"");
 ```
@@ -1015,7 +1015,7 @@ should determine the correct level of items nested in actions.
 
 ```js
 var lexer = new lexer_1.Lexer();
-var result = lexer.parse('SELECT * FROM {% if table = \'Test\' } TestTable {% else } ProdTable {% endif }');
+var result = lexer.invoke('SELECT * FROM {% if table = \'Test\' } TestTable {% else } ProdTable {% endif }');
 result[0].should.have.property('text');
 result[1].should.have.property('command');
 result[1].should.have.property('scope');
@@ -1032,7 +1032,7 @@ should detect an expression in a replacement.
 
 ```js
 var lexer = new lexer_1.Lexer();
-var result = lexer.parse('{12 > 13}');
+var result = lexer.invoke('{12 > 13}');
 result[0].replacement.should.have.property('expressions');
 ```
 
@@ -1040,7 +1040,7 @@ should detect an expression in a replacement with a modifier.
 
 ```js
 var lexer = new lexer_1.Lexer();
-var result = lexer.parse('{12 !< 13}');
+var result = lexer.invoke('{12 !< 13}');
 result[0].replacement.should.have.property('expressions');
 ```
 
@@ -1048,7 +1048,7 @@ should correctly identify a modifier in an expression.
 
 ```js
 var lexer = new lexer_1.Lexer();
-var result = lexer.parse('{12 !> 13}');
+var result = lexer.invoke('{12 !> 13}');
 result[0].replacement.expressions.branches[0].should.have.property('modifiers');
 result[0].replacement.expressions.branches[0].modifiers[0].should.equal(modifiers_1.Not);
 ```
@@ -1057,20 +1057,20 @@ should correctly identify the values in an expression.
 
 ```js
 var lexer = new lexer_1.Lexer();
-var result = lexer.parse('{12 > 13}');
+var result = lexer.invoke('{12 > 13}');
 result[0].replacement.expressions.branches[0].values[0].should.equal('12');
 result[0].replacement.expressions.branches[0].values[1].should.equal('13');
 ```
 
 <a name="expressionparser"></a>
 # ExpressionParser
-<a name="expressionparser-parse"></a>
-## parse
+<a name="expressionparser-invoke"></a>
+## invoke
 should correctly return false if an expression should be false.
 
 ```js
 var dsl = { expression: expressions_1.GreaterThan, values: ['12', '13'], literal: '12 > 13' };
-var result = new expression_parser_1.ExpressionParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, {});
+var result = new expression_parser_1.ExpressionParser(parser_1.DEFAULT_PARSER_OPTIONS).invoke(dsl, {});
 result.value.should.equal(false);
 ```
 
@@ -1078,7 +1078,7 @@ should correctly return true if an expression should be true.
 
 ```js
 var dsl = { literal: '13 > 12', expression: expressions_1.GreaterThan, values: ['13', '12'] };
-var result = new expression_parser_1.ExpressionParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, {});
+var result = new expression_parser_1.ExpressionParser(parser_1.DEFAULT_PARSER_OPTIONS).invoke(dsl, {});
 result.value.should.eql(true);
 ```
 
@@ -1086,7 +1086,7 @@ should output the result of a boolean expression with variables.
 
 ```js
 var dsl = { literal: 'high > low', expression: expressions_1.GreaterThan, values: ['high', 'low'] };
-var result = new expression_parser_1.ExpressionParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, { high: 13, low: 12 });
+var result = new expression_parser_1.ExpressionParser(parser_1.DEFAULT_PARSER_OPTIONS).invoke(dsl, { high: 13, low: 12 });
 result.value.should.eql(true);
 ```
 
@@ -1094,7 +1094,7 @@ should correctly return true if an expression is false but then negated with a m
 
 ```js
 var dsl = { literal: '12 > 13', expression: expressions_1.GreaterThan, values: ['12', '13'], modifiers: [modifiers_1.Not] };
-var result = new expression_parser_1.ExpressionParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, {});
+var result = new expression_parser_1.ExpressionParser(parser_1.DEFAULT_PARSER_OPTIONS).invoke(dsl, {});
 result.value.should.eql(true);
 ```
 
@@ -1105,7 +1105,7 @@ should return an ExpressionResult.
 ```js
 var expression = { literal: '13 > 12', expression: expressions_1.GreaterThan, values: ['13', '12'] };
 var dsl = { branches: [expression] };
-var result = instance.parse(dsl, {});
+var result = instance.invoke(dsl, {});
 result.value.should.equal(true);
 ```
 
@@ -1115,7 +1115,7 @@ should return a correct result of an expression with a conjunction.
 var expression1 = { literal: '13 > 12', expression: expressions_1.GreaterThan, values: ['13', '12'] };
 var expression2 = { literal: '13 < 12', expression: expressions_1.LessThan, values: ['13', '12'] };
 var dsl = { branches: [expression1, expression2], conjunctions: [conjunctions_1.AndConjunction] };
-var result = instance.parse(dsl, {});
+var result = instance.invoke(dsl, {});
 result.value.should.equal(false);
 ```
 
@@ -1128,7 +1128,7 @@ var booleanExpression = { literal: '12 > 13', expression: expressions_1.GreaterT
 var expressionTree = { branches: [booleanExpression] };
 var dsl = { literal: 'if 12 > 13', action: actions_1.If, expressions: expressionTree };
 var scope = [{ text: 'Hello World' }];
-var result = new command_parser_1.CommandParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, scope, {});
+var result = new command_parser_1.CommandParser(parser_1.DEFAULT_PARSER_OPTIONS).invoke(dsl, scope, {});
 result.should.equal('');
 ```
 
@@ -1139,7 +1139,7 @@ var booleanExpression = { literal: '13 > 12', expression: expressions_1.GreaterT
 var expressionTree = { branches: [booleanExpression] };
 var dsl = { literal: 'if 13 > 12', action: actions_1.If, expressions: expressionTree };
 var scope = [{ text: 'Hello World' }];
-var result = new command_parser_1.CommandParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, scope, {});
+var result = new command_parser_1.CommandParser(parser_1.DEFAULT_PARSER_OPTIONS).invoke(dsl, scope, {});
 result.should.equal('Hello World');
 ```
 
@@ -1148,7 +1148,7 @@ should correctly return a string in a DependentAction.
 ```js
 var dsl = { literal: 'else', action: actions_1.Else };
 var scope = [{ text: 'Merry Christmas' }];
-var result = new command_parser_1.CommandParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, scope, {});
+var result = new command_parser_1.CommandParser(parser_1.DEFAULT_PARSER_OPTIONS).invoke(dsl, scope, {});
 result.should.equal('Merry Christmas');
 ```
 
@@ -1161,19 +1161,19 @@ var commandDSL = { literal: 'for cat of catTypes using \', \'', action: actions_
 var textDSL = { text: 'Hello ' };
 var replacementDSL = { literal: 'cat', expressions: null };
 var scope = [textDSL, { replacement: replacementDSL }];
-var result = new command_parser_1.CommandParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(commandDSL, scope, {});
+var result = new command_parser_1.CommandParser(parser_1.DEFAULT_PARSER_OPTIONS).invoke(commandDSL, scope, {});
 result.should.equal('Hello hairy, Hello furry, Hello fuzzy');
 ```
 
 <a name="replacementparser"></a>
 # ReplacementParser
-<a name="replacementparser-parse"></a>
-## parse
+<a name="replacementparser-invoke"></a>
+## invoke
 should output a literal string.
 
 ```js
 var dsl = { literal: '\'Test string\'' };
-var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl);
+var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).invoke(dsl);
 result.should.eql('Test string');
 ```
 
@@ -1181,7 +1181,7 @@ should output a literal number.
 
 ```js
 var dsl = { literal: '12' };
-var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl);
+var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).invoke(dsl);
 result.should.eql('12');
 ```
 
@@ -1189,7 +1189,7 @@ should output a variable value.
 
 ```js
 var dsl = { literal: 'dragon' };
-var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, { dragon: 'Pet' });
+var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).invoke(dsl, { dragon: 'Pet' });
 result.should.eql('Pet');
 ```
 
@@ -1199,7 +1199,7 @@ should output the result of a boolean expression.
 var booleanExpression = { literal: '12 > 13', expression: expressions_1.GreaterThan, values: ['12', '13'] };
 var expressionTree = { branches: [booleanExpression] };
 var dsl = { literal: '12 > 13', expressions: expressionTree };
-var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl);
+var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).invoke(dsl);
 result.should.eql('0');
 ```
 
@@ -1209,7 +1209,7 @@ should output the result of a boolean expression with variables.
 var booleanExpression = { literal: 'high > low', expression: expressions_1.GreaterThan, values: ['high', 'low'] };
 var expressionTree = { branches: [booleanExpression] };
 var dsl = { literal: 'high > low', expressions: expressionTree };
-var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, { high: 13, low: 12 });
+var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).invoke(dsl, { high: 13, low: 12 });
 result.should.eql('1');
 ```
 
@@ -1219,7 +1219,7 @@ should output the result of an IterableExpression correctly.
 var iterableExpression = { literal: 'cat of catTypes using \',\'', expression: expressions_2.IterableOfUsing, local: 'cat', values: [['hairy', 'furry', 'fuzzy']], joiner: '\',\'' };
 var expressionTree = { branches: [iterableExpression] };
 var dsl = { literal: 'cat of catTypes using \',\'', expressions: expressionTree };
-var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl);
+var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).invoke(dsl);
 result.should.equal('hairy, furry, fuzzy');
 ```
 
@@ -1229,7 +1229,7 @@ should output the result of an IterableExpression correctly using variables.
 var iterableExpression = { literal: 'cat of catTypes using \',\'', expression: expressions_2.IterableOfUsing, local: 'cat', values: ['array'], joiner: 'joiner' };
 var expressionTree = { branches: [iterableExpression] };
 var dsl = { literal: 'cat of catTypes using \',\'', expressions: expressionTree };
-var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, { array: ['hairy', 'furry', 'fuzzy'], joiner: ',' });
+var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).invoke(dsl, { array: ['hairy', 'furry', 'fuzzy'], joiner: ',' });
 result.should.equal('hairy, furry, fuzzy');
 ```
 
@@ -1245,7 +1245,7 @@ var dsl = [
     { text: 'This is some text' },
     { comment: 'This is a comment' },
 ];
-var result = parser.parse(dsl);
+var result = parser.invoke(dsl);
 result.should.equal('This is some text');
 ```
 
@@ -1257,7 +1257,7 @@ var dsl = [
     { text: 'This is some text' },
     { comment: 'This is a comment' }
 ];
-var result = parser.parse(dsl);
+var result = parser.invoke(dsl);
 result.should.equal('This is some text/* This is a comment */');
 ```
 
@@ -1267,7 +1267,7 @@ should output text untouched.
 
 ```js
 var parser = new parser_1.Parser();
-var result = parser.parse([{ text: 'this is a test string' }]);
+var result = parser.invoke([{ text: 'this is a test string' }]);
 result.should.equal('this is a test string');
 ```
 
@@ -1277,14 +1277,14 @@ should resolve a variable in SQiggL query without an error.
 
 ```js
 var parser = new parser_1.Parser();
-parser.parse([{ variable: { literal: 'cat:"meow"', key: 'cat', value: '"meow"' } }]);
+parser.invoke([{ variable: { literal: 'cat:"meow"', key: 'cat', value: '"meow"' } }]);
 ```
 
 should resolve a variable alias in a SQiggL query without an error.
 
 ```js
 var parser = new parser_1.Parser();
-parser.parse([{ variable: { literal: 'cat:sound', key: 'cat', value: 'sound' } }], { sound: 'meow' });
+parser.invoke([{ variable: { literal: 'cat:sound', key: 'cat', value: 'sound' } }], { sound: 'meow' });
 ```
 
 <a name="parser-resolvevalue"></a>
@@ -1328,91 +1328,91 @@ should throw an error if a variable value is undefined.
 should correctly output a completely non-special query untouched.
 
 ```js
-var result = SQiggL.parse('SELECT * FROM Table');
+var result = SQiggL.invoke('SELECT * FROM Table');
 result.should.equal('SELECT * FROM Table');
 ```
 
 should correctly output a SQiggL query containing a comment (default).
 
 ```js
-var result = SQiggL.parse('SELECT * FROM Table {# this is the client\'s table}');
+var result = SQiggL.invoke('SELECT * FROM Table {# this is the client\'s table}');
 result.should.equal('SELECT * FROM Table ');
 ```
 
 should correctly output a SQiggL query containing a comment (export true).
 
 ```js
-var result = SQiggL.parse('SELECT * FROM Table {# this is the client\'s table}', null, { exportComments: true });
+var result = SQiggL.invoke('SELECT * FROM Table {# this is the client\'s table}', null, { exportComments: true });
 result.should.equal('SELECT * FROM Table /* this is the client\'s table */');
 ```
 
 should correctly output a SQiggL query containing a string literal replacement.
 
 ```js
-var result = SQiggL.parse('SELECT * FROM {\'Table\'}');
+var result = SQiggL.invoke('SELECT * FROM {\'Table\'}');
 result.should.equal('SELECT * FROM Table');
 ```
 
 should correctly output a SQiggL query containing a number literal replacement.
 
 ```js
-var result = SQiggL.parse('SELECT * FROM Table WHERE ID = {12}');
+var result = SQiggL.invoke('SELECT * FROM Table WHERE ID = {12}');
 result.should.equal('SELECT * FROM Table WHERE ID = 12');
 ```
 
 should correctly output a SQiggL query containing a variable replacement.
 
 ```js
-var result = SQiggL.parse('SELECT * FROM Table WHERE ID = {id}', { id: 12 });
+var result = SQiggL.invoke('SELECT * FROM Table WHERE ID = {id}', { id: 12 });
 result.should.equal('SELECT * FROM Table WHERE ID = 12');
 ```
 
 should correctly output a SQiggL query containing a boolean expression with numbers.
 
 ```js
-var result = SQiggL.parse('SELECT * FROM Table WHERE status = {12 > 13}');
+var result = SQiggL.invoke('SELECT * FROM Table WHERE status = {12 > 13}');
 result.should.equal('SELECT * FROM Table WHERE status = 0');
 ```
 
 should correctly output a SQiggL query containing a boolean expression with strings.
 
 ```js
-var result = SQiggL.parse('SELECT * FROM Table WHERE status = {\'yes\' abc> \'no\'}');
+var result = SQiggL.invoke('SELECT * FROM Table WHERE status = {\'yes\' abc> \'no\'}');
 result.should.equal('SELECT * FROM Table WHERE status = 1');
 ```
 
 should correctly output a SQiggL query containing a value expression.
 
 ```js
-var result = SQiggL.parse('SELECT * FROM {dev ?? prod}', { dev: 'DevTable' });
+var result = SQiggL.invoke('SELECT * FROM {dev ?? prod}', { dev: 'DevTable' });
 result.should.equal('SELECT * FROM DevTable');
 ```
 
 should correctly output a SQiggL query containing a coalesce.
 
 ```js
-var result = SQiggL.parse('SELECT * FROM {dev ?? prod}', { prod: 'ProdTable' });
+var result = SQiggL.invoke('SELECT * FROM {dev ?? prod}', { prod: 'ProdTable' });
 result.should.equal('SELECT * FROM ProdTable');
 ```
 
 should correctly output a SQiggL query containing a StartingAction/TerminatingAction pair.
 
 ```js
-var result = SQiggL.parse('SELECT * FROM Table {% if 13 > 12 } WHERE status = 1 {% endif }');
+var result = SQiggL.invoke('SELECT * FROM Table {% if 13 > 12 } WHERE status = 1 {% endif }');
 result.should.equal('SELECT * FROM Table  WHERE status = 1 ');
 ```
 
 should correctly output a SQiggL query containing a StartingAction, DependentAction, and TerminatingAction chain.
 
 ```js
-var result = SQiggL.parse('SELECT * FROM Table {% if 12 > 13 } WHERE status = 1 {% else } WHERE status = 0 {% endif }');
+var result = SQiggL.invoke('SELECT * FROM Table {% if 12 > 13 } WHERE status = 1 {% else } WHERE status = 0 {% endif }');
 result.should.equal('SELECT * FROM Table  WHERE status = 0 ');
 ```
 
 should correctly output a SQiggL query containing a conjunction in an expression.
 
 ```js
-var result = SQiggL.parse('SELECT * FROM Table {% if 13 > 12 and 15 < 100 } WHERE Status = 1 {% endif }');
+var result = SQiggL.invoke('SELECT * FROM Table {% if 13 > 12 and 15 < 100 } WHERE Status = 1 {% endif }');
 result.should.equal('SELECT * FROM Table  WHERE Status = 1 ');
 ```
 
@@ -1421,21 +1421,21 @@ result.should.equal('SELECT * FROM Table  WHERE Status = 1 ');
 should work with 'if'.
 
 ```js
-var result = SQiggL.parse('SELECT * FROM Table {% if 13 > 12} WHERE status = 0 {% end }');
+var result = SQiggL.invoke('SELECT * FROM Table {% if 13 > 12} WHERE status = 0 {% end }');
 result.should.equal('SELECT * FROM Table  WHERE status = 0 ');
 ```
 
 should work with 'unless'.
 
 ```js
-var result = SQiggL.parse('SELECT * FROM Table {% unless 13 < 12} WHERE status = 0 {% end }');
+var result = SQiggL.invoke('SELECT * FROM Table {% unless 13 < 12} WHERE status = 0 {% end }');
 result.should.equal('SELECT * FROM Table  WHERE status = 0 ');
 ```
 
 should work with 'for'.
 
 ```js
-var result = SQiggL.parse('SELECT * FROM Table WHERE {% for var of array using \'AND\'} id = {var} {% end }', { array: ['1', '2', '3'] });
+var result = SQiggL.invoke('SELECT * FROM Table WHERE {% for var of array using \'AND\'} id = {var} {% end }', { array: ['1', '2', '3'] });
 result.should.equal('SELECT * FROM Table WHERE  id = 1 AND  id = 2 AND  id = 3 ');
 ```
 
@@ -1448,14 +1448,14 @@ result.should.equal('SELECT * FROM Table WHERE  id = 1 AND  id = 2 AND  id = 3 '
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { penny: '12' });
+var result = SQiggL.invoke(query, { penny: '12' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'");
 ```
 
@@ -1464,14 +1464,14 @@ result.should.equal("UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { penny: '14' });
+var result = SQiggL.invoke(query, { penny: '14' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -1480,14 +1480,14 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { penny: '14' });
+var result = SQiggL.invoke(query, { penny: '14' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -1496,14 +1496,14 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: '14' });
+var result = SQiggL.invoke(query, { example: '14' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -1512,14 +1512,14 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: '14' });
+var result = SQiggL.invoke(query, { example: '14' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -1528,14 +1528,14 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: '14' });
+var result = SQiggL.invoke(query, { example: '14' });
 result.should.equal("UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'");
 ```
 
@@ -1544,14 +1544,14 @@ result.should.equal("UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: '14' });
+var result = SQiggL.invoke(query, { example: '14' });
 result.should.equal("UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'");
 ```
 
@@ -1560,21 +1560,21 @@ result.should.equal("UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '14' });
+var result = SQiggL.invoke(query, { example: '14' });
 result.should.equal("UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: '9' });
+var result = SQiggL.invoke(query, { example: '9' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -1583,21 +1583,21 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '14' });
+var result = SQiggL.invoke(query, { example: '14' });
 result.should.equal("UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: '9' });
+var result = SQiggL.invoke(query, { example: '9' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -1606,21 +1606,21 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '14' });
+var result = SQiggL.invoke(query, { example: '14' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: '9' });
+var result = SQiggL.invoke(query, { example: '9' });
 result.should.equal("UPDATE Names  SET Name = '9'  WHERE Name = 'Awesome'");
 ```
 
@@ -1629,21 +1629,21 @@ result.should.equal("UPDATE Names  SET Name = '9'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '14' });
+var result = SQiggL.invoke(query, { example: '14' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: '9' });
+var result = SQiggL.invoke(query, { example: '9' });
 result.should.equal("UPDATE Names  SET Name = '9'  WHERE Name = 'Awesome'");
 ```
 
@@ -1652,21 +1652,21 @@ result.should.equal("UPDATE Names  SET Name = '9'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '9' });
+var result = SQiggL.invoke(query, { example: '9' });
 result.should.equal("UPDATE Names  SET Name = '9'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: '14' });
+var result = SQiggL.invoke(query, { example: '14' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -1675,21 +1675,21 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '9' });
+var result = SQiggL.invoke(query, { example: '9' });
 result.should.equal("UPDATE Names  SET Name = '9'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: '14' });
+var result = SQiggL.invoke(query, { example: '14' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -1698,21 +1698,21 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '9' });
+var result = SQiggL.invoke(query, { example: '9' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: '14' });
+var result = SQiggL.invoke(query, { example: '14' });
 result.should.equal("UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'");
 ```
 
@@ -1721,21 +1721,21 @@ result.should.equal("UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '9' });
+var result = SQiggL.invoke(query, { example: '9' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: '14' });
+var result = SQiggL.invoke(query, { example: '14' });
 result.should.equal("UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'");
 ```
 
@@ -1744,21 +1744,21 @@ result.should.equal("UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'hello' });
+var result = SQiggL.invoke(query, { example: 'hello' });
 result.should.equal("UPDATE Names  SET Name = 'hello'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'dragon' });
+var result = SQiggL.invoke(query, { example: 'dragon' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'awkward' });
+var result = SQiggL.invoke(query, { example: 'awkward' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -1767,21 +1767,21 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'hello' });
+var result = SQiggL.invoke(query, { example: 'hello' });
 result.should.equal("UPDATE Names  SET Name = 'hello'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'dragon' });
+var result = SQiggL.invoke(query, { example: 'dragon' });
 result.should.equal("UPDATE Names  SET Name = 'dragon'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'awkward' });
+var result = SQiggL.invoke(query, { example: 'awkward' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -1790,21 +1790,21 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'hello' });
+var result = SQiggL.invoke(query, { example: 'hello' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'dragon' });
+var result = SQiggL.invoke(query, { example: 'dragon' });
 result.should.equal("UPDATE Names  SET Name = 'dragon'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'awkward' });
+var result = SQiggL.invoke(query, { example: 'awkward' });
 result.should.equal("UPDATE Names  SET Name = 'awkward'  WHERE Name = 'Awesome'");
 ```
 
@@ -1813,21 +1813,21 @@ result.should.equal("UPDATE Names  SET Name = 'awkward'  WHERE Name = 'Awesome'"
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'hello' });
+var result = SQiggL.invoke(query, { example: 'hello' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'dragon' });
+var result = SQiggL.invoke(query, { example: 'dragon' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'awkward' });
+var result = SQiggL.invoke(query, { example: 'awkward' });
 result.should.equal("UPDATE Names  SET Name = 'awkward'  WHERE Name = 'Awesome'");
 ```
 
@@ -1836,21 +1836,21 @@ result.should.equal("UPDATE Names  SET Name = 'awkward'  WHERE Name = 'Awesome'"
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'awkward' });
+var result = SQiggL.invoke(query, { example: 'awkward' });
 result.should.equal("UPDATE Names  SET Name = 'awkward'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'dragon' });
+var result = SQiggL.invoke(query, { example: 'dragon' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'hello' });
+var result = SQiggL.invoke(query, { example: 'hello' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -1859,21 +1859,21 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'awkward' });
+var result = SQiggL.invoke(query, { example: 'awkward' });
 result.should.equal("UPDATE Names  SET Name = 'awkward'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'dragon' });
+var result = SQiggL.invoke(query, { example: 'dragon' });
 result.should.equal("UPDATE Names  SET Name = 'dragon'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'hello' });
+var result = SQiggL.invoke(query, { example: 'hello' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -1882,21 +1882,21 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'awkward' });
+var result = SQiggL.invoke(query, { example: 'awkward' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'dragon' });
+var result = SQiggL.invoke(query, { example: 'dragon' });
 result.should.equal("UPDATE Names  SET Name = 'dragon'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'hello' });
+var result = SQiggL.invoke(query, { example: 'hello' });
 result.should.equal("UPDATE Names  SET Name = 'hello'  WHERE Name = 'Awesome'");
 ```
 
@@ -1905,21 +1905,21 @@ result.should.equal("UPDATE Names  SET Name = 'hello'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'awkward' });
+var result = SQiggL.invoke(query, { example: 'awkward' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'dragon' });
+var result = SQiggL.invoke(query, { example: 'dragon' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'hello' });
+var result = SQiggL.invoke(query, { example: 'hello' });
 result.should.equal("UPDATE Names  SET Name = 'hello'  WHERE Name = 'Awesome'");
 ```
 
@@ -1928,21 +1928,21 @@ result.should.equal("UPDATE Names  SET Name = 'hello'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'palooza' });
+var result = SQiggL.invoke(query, { example: 'palooza' });
 result.should.equal("UPDATE Names  SET Name = 'palooza'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'sqiggl' });
+var result = SQiggL.invoke(query, { example: 'sqiggl' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'fun' });
+var result = SQiggL.invoke(query, { example: 'fun' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -1951,21 +1951,21 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'palooza' });
+var result = SQiggL.invoke(query, { example: 'palooza' });
 result.should.equal("UPDATE Names  SET Name = 'palooza'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'sqiggl' });
+var result = SQiggL.invoke(query, { example: 'sqiggl' });
 result.should.equal("UPDATE Names  SET Name = 'sqiggl'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'fun' });
+var result = SQiggL.invoke(query, { example: 'fun' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -1974,21 +1974,21 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'palooza' });
+var result = SQiggL.invoke(query, { example: 'palooza' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'sqiggl' });
+var result = SQiggL.invoke(query, { example: 'sqiggl' });
 result.should.equal("UPDATE Names  SET Name = 'sqiggl'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'fun' });
+var result = SQiggL.invoke(query, { example: 'fun' });
 result.should.equal("UPDATE Names  SET Name = 'fun'  WHERE Name = 'Awesome'");
 ```
 
@@ -1997,21 +1997,21 @@ result.should.equal("UPDATE Names  SET Name = 'fun'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'palooza' });
+var result = SQiggL.invoke(query, { example: 'palooza' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'sqiggl' });
+var result = SQiggL.invoke(query, { example: 'sqiggl' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'fun' });
+var result = SQiggL.invoke(query, { example: 'fun' });
 result.should.equal("UPDATE Names  SET Name = 'fun'  WHERE Name = 'Awesome'");
 ```
 
@@ -2020,21 +2020,21 @@ result.should.equal("UPDATE Names  SET Name = 'fun'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'fun' });
+var result = SQiggL.invoke(query, { example: 'fun' });
 result.should.equal("UPDATE Names  SET Name = 'fun'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'sqiggl' });
+var result = SQiggL.invoke(query, { example: 'sqiggl' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'palooza' });
+var result = SQiggL.invoke(query, { example: 'palooza' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -2043,21 +2043,21 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'fun' });
+var result = SQiggL.invoke(query, { example: 'fun' });
 result.should.equal("UPDATE Names  SET Name = 'fun'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'sqiggl' });
+var result = SQiggL.invoke(query, { example: 'sqiggl' });
 result.should.equal("UPDATE Names  SET Name = 'sqiggl'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'palooza' });
+var result = SQiggL.invoke(query, { example: 'palooza' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -2066,21 +2066,21 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'fun' });
+var result = SQiggL.invoke(query, { example: 'fun' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'sqiggl' });
+var result = SQiggL.invoke(query, { example: 'sqiggl' });
 result.should.equal("UPDATE Names  SET Name = 'sqiggl'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'palooza' });
+var result = SQiggL.invoke(query, { example: 'palooza' });
 result.should.equal("UPDATE Names  SET Name = 'palooza'  WHERE Name = 'Awesome'");
 ```
 
@@ -2089,21 +2089,21 @@ result.should.equal("UPDATE Names  SET Name = 'palooza'  WHERE Name = 'Awesome'"
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'fun' });
+var result = SQiggL.invoke(query, { example: 'fun' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'sqiggl' });
+var result = SQiggL.invoke(query, { example: 'sqiggl' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'palooza' });
+var result = SQiggL.invoke(query, { example: 'palooza' });
 result.should.equal("UPDATE Names  SET Name = 'palooza'  WHERE Name = 'Awesome'");
 ```
 
@@ -2112,14 +2112,14 @@ result.should.equal("UPDATE Names  SET Name = 'palooza'  WHERE Name = 'Awesome'"
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'dragon' });
+var result = SQiggL.invoke(query, { example: 'dragon' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'");
 ```
 
@@ -2128,14 +2128,14 @@ result.should.equal("UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'dragon' });
+var result = SQiggL.invoke(query, { example: 'dragon' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -2144,14 +2144,14 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'dragon' });
+var result = SQiggL.invoke(query, { example: 'dragon' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -2160,35 +2160,35 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 15 });
+var result = SQiggL.invoke(query, { example: 15 });
 result.should.equal("UPDATE Names  SET Name = '15'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal to the low number.
 
 ```js
-var result = SQiggL.parse(query, { example: 10 });
+var result = SQiggL.invoke(query, { example: 10 });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal to the high number.
 
 ```js
-var result = SQiggL.parse(query, { example: 20 });
+var result = SQiggL.invoke(query, { example: 20 });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if below the low number.
 
 ```js
-var result = SQiggL.parse(query, { example: 5 });
+var result = SQiggL.invoke(query, { example: 5 });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if above the high number.
 
 ```js
-var result = SQiggL.parse(query, { example: 25 });
+var result = SQiggL.invoke(query, { example: 25 });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -2197,35 +2197,35 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 15 });
+var result = SQiggL.invoke(query, { example: 15 });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal to the low number.
 
 ```js
-var result = SQiggL.parse(query, { example: 10 });
+var result = SQiggL.invoke(query, { example: 10 });
 result.should.equal("UPDATE Names  SET Name = '10'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal to the high number.
 
 ```js
-var result = SQiggL.parse(query, { example: 20 });
+var result = SQiggL.invoke(query, { example: 20 });
 result.should.equal("UPDATE Names  SET Name = '20'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if below the low number.
 
 ```js
-var result = SQiggL.parse(query, { example: 5 });
+var result = SQiggL.invoke(query, { example: 5 });
 result.should.equal("UPDATE Names  SET Name = '5'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if above the high number.
 
 ```js
-var result = SQiggL.parse(query, { example: 25 });
+var result = SQiggL.invoke(query, { example: 25 });
 result.should.equal("UPDATE Names  SET Name = '25'  WHERE Name = 'Awesome'");
 ```
 
@@ -2234,35 +2234,35 @@ result.should.equal("UPDATE Names  SET Name = '25'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 15 });
+var result = SQiggL.invoke(query, { example: 15 });
 result.should.equal("UPDATE Names  SET Name = '15'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal to the low number.
 
 ```js
-var result = SQiggL.parse(query, { example: 10 });
+var result = SQiggL.invoke(query, { example: 10 });
 result.should.equal("UPDATE Names  SET Name = '10'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal to the high number.
 
 ```js
-var result = SQiggL.parse(query, { example: 20 });
+var result = SQiggL.invoke(query, { example: 20 });
 result.should.equal("UPDATE Names  SET Name = '20'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if below the low number.
 
 ```js
-var result = SQiggL.parse(query, { example: 5 });
+var result = SQiggL.invoke(query, { example: 5 });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if above the high number.
 
 ```js
-var result = SQiggL.parse(query, { example: 25 });
+var result = SQiggL.invoke(query, { example: 25 });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -2273,14 +2273,14 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { penny: '12' });
+var result = SQiggL.invoke(query, { penny: '12' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'");
 ```
 
@@ -2289,14 +2289,14 @@ result.should.equal("UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { penny: '14' });
+var result = SQiggL.invoke(query, { penny: '14' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -2305,14 +2305,14 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { penny: '14' });
+var result = SQiggL.invoke(query, { penny: '14' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -2321,14 +2321,14 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: '14' });
+var result = SQiggL.invoke(query, { example: '14' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -2337,14 +2337,14 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: '14' });
+var result = SQiggL.invoke(query, { example: '14' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -2353,14 +2353,14 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: '14' });
+var result = SQiggL.invoke(query, { example: '14' });
 result.should.equal("UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'");
 ```
 
@@ -2369,14 +2369,14 @@ result.should.equal("UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: '14' });
+var result = SQiggL.invoke(query, { example: '14' });
 result.should.equal("UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'");
 ```
 
@@ -2385,21 +2385,21 @@ result.should.equal("UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '14' });
+var result = SQiggL.invoke(query, { example: '14' });
 result.should.equal("UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: '9' });
+var result = SQiggL.invoke(query, { example: '9' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -2408,21 +2408,21 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '14' });
+var result = SQiggL.invoke(query, { example: '14' });
 result.should.equal("UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: '9' });
+var result = SQiggL.invoke(query, { example: '9' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -2431,21 +2431,21 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '14' });
+var result = SQiggL.invoke(query, { example: '14' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: '9' });
+var result = SQiggL.invoke(query, { example: '9' });
 result.should.equal("UPDATE Names  SET Name = '9'  WHERE Name = 'Awesome'");
 ```
 
@@ -2454,21 +2454,21 @@ result.should.equal("UPDATE Names  SET Name = '9'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '14' });
+var result = SQiggL.invoke(query, { example: '14' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: '9' });
+var result = SQiggL.invoke(query, { example: '9' });
 result.should.equal("UPDATE Names  SET Name = '9'  WHERE Name = 'Awesome'");
 ```
 
@@ -2477,21 +2477,21 @@ result.should.equal("UPDATE Names  SET Name = '9'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '9' });
+var result = SQiggL.invoke(query, { example: '9' });
 result.should.equal("UPDATE Names  SET Name = '9'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: '14' });
+var result = SQiggL.invoke(query, { example: '14' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -2500,21 +2500,21 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '9' });
+var result = SQiggL.invoke(query, { example: '9' });
 result.should.equal("UPDATE Names  SET Name = '9'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: '14' });
+var result = SQiggL.invoke(query, { example: '14' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -2523,21 +2523,21 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '9' });
+var result = SQiggL.invoke(query, { example: '9' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: '14' });
+var result = SQiggL.invoke(query, { example: '14' });
 result.should.equal("UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'");
 ```
 
@@ -2546,21 +2546,21 @@ result.should.equal("UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '9' });
+var result = SQiggL.invoke(query, { example: '9' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: '14' });
+var result = SQiggL.invoke(query, { example: '14' });
 result.should.equal("UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'");
 ```
 
@@ -2569,21 +2569,21 @@ result.should.equal("UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'hello' });
+var result = SQiggL.invoke(query, { example: 'hello' });
 result.should.equal("UPDATE Names  SET Name = 'hello'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'dragon' });
+var result = SQiggL.invoke(query, { example: 'dragon' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'awkward' });
+var result = SQiggL.invoke(query, { example: 'awkward' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -2592,21 +2592,21 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'hello' });
+var result = SQiggL.invoke(query, { example: 'hello' });
 result.should.equal("UPDATE Names  SET Name = 'hello'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'dragon' });
+var result = SQiggL.invoke(query, { example: 'dragon' });
 result.should.equal("UPDATE Names  SET Name = 'dragon'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'awkward' });
+var result = SQiggL.invoke(query, { example: 'awkward' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -2615,21 +2615,21 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'hello' });
+var result = SQiggL.invoke(query, { example: 'hello' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'dragon' });
+var result = SQiggL.invoke(query, { example: 'dragon' });
 result.should.equal("UPDATE Names  SET Name = 'dragon'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'awkward' });
+var result = SQiggL.invoke(query, { example: 'awkward' });
 result.should.equal("UPDATE Names  SET Name = 'awkward'  WHERE Name = 'Awesome'");
 ```
 
@@ -2638,21 +2638,21 @@ result.should.equal("UPDATE Names  SET Name = 'awkward'  WHERE Name = 'Awesome'"
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'hello' });
+var result = SQiggL.invoke(query, { example: 'hello' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'dragon' });
+var result = SQiggL.invoke(query, { example: 'dragon' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'awkward' });
+var result = SQiggL.invoke(query, { example: 'awkward' });
 result.should.equal("UPDATE Names  SET Name = 'awkward'  WHERE Name = 'Awesome'");
 ```
 
@@ -2661,21 +2661,21 @@ result.should.equal("UPDATE Names  SET Name = 'awkward'  WHERE Name = 'Awesome'"
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'awkward' });
+var result = SQiggL.invoke(query, { example: 'awkward' });
 result.should.equal("UPDATE Names  SET Name = 'awkward'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'dragon' });
+var result = SQiggL.invoke(query, { example: 'dragon' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'hello' });
+var result = SQiggL.invoke(query, { example: 'hello' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -2684,21 +2684,21 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'awkward' });
+var result = SQiggL.invoke(query, { example: 'awkward' });
 result.should.equal("UPDATE Names  SET Name = 'awkward'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'dragon' });
+var result = SQiggL.invoke(query, { example: 'dragon' });
 result.should.equal("UPDATE Names  SET Name = 'dragon'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'hello' });
+var result = SQiggL.invoke(query, { example: 'hello' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -2707,21 +2707,21 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'awkward' });
+var result = SQiggL.invoke(query, { example: 'awkward' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'dragon' });
+var result = SQiggL.invoke(query, { example: 'dragon' });
 result.should.equal("UPDATE Names  SET Name = 'dragon'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'hello' });
+var result = SQiggL.invoke(query, { example: 'hello' });
 result.should.equal("UPDATE Names  SET Name = 'hello'  WHERE Name = 'Awesome'");
 ```
 
@@ -2730,21 +2730,21 @@ result.should.equal("UPDATE Names  SET Name = 'hello'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'awkward' });
+var result = SQiggL.invoke(query, { example: 'awkward' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'dragon' });
+var result = SQiggL.invoke(query, { example: 'dragon' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'hello' });
+var result = SQiggL.invoke(query, { example: 'hello' });
 result.should.equal("UPDATE Names  SET Name = 'hello'  WHERE Name = 'Awesome'");
 ```
 
@@ -2753,21 +2753,21 @@ result.should.equal("UPDATE Names  SET Name = 'hello'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'palooza' });
+var result = SQiggL.invoke(query, { example: 'palooza' });
 result.should.equal("UPDATE Names  SET Name = 'palooza'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'sqiggl' });
+var result = SQiggL.invoke(query, { example: 'sqiggl' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'fun' });
+var result = SQiggL.invoke(query, { example: 'fun' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -2776,21 +2776,21 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'palooza' });
+var result = SQiggL.invoke(query, { example: 'palooza' });
 result.should.equal("UPDATE Names  SET Name = 'palooza'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'sqiggl' });
+var result = SQiggL.invoke(query, { example: 'sqiggl' });
 result.should.equal("UPDATE Names  SET Name = 'sqiggl'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'fun' });
+var result = SQiggL.invoke(query, { example: 'fun' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -2799,21 +2799,21 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'palooza' });
+var result = SQiggL.invoke(query, { example: 'palooza' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'sqiggl' });
+var result = SQiggL.invoke(query, { example: 'sqiggl' });
 result.should.equal("UPDATE Names  SET Name = 'sqiggl'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'fun' });
+var result = SQiggL.invoke(query, { example: 'fun' });
 result.should.equal("UPDATE Names  SET Name = 'fun'  WHERE Name = 'Awesome'");
 ```
 
@@ -2822,21 +2822,21 @@ result.should.equal("UPDATE Names  SET Name = 'fun'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'palooza' });
+var result = SQiggL.invoke(query, { example: 'palooza' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'sqiggl' });
+var result = SQiggL.invoke(query, { example: 'sqiggl' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'fun' });
+var result = SQiggL.invoke(query, { example: 'fun' });
 result.should.equal("UPDATE Names  SET Name = 'fun'  WHERE Name = 'Awesome'");
 ```
 
@@ -2845,21 +2845,21 @@ result.should.equal("UPDATE Names  SET Name = 'fun'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'fun' });
+var result = SQiggL.invoke(query, { example: 'fun' });
 result.should.equal("UPDATE Names  SET Name = 'fun'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'sqiggl' });
+var result = SQiggL.invoke(query, { example: 'sqiggl' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'palooza' });
+var result = SQiggL.invoke(query, { example: 'palooza' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -2868,21 +2868,21 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'fun' });
+var result = SQiggL.invoke(query, { example: 'fun' });
 result.should.equal("UPDATE Names  SET Name = 'fun'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'sqiggl' });
+var result = SQiggL.invoke(query, { example: 'sqiggl' });
 result.should.equal("UPDATE Names  SET Name = 'sqiggl'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'palooza' });
+var result = SQiggL.invoke(query, { example: 'palooza' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -2891,21 +2891,21 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'fun' });
+var result = SQiggL.invoke(query, { example: 'fun' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'sqiggl' });
+var result = SQiggL.invoke(query, { example: 'sqiggl' });
 result.should.equal("UPDATE Names  SET Name = 'sqiggl'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'palooza' });
+var result = SQiggL.invoke(query, { example: 'palooza' });
 result.should.equal("UPDATE Names  SET Name = 'palooza'  WHERE Name = 'Awesome'");
 ```
 
@@ -2914,21 +2914,21 @@ result.should.equal("UPDATE Names  SET Name = 'palooza'  WHERE Name = 'Awesome'"
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'fun' });
+var result = SQiggL.invoke(query, { example: 'fun' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal.
 
 ```js
-var result = SQiggL.parse(query, { example: 'sqiggl' });
+var result = SQiggL.invoke(query, { example: 'sqiggl' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'palooza' });
+var result = SQiggL.invoke(query, { example: 'palooza' });
 result.should.equal("UPDATE Names  SET Name = 'palooza'  WHERE Name = 'Awesome'");
 ```
 
@@ -2937,14 +2937,14 @@ result.should.equal("UPDATE Names  SET Name = 'palooza'  WHERE Name = 'Awesome'"
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 'dragon' });
+var result = SQiggL.invoke(query, { example: 'dragon' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'");
 ```
 
@@ -2953,14 +2953,14 @@ result.should.equal("UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'dragon' });
+var result = SQiggL.invoke(query, { example: 'dragon' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -2969,14 +2969,14 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: '12' });
+var result = SQiggL.invoke(query, { example: '12' });
 result.should.equal("UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if false.
 
 ```js
-var result = SQiggL.parse(query, { example: 'dragon' });
+var result = SQiggL.invoke(query, { example: 'dragon' });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -2985,35 +2985,35 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 15 });
+var result = SQiggL.invoke(query, { example: 15 });
 result.should.equal("UPDATE Names  SET Name = '15'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal to the low number.
 
 ```js
-var result = SQiggL.parse(query, { example: 10 });
+var result = SQiggL.invoke(query, { example: 10 });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal to the high number.
 
 ```js
-var result = SQiggL.parse(query, { example: 20 });
+var result = SQiggL.invoke(query, { example: 20 });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if below the low number.
 
 ```js
-var result = SQiggL.parse(query, { example: 5 });
+var result = SQiggL.invoke(query, { example: 5 });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if above the high number.
 
 ```js
-var result = SQiggL.parse(query, { example: 25 });
+var result = SQiggL.invoke(query, { example: 25 });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -3022,35 +3022,35 @@ result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 15 });
+var result = SQiggL.invoke(query, { example: 15 });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal to the low number.
 
 ```js
-var result = SQiggL.parse(query, { example: 10 });
+var result = SQiggL.invoke(query, { example: 10 });
 result.should.equal("UPDATE Names  SET Name = '10'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal to the high number.
 
 ```js
-var result = SQiggL.parse(query, { example: 20 });
+var result = SQiggL.invoke(query, { example: 20 });
 result.should.equal("UPDATE Names  SET Name = '20'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if below the low number.
 
 ```js
-var result = SQiggL.parse(query, { example: 5 });
+var result = SQiggL.invoke(query, { example: 5 });
 result.should.equal("UPDATE Names  SET Name = '5'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if above the high number.
 
 ```js
-var result = SQiggL.parse(query, { example: 25 });
+var result = SQiggL.invoke(query, { example: 25 });
 result.should.equal("UPDATE Names  SET Name = '25'  WHERE Name = 'Awesome'");
 ```
 
@@ -3059,35 +3059,35 @@ result.should.equal("UPDATE Names  SET Name = '25'  WHERE Name = 'Awesome'");
 should provide a correct result if true.
 
 ```js
-var result = SQiggL.parse(query, { example: 15 });
+var result = SQiggL.invoke(query, { example: 15 });
 result.should.equal("UPDATE Names  SET Name = '15'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal to the low number.
 
 ```js
-var result = SQiggL.parse(query, { example: 10 });
+var result = SQiggL.invoke(query, { example: 10 });
 result.should.equal("UPDATE Names  SET Name = '10'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if equal to the high number.
 
 ```js
-var result = SQiggL.parse(query, { example: 20 });
+var result = SQiggL.invoke(query, { example: 20 });
 result.should.equal("UPDATE Names  SET Name = '20'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if below the low number.
 
 ```js
-var result = SQiggL.parse(query, { example: 5 });
+var result = SQiggL.invoke(query, { example: 5 });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
 should provide a correct result if above the high number.
 
 ```js
-var result = SQiggL.parse(query, { example: 25 });
+var result = SQiggL.invoke(query, { example: 25 });
 result.should.equal("UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'");
 ```
 
@@ -3098,7 +3098,7 @@ should accept newlines in queries.
 ```js
 var sql = "UPDATE Names\n{% if example is not null }\nSET Name = '{example}'\n{% else } SET Name = 'Cow'\n{% endif }\nWHERE Name = 'Awesome'";
 var result = "UPDATE Names\n\nSET Name = 'Dragon'\n\nWHERE Name = 'Awesome'";
-var actual = SQiggL.parse(sql, { example: 'Dragon' });
+var actual = SQiggL.invoke(sql, { example: 'Dragon' });
 actual.should.equal(result);
 ```
 
