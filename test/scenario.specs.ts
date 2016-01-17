@@ -84,7 +84,7 @@ describe('Scenarios', () => {
     });
 });
 
-describe.skip('Full feature sweep: ', () => {
+describe('Full feature sweep: ', () => {
     describe('if', () => {
         describe('is null', () => {
             const query = `UPDATE Names {% if example is null } SET Name = 'Cow' {% else } SET Name = '{example}' {% endif } WHERE Name = 'Awesome'`;
@@ -1239,6 +1239,36 @@ describe.skip('Full feature sweep: ', () => {
             it('should provide a correct result if above the high number', () => {
                 const result = SQiggL.parse(query, {example: 25});
                 result.should.equal(`UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'`);
+            });
+        });
+    });
+
+    describe('Ternaries', () => {
+        describe('Verbose Ternary', () => {
+            it('should return the first value if true', () => {
+                const query = `SELECT * FROM {if (13 > 12) then 'Dev' else 'Prod'}`;
+                const result = SQiggL.parse(query);
+                result.should.equal(`SELECT * FROM Dev`);
+            });
+
+            it('should return the last value if false', () => {
+                const query = `SELECT * FROM {if (12 > 13) then 'Dev' else 'Prod'}`;
+                const result = SQiggL.parse(query);
+                result.should.equal(`SELECT * FROM Prod`);
+            });
+        });
+
+        describe('Ternary', () => {
+            it('should return the first value if true', () => {
+                const query = `SELECT * FROM {(13 > 12) ? 'Dev' : 'Prod'}`;
+                const result = SQiggL.parse(query);
+                result.should.equal(`SELECT * FROM Dev`);
+            });
+
+            it('should return the last value if false', () => {
+                const query = `SELECT * FROM {(12 > 13) ? 'Dev' : 'Prod'}`;
+                const result = SQiggL.parse(query);
+                result.should.equal(`SELECT * FROM Prod`);
             });
         });
     });

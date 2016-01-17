@@ -35,7 +35,7 @@ export class ReplacementParser{
         if(!!dsl.expressions) {
             result = new ExpressionTreeParser(this.options).parse(dsl.expressions, variables);
             if(!!(<IterableExpressionResult>result).iterable){
-                output = (<string[]>result.value).join(`${resolveValue((<IterableExpressionResult>result).iterable.joiner, variables, this.options)} `);
+                output = (<string[]>result.value).join(`${(<IterableExpressionResult>result).iterable.joiner} `);
             } else {
                 output = <string | boolean>result.value;
             }

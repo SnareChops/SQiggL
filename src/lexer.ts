@@ -350,7 +350,7 @@ export class Lexer{
             return input[start];
         } else {
             nextSpace = input.indexOf(' ', start);
-            if(input[nextSpace-1] === ')') return input[nextSpace-1];
+            if(input[nextSpace-1] === ')') return input.slice(start, nextSpace-1);
             return input.slice(start, nextSpace > 0 ? nextSpace : input.length);
         }
     }

@@ -5,6 +5,7 @@ import {Modifier} from '../modifiers';
 import {SQiggLError} from "../error";
 import {ExpressionValue} from "../expressions";
 import {IterableExpression} from '../expressions';
+import {resolveValue} from '../resolvers';
 
 /**
  * The lexer responsible for all Expression DSL generation.
@@ -186,8 +187,8 @@ export class ExpressionLexer{
                 /* Rule: J1 */
                 if(!!joiner) dsl.joiner = joiner;
                 dsl.expression = expression;
-                dsl.values = <ExpressionValue[]><any>clone.filter(x => typeof x !== 'object');
-                dsl.modifiers = this.sortAndExtractModifiers(<OrderedModifier[]><any[]>clone.filter(x => typeof x === 'object'));
+                dsl.values = <ExpressionValue[]><any>clone.filter(x => typeof x === 'string' || !!(<DSLExpression>x).expression);
+                dsl.modifiers = this.sortAndExtractModifiers(<OrderedModifier[]><any[]>clone.filter(x => typeof x === 'object' && !(<DSLExpression>x).expression));
                 break;
             }
         }
