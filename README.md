@@ -112,7 +112,7 @@ Replacements are surrounded by `{ }`
 `{var > 13}`    |   `15`        | `1` *`1` is `true` in SQL*
 
 *Notes:*
-* Only 1 replacement is allowed per `{ }`. *Support for `and`, `or`, and complex expressions coming soon.*
+* Only 1 replacement is allowed per `{ }`. *Complex expressions are supported but have a few caveats. See [Expressions](#expressions) for more details.*
 
 ### Expressions
 
@@ -139,6 +139,13 @@ expression| rule                     | example
 `abc<`    | lexical less than        | `'Cat' abc< 'Dragon'`
 `><`      | between                  | `10 5 >< 15`
 
+The following value expressions are supported:
+
+```
+if (<boolean expression>) then <value> else <value>
+(<boolean expression>) ? <value> : <value>
+```
+
 The only iterable expression supported at the moment is
 
 ```
@@ -156,7 +163,10 @@ separated by the `<joiner>`
 
 *Notes:*
 * Arithmetic is not currently supported.
-* Expressions cannot currently be grouped or nested at this time
+* Complex expressions are supported but have a few caveats.
+
+For any given Expression you may substitute any `<value>` with another expression by wrapping the expression in `( )`.
+Conjunctions within these nested expressions are not supported at the moment, but will be comming soon.
 
 ### Conjunctions
 
@@ -169,7 +179,6 @@ conjunction | rule
 `&&`        | Same as `and`
 `or`        | True if any of the conditions pass
 `||`        | Same as `or`
-
 
 ### Variables
 
@@ -219,7 +228,7 @@ features are coming soon.
 SQiggL can be configured and includes the following options that can be passed in as an object in the third argument to `invoke()`.
 
  option                  | type            | default | description
--------------------------|-----------------|---------|-
+-------------------------|-----------------|---------|---------------------------------------------------------------
 `leftWrapperChar`        | `string`        | `{`     | Sets the left wrapper character to use for SQiggL statements.
 `rightWrapperChar`       | `string`        | `}`     | Sets the right wrapper character to use for SQiggL statements.
 `commandChar`            | `string`        | `%`     | Sets the character to denote a command statement
@@ -245,16 +254,28 @@ modifiers, and other core features. Once the official 1.0 release drops there wi
 here explaining how. *Technically it's possible to extend SQiggL now, the hooks are in the options, but
 actual support for this will come when the API stabilizes*
 
-## Milestone 0.5 features:
-
-This update will add ternary statements to the language `if myVar > 12 then myVar else otherVar`.
-The other common syntax will also be supported `myVar > 12 ? myVar : otherVar`.
-
 ## Milestone 0.6 features:
 
-This update will add basic arithmetic to expressions and hopefully the ability to nest expressions within
-other expressions.
+This update will add basic arithmetic to expressions and the ability to use conjunctions with nested expressions.
 
 ## Milestone 0.7 features:
 
 This update will add a CLI interface.
+
+## Milestone 0.8 features:
+
+This update will add official extensibility support in preparation for 1.0. Docs will be updated and examples included
+as well as a beta API for attaching plugins.
+
+## Spanish SQiggL:
+
+To provide an example, proof of concept, as well as the full flexibility of the language I will be releasing a Spanish
+SQiggL plugin that will take the core library and override it with spanish translations. Any part of SQiggL's core library
+can be replaced or added to. This is the flexibility I was after and will be proud to demo this for all.
+
+## 1.0.0 !!!
+
+We're getting closer to the full release of SQiggL. In preparation for this all code, documentation, and guides will be
+given a full comb through to ensure the best quality launch possible for this product. If you have any ideas or suggestions
+that should be considered before the final release please submit an issue with the idea. I am creating SQiggL for you, so
+your input is extremely important.
