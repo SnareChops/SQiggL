@@ -6,6 +6,11 @@ Once 1.x is released, all breaking changes will bump the Major version to adhere
 
 ## [Unreleased]
 
+## [0.5.0]
+- Added support for nested expressions in any position that would accept a VALUE
+- Added resolvers to help with scope resolution and value resolution
+- Added validators to help with checking elements for syntax errors (incomplete)
+
 ## [0.4.0]
 - Added support for new concept "Conjunctions".
 - Added generic "End" action for all core Actions.
