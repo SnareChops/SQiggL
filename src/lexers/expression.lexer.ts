@@ -45,6 +45,14 @@ export class ExpressionLexer{
      * - Rule V1: If the template declares a VALUE then advance the indexes to the next parts.
      *   Values can't be matched against the template since they are user defined.
      *
+     * - Rule V2: If a `(` is found in the first position of a VALUE then this is to be treated
+     *   as an expression and the DSLExpression should be used as the VALUE of the current
+     *   expression, which will then be parsed for a final true value to be used for this expression
+     *   by the parser.
+     *
+     * - Rule V3: dsl.values should store all strings, booleans, numbers, or DSLExpressions left in
+     *   the clone at this point.
+     *
      * - Rule S1: If the template declares a SPACE then compare the current item in the clone
      *   with the SPACE. If they are not equal then NO MATCH. Set isMatch to false and break the
      *   loop to try the next expression.
@@ -68,6 +76,9 @@ export class ExpressionLexer{
      * - Rule M5: If a modifier is successfully matched then inject it into the clone for
      *   eventual output in the DSL.
      *
+     * - Rule M6: Any objects in the clone that do not match rule V3 will be considered OrderedModifiers and
+     *   will be sorted by their order, then the now Modifiers will be placed in order in the dsl.modifiers array.
+     *
      * - Rule O1: If an operator is declared in the template compare the "Part" against the
      *   operator. match only the same amount of characters as a modifier may follow the
      *   operator in the same "Part".
@@ -88,9 +99,8 @@ export class ExpressionLexer{
      * - If no matching expression is found then throw an error.
      *
      * @internal
-     * @param dsl {DSLExpression} - The DSL to which to append the found DSLExpression
      * @param parts {string} - The expression "Parts" as found in the replacement or command
-     * @returns {DSLExpression} - The appended DSLExpression with all found expression properties.
+     * @returns {DSLExpression} - The DSLExpression with all found expression properties.
      */
     public invoke(parts: string[]): DSLExpression{
         let dsl: DSLExpression = {literal: this.craftLiteralFromParts(parts), expression: null},
@@ -128,6 +138,7 @@ export class ExpressionLexer{
                     eidx++;
                 } else if(ePart === VALUE) {
                     if(clone[pidx] === '('){
+                        /* Rule: V2 */
                         let expressionDSL: DSLExpression = this.resolveExpressionAsValue(<string[]>clone, pidx);
                         if(!!expressionDSL) clone.splice(pidx, 0, expressionDSL);
                     }
@@ -187,7 +198,9 @@ export class ExpressionLexer{
                 /* Rule: J1 */
                 if(!!joiner) dsl.joiner = joiner;
                 dsl.expression = expression;
+                /* Rule: V3 */
                 dsl.values = <ExpressionValue[]><any>clone.filter(x => typeof x === 'string' || !!(<DSLExpression>x).expression);
+                /* Rule: M */
                 dsl.modifiers = this.sortAndExtractModifiers(<OrderedModifier[]><any[]>clone.filter(x => typeof x === 'object' && !(<DSLExpression>x).expression));
                 break;
             }

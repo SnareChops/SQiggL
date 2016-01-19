@@ -93,7 +93,7 @@ SQiggL currently supports the following actions: *with more coming soon*
 
 *Notes:*
 * An Action **must** be the first word in a command
-* Only 1 action/expression pair may be defined in a single `{% }`. *Support for `and`, `or`, and complex expressions coming soon.*
+* Only 1 action/expression pair may be defined in a single `{% }`. *See [Conjunctions](#conjunctions) for information about complex expressions*
 * The `%` character is the default but is customizable. See [Configuration](#configuration) for more information.
 * Custom actions may be added to provide more features. See [Extensible](#extensible) for more information.
 
@@ -146,7 +146,7 @@ if (<boolean expression>) then <value> else <value>
 (<boolean expression>) ? <value> : <value>
 ```
 
-The only iterable expression supported at the moment is
+The only iterable expression supported at the moment is:
 
 ```
 <var> of <collection> using <joiner>
@@ -252,7 +252,7 @@ SQiggL can be configured and includes the following options that can be passed i
 SQiggL is an extensible language, in the future you will be able to add in new actions, expressions,
 modifiers, and other core features. Once the official 1.0 release drops there will be plugin instructions
 here explaining how. *Technically it's possible to extend SQiggL now, the hooks are in the options, but
-actual support for this will come when the API stabilizes*
+actual support for this will come when the API stabilizes, extension API is subject to change without notice until 1.0*
 
 ## Milestone 0.6 features:
 

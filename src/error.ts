@@ -9,5 +9,6 @@
  */
 export function SQiggLError(code: string, message: string, bug: boolean = false){
     if(!bug) return new Error(`SQiggLError - ${code}: ${message}`);
+    /* istanbul ignore next */
     return new Error(`SQiggLError - ${code}: ${message}. This is most likely a bug in SQiggL itself. Please create an issue at github.com/SnareChops/SQiggL/issues with this message and an example query that produces this error.`);
 }

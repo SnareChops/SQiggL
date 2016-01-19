@@ -26,6 +26,6 @@ function parse(query: string, variables?: Object, options?: SQiggLOptions): stri
 /**
  * The SQiggL library export.
  *
- * @type {{parse: (function(string, ScopedVariables=, SQiggLOptions=): string)}}
+ * @type {{parse: (function(string, ScopedVariables?, SQiggLOptions?): string)}}
  */
 export const SQiggL = {parse: parse};

@@ -118,7 +118,7 @@ result.should.equal(false);</code></pre></dd>
             <dd><pre><code>var result = expressions_1.Coalesce.rule(['Hello', 'World']);
 result.should.equal('Hello');</code></pre></dd>
             <dt>should return the second value if the first is null</dt>
-            <dd><pre><code>var result = expressions_1.Coalesce.rule([null, 'World']);
+            <dd><pre><code>var result = expressions_1.Coalesce.rule([void 0, 'World']);
 result.should.equal('World');</code></pre></dd>
           </dl>
         </section>
@@ -130,6 +130,28 @@ result.should.equal('World');</code></pre></dd>
 result[0].should.equal('hairy');
 result[1].should.equal('furry');
 result[2].should.equal('fuzzy');</code></pre></dd>
+          </dl>
+        </section>
+        <section class="suite">
+          <h1>VerboseTernary</h1>
+          <dl>
+            <dt>should return the second value if true</dt>
+            <dd><pre><code>var result = expressions_1.VerboseTernary.rule([true, 'Hello', 'World']);
+result.should.equal('Hello');</code></pre></dd>
+            <dt>should return the third value if false</dt>
+            <dd><pre><code>var result = expressions_1.VerboseTernary.rule([false, 'Hello', 'World']);
+result.should.equal('World');</code></pre></dd>
+          </dl>
+        </section>
+        <section class="suite">
+          <h1>Ternary</h1>
+          <dl>
+            <dt>should return the second value if true</dt>
+            <dd><pre><code>var result = expressions_1.Ternary.rule([true, 'Hello', 'World']);
+result.should.equal('Hello');</code></pre></dd>
+            <dt>should return the third value if false</dt>
+            <dd><pre><code>var result = expressions_1.Ternary.rule([false, 'Hello', 'World']);
+result.should.equal('World');</code></pre></dd>
           </dl>
         </section>
       </dl>
@@ -191,11 +213,11 @@ result[2].should.equal('fuzzy');</code></pre></dd>
           <dl>
             <dt>should return the inner scope if the expression is true</dt>
             <dd><pre><code>var dsl = [{ text: 'Hello World' }];
-var result = actions_1.If.rule({ value: true }, null, dsl, new parser_1.Parser(parser_1.DEFAULT_PARSER_OPTIONS));
+var result = actions_1.If.rule({ value: true }, null, resolvers_1.getScopeResolver(parser_1.DEFAULT_PARSER_OPTIONS, dsl, variables));
 result.should.equal('Hello World');</code></pre></dd>
             <dt>should return null if the expression is false</dt>
             <dd><pre><code>var dsl = [{ text: 'Hello World' }];
-var result = actions_1.If.rule({ value: false }, null, dsl, new parser_1.Parser(parser_1.DEFAULT_PARSER_OPTIONS));
+var result = actions_1.If.rule({ value: false }, null, resolvers_1.getScopeResolver(parser_1.DEFAULT_PARSER_OPTIONS, dsl, variables));
 should(result).equal(null);</code></pre></dd>
           </dl>
         </section>
@@ -204,11 +226,11 @@ should(result).equal(null);</code></pre></dd>
           <dl>
             <dt>should return null if the expression is true</dt>
             <dd><pre><code>var dsl = [{ text: 'Hello World' }];
-var result = actions_1.Unless.rule({ value: true }, null, dsl, new parser_1.Parser(parser_1.DEFAULT_PARSER_OPTIONS));
+var result = actions_1.Unless.rule({ value: true }, null, resolvers_1.getScopeResolver(parser_1.DEFAULT_PARSER_OPTIONS, dsl, variables));
 should(result).equal(null);</code></pre></dd>
             <dt>should return the inner scope if the expression is false</dt>
             <dd><pre><code>var dsl = [{ text: 'Hello World' }];
-var result = actions_1.Unless.rule({ value: false }, null, dsl, new parser_1.Parser(parser_1.DEFAULT_PARSER_OPTIONS));
+var result = actions_1.Unless.rule({ value: false }, null, resolvers_1.getScopeResolver(parser_1.DEFAULT_PARSER_OPTIONS, dsl, variables));
 result.should.equal('Hello World');</code></pre></dd>
           </dl>
         </section>
@@ -217,11 +239,11 @@ result.should.equal('Hello World');</code></pre></dd>
           <dl>
             <dt>should return the inner scope if the expression is true</dt>
             <dd><pre><code>var dsl = [{ text: 'Hello World' }];
-var result = actions_1.Else.rule({ value: true }, null, dsl, new parser_1.Parser(parser_1.DEFAULT_PARSER_OPTIONS));
+var result = actions_1.Else.rule({ value: true }, null, resolvers_1.getScopeResolver(parser_1.DEFAULT_PARSER_OPTIONS, dsl, variables));
 result.should.equal('Hello World');</code></pre></dd>
             <dt>should return the inner scope if the expression is false</dt>
             <dd><pre><code>var dsl = [{ text: 'Hello World' }];
-var result = actions_1.Else.rule({ value: false }, null, dsl, new parser_1.Parser(parser_1.DEFAULT_PARSER_OPTIONS));
+var result = actions_1.Else.rule({ value: false }, null, resolvers_1.getScopeResolver(parser_1.DEFAULT_PARSER_OPTIONS, dsl, variables));
 result.should.equal('Hello World');</code></pre></dd>
           </dl>
         </section>
@@ -230,11 +252,11 @@ result.should.equal('Hello World');</code></pre></dd>
           <dl>
             <dt>should return the inner scope as many times as there are values and combining them with the joiner</dt>
             <dd><pre><code>var dsl = [{ text: 'Hello World' }];
-var result = actions_1.For.rule({ value: ['1', '2', '3'], iterable: { local: 'var', joiner: '\',\'' } }, void 0, dsl, new parser_1.Parser(parser_1.DEFAULT_PARSER_OPTIONS));
+var result = actions_1.For.rule({ value: ['1', '2', '3'], iterable: { local: 'var', joiner: ',' } }, variables, resolvers_1.getScopeResolver(parser_1.DEFAULT_PARSER_OPTIONS, dsl, variables));
 result.should.equal('Hello World, Hello World, Hello World');</code></pre></dd>
             <dt>should iterate the inner scope and correctly replace the inner values using the expressionResult</dt>
             <dd><pre><code>var dsl = [{ text: 'Iteration ' }, { replacement: { literal: 'var' } }];
-var result = actions_1.For.rule({ value: ['1', '2', '3'], iterable: { local: 'var', joiner: '\',\'' } }, void 0, dsl, new parser_1.Parser(parser_1.DEFAULT_PARSER_OPTIONS));
+var result = actions_1.For.rule({ value: ['1', '2', '3'], iterable: { local: 'var', joiner: ',' } }, variables, resolvers_1.getScopeResolver(parser_1.DEFAULT_PARSER_OPTIONS, dsl, variables));
 result.should.equal('Iteration 1, Iteration 2, Iteration 3');</code></pre></dd>
           </dl>
         </section>
@@ -274,6 +296,25 @@ result.should.equal(true);</code></pre></dd>
       </dl>
     </section>
     <section class="suite">
+      <h1>Resolvers</h1>
+      <dl>
+        <dt>should correctly output a string literal using single quotes</dt>
+        <dd><pre><code>var result = resolvers_1.resolveValue('\'Hello\'', void 0, parser_1.DEFAULT_PARSER_OPTIONS);
+result.should.equal('Hello');</code></pre></dd>
+        <dt>should correctly output a string literal using double quotes</dt>
+        <dd><pre><code>var result = resolvers_1.resolveValue('&quot;Hello&quot;', void 0, parser_1.DEFAULT_PARSER_OPTIONS);
+result.should.equal('Hello');</code></pre></dd>
+        <dt>should correctly output a number literal</dt>
+        <dd><pre><code>var result = resolvers_1.resolveValue('12', void 0, parser_1.DEFAULT_PARSER_OPTIONS);
+result.should.equal('12');</code></pre></dd>
+        <dt>should correctly output a found variable value</dt>
+        <dd><pre><code>var result = resolvers_1.resolveValue('cat', new variables_1.ScopedVariables({ cat: 'Dragon' }), parser_1.DEFAULT_PARSER_OPTIONS);
+result.should.equal('Dragon');</code></pre></dd>
+        <dt>should throw an error if a variable value is undefined</dt>
+        <dd><pre><code>(function () { return resolvers_1.resolveValue('cat', new variables_1.ScopedVariables({ dragon: 'Fish' }), parser_1.DEFAULT_PARSER_OPTIONS); }).should.throw('SQiggLError - P1000: cat is not a defined variable in this scope');</code></pre></dd>
+      </dl>
+    </section>
+    <section class="suite">
       <h1>ExpressionLexer</h1>
       <dl>
         <dt>should return a DSLExpression with a local if an expression contains a local variable</dt>
@@ -287,6 +328,10 @@ result.joiner.should.equal('\',\'');</code></pre></dd>
         <dt>should throw an error if an expression cannot be found</dt>
         <dd><pre><code>var parts = ['blah', ' ', 'blah', ' ', 'blah'];
 (function () { return instance.invoke(parts); }).should.throw(&quot;SQiggLError - LE2000: Unable to determine expression type of 'blah blah blah'&quot;);</code></pre></dd>
+        <dt>should locate a sub expression in a value field and generate the DSL in the values array</dt>
+        <dd><pre><code>var parts = ['if', ' ', '(', '12', ' ', '&gt;', ' ', '13', ')', ' ', 'then', ' ', '\'Hello\'', ' ', 'else', ' ', '\'World\''];
+var result = instance.invoke(parts);
+result.values[0].expression.should.not.equal(void 0);</code></pre></dd>
       </dl>
     </section>
     <section class="suite">
@@ -334,7 +379,6 @@ result.value.should.equal(&quot;'Dragon's breath'&quot;);</code></pre></dd>
         <dd><pre><code>var input = &quot;key:\&quot;Dragon\\\&quot;s breath\&quot;&quot;;
 var result = lexer.invoke(input);
 result.value.should.equal(&quot;\&quot;Dragon\&quot;s breath\&quot;&quot;);</code></pre></dd>
-key:'one', 'two', 'three'
         <dt>should correctly handle a variable value of an array of strings</dt>
         <dd><pre><code>var input = &quot;key:['one', 'two', 'three']&quot;;
 var result = lexer.invoke(input);
@@ -374,36 +418,30 @@ var query = 'SELECT * FROM {% if 12 &gt; 13 } Test';
         <dd><pre><code>var query = 'SELECT * FROM {\'Table}';
 (function () { return instance.invoke(query); }).should.throw('SQiggLError - L1006: Invalid string found in \'Table');</code></pre></dd>
         <dt>should correctly handle a custom action</dt>
-        <dd><pre><code>var replaceAction = {
-    key: 'replace',
-    rule: function (expressionResult, variables, scope, parser) {
-        return parser.invoke([{ text: expressionResult.value }]);
-    }
-};
-var endAction = { key: 'endreplace', dependents: [replaceAction] };
+        <dd><pre><code>var replaceAction = new actions_1.StartingAction('ReplaceAction', 'replace', function (expressionResult, variables, resolveScope) {
+    return resolveScope();
+});
+var endAction = new actions_1.TerminatingAction('EndReplaceAction', 'endreplace', [replaceAction]);
 var lexer = new lexer_1.Lexer({ customActions: [replaceAction, endAction] });
 var query = '{% replace \'Hello World\'} SELECT * FROM Table {%endreplace}';
 var result = lexer.invoke(query);
 result[0].command.action.should.equal(replaceAction);
 result[1].command.action.should.equal(endAction);</code></pre></dd>
         <dt>should correctly handle a custom expression</dt>
-        <dd><pre><code>var testExpression = {
-    template: [expressions_1.VALUE, expressions_2.SPACE, 'blah', expressions_2.SPACE, expressions_1.VALUE],
-    rule: function (values) { return (+values[0]) &gt; (+values[1]); }
-};
+        <dd><pre><code>var testExpression = new expressions_1.BooleanExpression([expressions_1.VALUE, expressions_1.SPACE, 'blah', expressions_1.SPACE, expressions_1.VALUE], function (values) {
+    return (+values[0]) &gt; (+values[1]);
+});
 var lexer = new lexer_1.Lexer({ customExpressions: [testExpression] });
 var query = '{12 blah 13}';
 var result = lexer.invoke(query);
 result[0].replacement.expressions.branches[0].expression.should.equal(testExpression);</code></pre></dd>
         <dt>should correctly handle a custom modifier</dt>
-        <dd><pre><code>var testModifier = {
-    identifiers: ['!'],
-    rule: function (prevResult, values) { return !prevResult; }
-};
-var testExpression = {
-    template: [expressions_1.VALUE, expressions_2.SPACE, [{ 0: testModifier }], 'blah', expressions_2.SPACE, expressions_1.VALUE],
-    rule: function (values) { return (+values[0]) &gt; (+values[1]); }
-};
+        <dd><pre><code>var testModifier = new modifiers_1.BooleanModifier(['!'], function (prevResult, values) {
+    return !prevResult;
+});
+var testExpression = new expressions_1.BooleanExpression([expressions_1.VALUE, expressions_1.SPACE, [{ 0: testModifier }], 'blah', expressions_1.SPACE, expressions_1.VALUE], function (values) {
+    return (+values[0]) &gt; (+values[1]);
+});
 var lexer = new lexer_1.Lexer({ customExpressions: [testExpression], customModifiers: [testModifier] });
 var query = '{12 !blah 13}';
 var result = lexer.invoke(query);
@@ -626,19 +664,19 @@ result[0].replacement.expressions.branches[0].values[1].should.equal('13');</cod
           <dl>
             <dt>should correctly return false if an expression should be false</dt>
             <dd><pre><code>var dsl = { expression: expressions_1.GreaterThan, values: ['12', '13'], literal: '12 &gt; 13' };
-var result = new expression_parser_1.ExpressionParser(parser_1.DEFAULT_PARSER_OPTIONS).invoke(dsl, {});
+var result = new expression_parser_1.ExpressionParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, new variables_1.ScopedVariables());
 result.value.should.equal(false);</code></pre></dd>
             <dt>should correctly return true if an expression should be true</dt>
             <dd><pre><code>var dsl = { literal: '13 &gt; 12', expression: expressions_1.GreaterThan, values: ['13', '12'] };
-var result = new expression_parser_1.ExpressionParser(parser_1.DEFAULT_PARSER_OPTIONS).invoke(dsl, {});
+var result = new expression_parser_1.ExpressionParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, new variables_1.ScopedVariables());
 result.value.should.eql(true);</code></pre></dd>
             <dt>should output the result of a boolean expression with variables</dt>
             <dd><pre><code>var dsl = { literal: 'high &gt; low', expression: expressions_1.GreaterThan, values: ['high', 'low'] };
-var result = new expression_parser_1.ExpressionParser(parser_1.DEFAULT_PARSER_OPTIONS).invoke(dsl, { high: 13, low: 12 });
+var result = new expression_parser_1.ExpressionParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, new variables_1.ScopedVariables({ high: 13, low: 12 }));
 result.value.should.eql(true);</code></pre></dd>
             <dt>should correctly return true if an expression is false but then negated with a modifier</dt>
             <dd><pre><code>var dsl = { literal: '12 &gt; 13', expression: expressions_1.GreaterThan, values: ['12', '13'], modifiers: [modifiers_1.Not] };
-var result = new expression_parser_1.ExpressionParser(parser_1.DEFAULT_PARSER_OPTIONS).invoke(dsl, {});
+var result = new expression_parser_1.ExpressionParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, new variables_1.ScopedVariables());
 result.value.should.eql(true);</code></pre></dd>
           </dl>
         </section>
@@ -650,13 +688,13 @@ result.value.should.eql(true);</code></pre></dd>
         <dt>should return an ExpressionResult</dt>
         <dd><pre><code>var expression = { literal: '13 &gt; 12', expression: expressions_1.GreaterThan, values: ['13', '12'] };
 var dsl = { branches: [expression] };
-var result = instance.invoke(dsl, {});
+var result = instance.parse(dsl, new variables_1.ScopedVariables());
 result.value.should.equal(true);</code></pre></dd>
         <dt>should return a correct result of an expression with a conjunction</dt>
         <dd><pre><code>var expression1 = { literal: '13 &gt; 12', expression: expressions_1.GreaterThan, values: ['13', '12'] };
 var expression2 = { literal: '13 &lt; 12', expression: expressions_1.LessThan, values: ['13', '12'] };
 var dsl = { branches: [expression1, expression2], conjunctions: [conjunctions_1.AndConjunction] };
-var result = instance.invoke(dsl, {});
+var result = instance.parse(dsl, new variables_1.ScopedVariables());
 result.value.should.equal(false);</code></pre></dd>
       </dl>
     </section>
@@ -668,19 +706,19 @@ result.value.should.equal(false);</code></pre></dd>
 var expressionTree = { branches: [booleanExpression] };
 var dsl = { literal: 'if 12 &gt; 13', action: actions_1.If, expressions: expressionTree };
 var scope = [{ text: 'Hello World' }];
-var result = new command_parser_1.CommandParser(parser_1.DEFAULT_PARSER_OPTIONS).invoke(dsl, scope, {});
+var result = new command_parser_1.CommandParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, scope, new variables_1.ScopedVariables());
 result.should.equal('');</code></pre></dd>
         <dt>should correctly return a string in a StartingAction that is true</dt>
         <dd><pre><code>var booleanExpression = { literal: '13 &gt; 12', expression: expressions_1.GreaterThan, values: ['13', '12'] };
 var expressionTree = { branches: [booleanExpression] };
 var dsl = { literal: 'if 13 &gt; 12', action: actions_1.If, expressions: expressionTree };
 var scope = [{ text: 'Hello World' }];
-var result = new command_parser_1.CommandParser(parser_1.DEFAULT_PARSER_OPTIONS).invoke(dsl, scope, {});
+var result = new command_parser_1.CommandParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, scope, new variables_1.ScopedVariables());
 result.should.equal('Hello World');</code></pre></dd>
         <dt>should correctly return a string in a DependentAction</dt>
         <dd><pre><code>var dsl = { literal: 'else', action: actions_1.Else };
 var scope = [{ text: 'Merry Christmas' }];
-var result = new command_parser_1.CommandParser(parser_1.DEFAULT_PARSER_OPTIONS).invoke(dsl, scope, {});
+var result = new command_parser_1.CommandParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, scope, new variables_1.ScopedVariables());
 result.should.equal('Merry Christmas');</code></pre></dd>
         <dt>should correctly return a string for an IterableCommand</dt>
         <dd><pre><code>var iterableExpression = { literal: 'cat of catTypes using \',\'', expression: expressions_1.IterableOfUsing, local: 'cat', values: [['hairy', 'furry', 'fuzzy']], joiner: '\',\'' };
@@ -689,7 +727,7 @@ var commandDSL = { literal: 'for cat of catTypes using \', \'', action: actions_
 var textDSL = { text: 'Hello ' };
 var replacementDSL = { literal: 'cat', expressions: null };
 var scope = [textDSL, { replacement: replacementDSL }];
-var result = new command_parser_1.CommandParser(parser_1.DEFAULT_PARSER_OPTIONS).invoke(commandDSL, scope, {});
+var result = new command_parser_1.CommandParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(commandDSL, scope, new variables_1.ScopedVariables());
 result.should.equal('Hello hairy, Hello furry, Hello fuzzy');</code></pre></dd>
       </dl>
     </section>
@@ -701,39 +739,39 @@ result.should.equal('Hello hairy, Hello furry, Hello fuzzy');</code></pre></dd>
           <dl>
             <dt>should output a literal string</dt>
             <dd><pre><code>var dsl = { literal: '\'Test string\'' };
-var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).invoke(dsl);
+var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, new variables_1.ScopedVariables());
 result.should.eql('Test string');</code></pre></dd>
             <dt>should output a literal number</dt>
             <dd><pre><code>var dsl = { literal: '12' };
-var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).invoke(dsl);
+var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, new variables_1.ScopedVariables());
 result.should.eql('12');</code></pre></dd>
             <dt>should output a variable value</dt>
             <dd><pre><code>var dsl = { literal: 'dragon' };
-var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).invoke(dsl, { dragon: 'Pet' });
+var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, new variables_1.ScopedVariables({ dragon: 'Pet' }));
 result.should.eql('Pet');</code></pre></dd>
             <dt>should output the result of a boolean expression</dt>
             <dd><pre><code>var booleanExpression = { literal: '12 &gt; 13', expression: expressions_1.GreaterThan, values: ['12', '13'] };
 var expressionTree = { branches: [booleanExpression] };
 var dsl = { literal: '12 &gt; 13', expressions: expressionTree };
-var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).invoke(dsl);
+var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, new variables_1.ScopedVariables());
 result.should.eql('0');</code></pre></dd>
             <dt>should output the result of a boolean expression with variables</dt>
             <dd><pre><code>var booleanExpression = { literal: 'high &gt; low', expression: expressions_1.GreaterThan, values: ['high', 'low'] };
 var expressionTree = { branches: [booleanExpression] };
 var dsl = { literal: 'high &gt; low', expressions: expressionTree };
-var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).invoke(dsl, { high: 13, low: 12 });
+var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, new variables_1.ScopedVariables({ high: 13, low: 12 }));
 result.should.eql('1');</code></pre></dd>
             <dt>should output the result of an IterableExpression correctly</dt>
-            <dd><pre><code>var iterableExpression = { literal: 'cat of catTypes using \',\'', expression: expressions_2.IterableOfUsing, local: 'cat', values: [['hairy', 'furry', 'fuzzy']], joiner: '\',\'' };
+            <dd><pre><code>var iterableExpression = { literal: 'cat of catTypes using \',\'', expression: expressions_1.IterableOfUsing, local: 'cat', values: [['hairy', 'furry', 'fuzzy']], joiner: '\',\'' };
 var expressionTree = { branches: [iterableExpression] };
 var dsl = { literal: 'cat of catTypes using \',\'', expressions: expressionTree };
-var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).invoke(dsl);
+var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, new variables_1.ScopedVariables());
 result.should.equal('hairy, furry, fuzzy');</code></pre></dd>
             <dt>should output the result of an IterableExpression correctly using variables</dt>
-            <dd><pre><code>var iterableExpression = { literal: 'cat of catTypes using \',\'', expression: expressions_2.IterableOfUsing, local: 'cat', values: ['array'], joiner: 'joiner' };
+            <dd><pre><code>var iterableExpression = { literal: 'cat of catTypes using \',\'', expression: expressions_1.IterableOfUsing, local: 'cat', values: ['array'], joiner: 'joiner' };
 var expressionTree = { branches: [iterableExpression] };
 var dsl = { literal: 'cat of catTypes using \',\'', expressions: expressionTree };
-var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).invoke(dsl, { array: ['hairy', 'furry', 'fuzzy'], joiner: ',' });
+var result = new replacement_parser_1.ReplacementParser(parser_1.DEFAULT_PARSER_OPTIONS).parse(dsl, new variables_1.ScopedVariables({ array: ['hairy', 'furry', 'fuzzy'], joiner: ',' }));
 result.should.equal('hairy, furry, fuzzy');</code></pre></dd>
           </dl>
         </section>
@@ -751,7 +789,7 @@ var dsl = [
     { text: 'This is some text' },
     { comment: 'This is a comment' },
 ];
-var result = parser.invoke(dsl);
+var result = parser.parse(dsl);
 result.should.equal('This is some text');</code></pre></dd>
             <dt>should output comments if exportComments option is true</dt>
             <dd><pre><code>var parser = new parser_1.Parser({ exportComments: true });
@@ -759,7 +797,7 @@ var dsl = [
     { text: 'This is some text' },
     { comment: 'This is a comment' }
 ];
-var result = parser.invoke(dsl);
+var result = parser.parse(dsl);
 result.should.equal('This is some text/* This is a comment */');</code></pre></dd>
           </dl>
         </section>
@@ -768,7 +806,7 @@ result.should.equal('This is some text/* This is a comment */');</code></pre></d
           <dl>
             <dt>should output text untouched</dt>
             <dd><pre><code>var parser = new parser_1.Parser();
-var result = parser.invoke([{ text: 'this is a test string' }]);
+var result = parser.parse([{ text: 'this is a test string' }]);
 result.should.equal('this is a test string');</code></pre></dd>
           </dl>
         </section>
@@ -777,29 +815,10 @@ result.should.equal('this is a test string');</code></pre></dd>
           <dl>
             <dt>should resolve a variable in SQiggL query without an error</dt>
             <dd><pre><code>var parser = new parser_1.Parser();
-parser.invoke([{ variable: { literal: 'cat:&quot;meow&quot;', key: 'cat', value: '&quot;meow&quot;' } }]);</code></pre></dd>
+parser.parse([{ variable: { literal: 'cat:&quot;meow&quot;', key: 'cat', value: '&quot;meow&quot;' } }]);</code></pre></dd>
             <dt>should resolve a variable alias in a SQiggL query without an error</dt>
             <dd><pre><code>var parser = new parser_1.Parser();
-parser.invoke([{ variable: { literal: 'cat:sound', key: 'cat', value: 'sound' } }], { sound: 'meow' });</code></pre></dd>
-          </dl>
-        </section>
-        <section class="suite">
-          <h1>resolveValue</h1>
-          <dl>
-            <dt>should correctly output a string literal using single quotes</dt>
-            <dd><pre><code>var result = parser_1.Parser.resolveValue('\'Hello\'', null);
-result.should.equal('Hello');</code></pre></dd>
-            <dt>should correctly output a string literal using double quotes</dt>
-            <dd><pre><code>var result = parser_1.Parser.resolveValue('&quot;Hello&quot;', null);
-result.should.equal('Hello');</code></pre></dd>
-            <dt>should correctly output a number literal</dt>
-            <dd><pre><code>var result = parser_1.Parser.resolveValue('12', null);
-result.should.equal('12');</code></pre></dd>
-            <dt>should correctly output a found variable value</dt>
-            <dd><pre><code>var result = parser_1.Parser.resolveValue('cat', { cat: 'Dragon' });
-result.should.equal('Dragon');</code></pre></dd>
-            <dt>should throw an error if a variable value is undefined</dt>
-            <dd><pre><code>(function () { return parser_1.Parser.resolveValue('cat', { dragon: 'Fish' }); }).should.throw('SQiggLError - P1000: cat is not a defined variable in this scope');</code></pre></dd>
+parser.parse([{ variable: { literal: 'cat:sound', key: 'cat', value: 'sound' } }], new variables_1.ScopedVariables({ sound: 'meow' }));</code></pre></dd>
           </dl>
         </section>
       </dl>
@@ -808,55 +827,55 @@ result.should.equal('Dragon');</code></pre></dd>
       <h1>Scenarios</h1>
       <dl>
         <dt>should correctly output a completely non-special query untouched</dt>
-        <dd><pre><code>var result = SQiggL.invoke('SELECT * FROM Table');
+        <dd><pre><code>var result = SQiggL.parse('SELECT * FROM Table');
 result.should.equal('SELECT * FROM Table');</code></pre></dd>
         <dt>should correctly output a SQiggL query containing a comment (default)</dt>
-        <dd><pre><code>var result = SQiggL.invoke('SELECT * FROM Table {# this is the client\'s table}');
+        <dd><pre><code>var result = SQiggL.parse('SELECT * FROM Table {# this is the client\'s table}');
 result.should.equal('SELECT * FROM Table ');</code></pre></dd>
         <dt>should correctly output a SQiggL query containing a comment (export true)</dt>
-        <dd><pre><code>var result = SQiggL.invoke('SELECT * FROM Table {# this is the client\'s table}', null, { exportComments: true });
+        <dd><pre><code>var result = SQiggL.parse('SELECT * FROM Table {# this is the client\'s table}', void 0, { exportComments: true });
 result.should.equal('SELECT * FROM Table /* this is the client\'s table */');</code></pre></dd>
         <dt>should correctly output a SQiggL query containing a string literal replacement</dt>
-        <dd><pre><code>var result = SQiggL.invoke('SELECT * FROM {\'Table\'}');
+        <dd><pre><code>var result = SQiggL.parse('SELECT * FROM {\'Table\'}');
 result.should.equal('SELECT * FROM Table');</code></pre></dd>
         <dt>should correctly output a SQiggL query containing a number literal replacement</dt>
-        <dd><pre><code>var result = SQiggL.invoke('SELECT * FROM Table WHERE ID = {12}');
+        <dd><pre><code>var result = SQiggL.parse('SELECT * FROM Table WHERE ID = {12}');
 result.should.equal('SELECT * FROM Table WHERE ID = 12');</code></pre></dd>
         <dt>should correctly output a SQiggL query containing a variable replacement</dt>
-        <dd><pre><code>var result = SQiggL.invoke('SELECT * FROM Table WHERE ID = {id}', { id: 12 });
+        <dd><pre><code>var result = SQiggL.parse('SELECT * FROM Table WHERE ID = {id}', { id: 12 });
 result.should.equal('SELECT * FROM Table WHERE ID = 12');</code></pre></dd>
         <dt>should correctly output a SQiggL query containing a boolean expression with numbers</dt>
-        <dd><pre><code>var result = SQiggL.invoke('SELECT * FROM Table WHERE status = {12 &gt; 13}');
+        <dd><pre><code>var result = SQiggL.parse('SELECT * FROM Table WHERE status = {12 &gt; 13}');
 result.should.equal('SELECT * FROM Table WHERE status = 0');</code></pre></dd>
         <dt>should correctly output a SQiggL query containing a boolean expression with strings</dt>
-        <dd><pre><code>var result = SQiggL.invoke('SELECT * FROM Table WHERE status = {\'yes\' abc&gt; \'no\'}');
+        <dd><pre><code>var result = SQiggL.parse('SELECT * FROM Table WHERE status = {\'yes\' abc&gt; \'no\'}');
 result.should.equal('SELECT * FROM Table WHERE status = 1');</code></pre></dd>
         <dt>should correctly output a SQiggL query containing a value expression</dt>
-        <dd><pre><code>var result = SQiggL.invoke('SELECT * FROM {dev ?? prod}', { dev: 'DevTable' });
+        <dd><pre><code>var result = SQiggL.parse('SELECT * FROM {dev ?? prod}', { dev: 'DevTable' });
 result.should.equal('SELECT * FROM DevTable');</code></pre></dd>
         <dt>should correctly output a SQiggL query containing a coalesce</dt>
-        <dd><pre><code>var result = SQiggL.invoke('SELECT * FROM {dev ?? prod}', { prod: 'ProdTable' });
+        <dd><pre><code>var result = SQiggL.parse('SELECT * FROM {dev ?? prod}', { prod: 'ProdTable' });
 result.should.equal('SELECT * FROM ProdTable');</code></pre></dd>
         <dt>should correctly output a SQiggL query containing a StartingAction/TerminatingAction pair</dt>
-        <dd><pre><code>var result = SQiggL.invoke('SELECT * FROM Table {% if 13 &gt; 12 } WHERE status = 1 {% endif }');
+        <dd><pre><code>var result = SQiggL.parse('SELECT * FROM Table {% if 13 &gt; 12 } WHERE status = 1 {% endif }');
 result.should.equal('SELECT * FROM Table  WHERE status = 1 ');</code></pre></dd>
         <dt>should correctly output a SQiggL query containing a StartingAction, DependentAction, and TerminatingAction chain</dt>
-        <dd><pre><code>var result = SQiggL.invoke('SELECT * FROM Table {% if 12 &gt; 13 } WHERE status = 1 {% else } WHERE status = 0 {% endif }');
+        <dd><pre><code>var result = SQiggL.parse('SELECT * FROM Table {% if 12 &gt; 13 } WHERE status = 1 {% else } WHERE status = 0 {% endif }');
 result.should.equal('SELECT * FROM Table  WHERE status = 0 ');</code></pre></dd>
         <dt>should correctly output a SQiggL query containing a conjunction in an expression</dt>
-        <dd><pre><code>var result = SQiggL.invoke('SELECT * FROM Table {% if 13 &gt; 12 and 15 &lt; 100 } WHERE Status = 1 {% endif }');
+        <dd><pre><code>var result = SQiggL.parse('SELECT * FROM Table {% if 13 &gt; 12 and 15 &lt; 100 } WHERE Status = 1 {% endif }');
 result.should.equal('SELECT * FROM Table  WHERE Status = 1 ');</code></pre></dd>
         <section class="suite">
           <h1>generic 'end'</h1>
           <dl>
             <dt>should work with 'if'</dt>
-            <dd><pre><code>var result = SQiggL.invoke('SELECT * FROM Table {% if 13 &gt; 12} WHERE status = 0 {% end }');
+            <dd><pre><code>var result = SQiggL.parse('SELECT * FROM Table {% if 13 &gt; 12} WHERE status = 0 {% end }');
 result.should.equal('SELECT * FROM Table  WHERE status = 0 ');</code></pre></dd>
             <dt>should work with 'unless'</dt>
-            <dd><pre><code>var result = SQiggL.invoke('SELECT * FROM Table {% unless 13 &lt; 12} WHERE status = 0 {% end }');
+            <dd><pre><code>var result = SQiggL.parse('SELECT * FROM Table {% unless 13 &lt; 12} WHERE status = 0 {% end }');
 result.should.equal('SELECT * FROM Table  WHERE status = 0 ');</code></pre></dd>
             <dt>should work with 'for'</dt>
-            <dd><pre><code>var result = SQiggL.invoke('SELECT * FROM Table WHERE {% for var of array using \'AND\'} id = {var} {% end }', { array: ['1', '2', '3'] });
+            <dd><pre><code>var result = SQiggL.parse('SELECT * FROM Table WHERE {% for var of array using \'AND\'} id = {var} {% end }', { array: ['1', '2', '3'] });
 result.should.equal('SELECT * FROM Table WHERE  id = 1 AND  id = 2 AND  id = 3 ');</code></pre></dd>
           </dl>
         </section>
@@ -872,10 +891,10 @@ result.should.equal('SELECT * FROM Table WHERE  id = 1 AND  id = 2 AND  id = 3 '
               <h1>is null</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { penny: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { penny: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -883,10 +902,10 @@ result.should.equal(&quot;UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'&
               <h1>is not null</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { penny: '14' });
+                <dd><pre><code>var result = SQiggL.parse(query, { penny: '14' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -894,10 +913,10 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>is !null</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { penny: '14' });
+                <dd><pre><code>var result = SQiggL.parse(query, { penny: '14' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -905,10 +924,10 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>=</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '14' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '14' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -916,10 +935,10 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>==</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '14' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '14' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -927,10 +946,10 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>!=</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '14' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '14' });
 result.should.equal(&quot;UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -938,10 +957,10 @@ result.should.equal(&quot;UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'&
               <h1>!==</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '14' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '14' });
 result.should.equal(&quot;UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -949,13 +968,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'&
               <h1>&gt;</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '14' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '14' });
 result.should.equal(&quot;UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '9' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '9' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -963,13 +982,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>&gt;=</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '14' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '14' });
 result.should.equal(&quot;UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '9' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '9' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -977,13 +996,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>!&gt;</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '14' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '14' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '9' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '9' });
 result.should.equal(&quot;UPDATE Names  SET Name = '9'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -991,13 +1010,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = '9'  WHERE Name = 'Awesome'&q
               <h1>!&gt;=</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '14' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '14' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '9' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '9' });
 result.should.equal(&quot;UPDATE Names  SET Name = '9'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1005,13 +1024,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = '9'  WHERE Name = 'Awesome'&q
               <h1>&lt;</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '9' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '9' });
 result.should.equal(&quot;UPDATE Names  SET Name = '9'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '14' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '14' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1019,13 +1038,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>&lt;=</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '9' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '9' });
 result.should.equal(&quot;UPDATE Names  SET Name = '9'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '14' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '14' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1033,13 +1052,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>!&lt;</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '9' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '9' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '14' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '14' });
 result.should.equal(&quot;UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1047,13 +1066,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'&
               <h1>!&lt;=</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '9' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '9' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '14' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '14' });
 result.should.equal(&quot;UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1061,13 +1080,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'&
               <h1>abc&gt;</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'hello' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'hello' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'hello'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'dragon' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'dragon' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'awkward' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'awkward' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1075,13 +1094,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>abc&gt;=</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'hello' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'hello' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'hello'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'dragon' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'dragon' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'dragon'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'awkward' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'awkward' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1089,13 +1108,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>!abc&gt;</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'hello' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'hello' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'dragon' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'dragon' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'dragon'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'awkward' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'awkward' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'awkward'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1103,13 +1122,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'awkward'  WHERE Name = 'Awes
               <h1>!abc&gt;=</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'hello' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'hello' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'dragon' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'dragon' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'awkward' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'awkward' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'awkward'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1117,13 +1136,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'awkward'  WHERE Name = 'Awes
               <h1>abc&lt;</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'awkward' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'awkward' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'awkward'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'dragon' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'dragon' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'hello' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'hello' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1131,13 +1150,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>abc&lt;=</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'awkward' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'awkward' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'awkward'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'dragon' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'dragon' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'dragon'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'hello' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'hello' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1145,13 +1164,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>!abc&lt;</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'awkward' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'awkward' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'dragon' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'dragon' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'dragon'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'hello' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'hello' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'hello'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1159,13 +1178,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'hello'  WHERE Name = 'Awesom
               <h1>!abc&lt;=</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'awkward' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'awkward' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'dragon' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'dragon' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'hello' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'hello' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'hello'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1173,13 +1192,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'hello'  WHERE Name = 'Awesom
               <h1>len&gt;</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'palooza' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'palooza' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'palooza'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'sqiggl' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'sqiggl' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'fun' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'fun' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1187,13 +1206,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>len&gt;=</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'palooza' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'palooza' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'palooza'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'sqiggl' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'sqiggl' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'sqiggl'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'fun' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'fun' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1201,13 +1220,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>!len&gt;</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'palooza' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'palooza' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'sqiggl' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'sqiggl' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'sqiggl'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'fun' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'fun' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'fun'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1215,13 +1234,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'fun'  WHERE Name = 'Awesome'
               <h1>!len&gt;=</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'palooza' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'palooza' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'sqiggl' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'sqiggl' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'fun' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'fun' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'fun'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1229,13 +1248,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'fun'  WHERE Name = 'Awesome'
               <h1>len&lt;</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'fun' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'fun' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'fun'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'sqiggl' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'sqiggl' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'palooza' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'palooza' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1243,13 +1262,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>len&lt;=</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'fun' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'fun' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'fun'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'sqiggl' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'sqiggl' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'sqiggl'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'palooza' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'palooza' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1257,13 +1276,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>!len&lt;</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'fun' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'fun' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'sqiggl' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'sqiggl' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'sqiggl'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'palooza' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'palooza' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'palooza'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1271,13 +1290,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'palooza'  WHERE Name = 'Awes
               <h1>!len&lt;=</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'fun' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'fun' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'sqiggl' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'sqiggl' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'palooza' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'palooza' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'palooza'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1285,10 +1304,10 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'palooza'  WHERE Name = 'Awes
               <h1>is NaN</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'dragon' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'dragon' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1296,10 +1315,10 @@ result.should.equal(&quot;UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'&
               <h1>is not NaN</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'dragon' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'dragon' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1307,10 +1326,10 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>is !NaN</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'dragon' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'dragon' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1318,19 +1337,19 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>&gt;&lt;</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 15 });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 15 });
 result.should.equal(&quot;UPDATE Names  SET Name = '15'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal to the low number</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 10 });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 10 });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal to the high number</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 20 });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 20 });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if below the low number</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 5 });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 5 });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if above the high number</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 25 });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 25 });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1338,19 +1357,19 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>&gt;!&lt;</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 15 });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 15 });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal to the low number</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 10 });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 10 });
 result.should.equal(&quot;UPDATE Names  SET Name = '10'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal to the high number</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 20 });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 20 });
 result.should.equal(&quot;UPDATE Names  SET Name = '20'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if below the low number</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 5 });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 5 });
 result.should.equal(&quot;UPDATE Names  SET Name = '5'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if above the high number</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 25 });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 25 });
 result.should.equal(&quot;UPDATE Names  SET Name = '25'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1358,19 +1377,19 @@ result.should.equal(&quot;UPDATE Names  SET Name = '25'  WHERE Name = 'Awesome'&
               <h1>&gt;=&lt;</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 15 });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 15 });
 result.should.equal(&quot;UPDATE Names  SET Name = '15'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal to the low number</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 10 });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 10 });
 result.should.equal(&quot;UPDATE Names  SET Name = '10'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal to the high number</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 20 });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 20 });
 result.should.equal(&quot;UPDATE Names  SET Name = '20'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if below the low number</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 5 });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 5 });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if above the high number</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 25 });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 25 });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1383,10 +1402,10 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>is null</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { penny: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { penny: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1394,10 +1413,10 @@ result.should.equal(&quot;UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'&
               <h1>is not null</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { penny: '14' });
+                <dd><pre><code>var result = SQiggL.parse(query, { penny: '14' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1405,10 +1424,10 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>is !null</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { penny: '14' });
+                <dd><pre><code>var result = SQiggL.parse(query, { penny: '14' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1416,10 +1435,10 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>=</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '14' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '14' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1427,10 +1446,10 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>==</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '14' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '14' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1438,10 +1457,10 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>!=</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '14' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '14' });
 result.should.equal(&quot;UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1449,10 +1468,10 @@ result.should.equal(&quot;UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'&
               <h1>!==</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '14' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '14' });
 result.should.equal(&quot;UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1460,13 +1479,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'&
               <h1>&gt;</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '14' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '14' });
 result.should.equal(&quot;UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '9' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '9' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1474,13 +1493,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>&gt;=</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '14' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '14' });
 result.should.equal(&quot;UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '9' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '9' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1488,13 +1507,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>!&gt;</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '14' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '14' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '9' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '9' });
 result.should.equal(&quot;UPDATE Names  SET Name = '9'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1502,13 +1521,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = '9'  WHERE Name = 'Awesome'&q
               <h1>!&gt;=</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '14' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '14' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '9' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '9' });
 result.should.equal(&quot;UPDATE Names  SET Name = '9'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1516,13 +1535,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = '9'  WHERE Name = 'Awesome'&q
               <h1>&lt;</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '9' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '9' });
 result.should.equal(&quot;UPDATE Names  SET Name = '9'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '14' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '14' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1530,13 +1549,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>&lt;=</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '9' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '9' });
 result.should.equal(&quot;UPDATE Names  SET Name = '9'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '14' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '14' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1544,13 +1563,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>!&lt;</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '9' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '9' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '14' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '14' });
 result.should.equal(&quot;UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1558,13 +1577,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'&
               <h1>!&lt;=</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '9' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '9' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '14' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '14' });
 result.should.equal(&quot;UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1572,13 +1591,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = '14'  WHERE Name = 'Awesome'&
               <h1>abc&gt;</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'hello' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'hello' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'hello'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'dragon' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'dragon' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'awkward' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'awkward' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1586,13 +1605,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>abc&gt;=</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'hello' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'hello' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'hello'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'dragon' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'dragon' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'dragon'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'awkward' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'awkward' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1600,13 +1619,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>!abc&gt;</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'hello' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'hello' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'dragon' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'dragon' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'dragon'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'awkward' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'awkward' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'awkward'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1614,13 +1633,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'awkward'  WHERE Name = 'Awes
               <h1>!abc&gt;=</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'hello' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'hello' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'dragon' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'dragon' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'awkward' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'awkward' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'awkward'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1628,13 +1647,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'awkward'  WHERE Name = 'Awes
               <h1>abc&lt;</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'awkward' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'awkward' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'awkward'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'dragon' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'dragon' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'hello' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'hello' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1642,13 +1661,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>abc&lt;=</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'awkward' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'awkward' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'awkward'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'dragon' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'dragon' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'dragon'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'hello' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'hello' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1656,13 +1675,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>!abc&lt;</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'awkward' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'awkward' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'dragon' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'dragon' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'dragon'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'hello' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'hello' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'hello'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1670,13 +1689,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'hello'  WHERE Name = 'Awesom
               <h1>!abc&lt;=</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'awkward' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'awkward' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'dragon' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'dragon' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'hello' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'hello' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'hello'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1684,13 +1703,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'hello'  WHERE Name = 'Awesom
               <h1>len&gt;</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'palooza' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'palooza' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'palooza'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'sqiggl' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'sqiggl' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'fun' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'fun' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1698,13 +1717,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>len&gt;=</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'palooza' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'palooza' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'palooza'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'sqiggl' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'sqiggl' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'sqiggl'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'fun' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'fun' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1712,13 +1731,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>!len&gt;</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'palooza' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'palooza' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'sqiggl' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'sqiggl' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'sqiggl'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'fun' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'fun' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'fun'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1726,13 +1745,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'fun'  WHERE Name = 'Awesome'
               <h1>!len&gt;=</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'palooza' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'palooza' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'sqiggl' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'sqiggl' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'fun' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'fun' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'fun'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1740,13 +1759,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'fun'  WHERE Name = 'Awesome'
               <h1>len&lt;</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'fun' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'fun' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'fun'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'sqiggl' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'sqiggl' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'palooza' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'palooza' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1754,13 +1773,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>len&lt;=</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'fun' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'fun' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'fun'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'sqiggl' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'sqiggl' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'sqiggl'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'palooza' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'palooza' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1768,13 +1787,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>!len&lt;</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'fun' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'fun' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'sqiggl' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'sqiggl' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'sqiggl'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'palooza' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'palooza' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'palooza'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1782,13 +1801,13 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'palooza'  WHERE Name = 'Awes
               <h1>!len&lt;=</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'fun' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'fun' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'sqiggl' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'sqiggl' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'palooza' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'palooza' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'palooza'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1796,10 +1815,10 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'palooza'  WHERE Name = 'Awes
               <h1>is NaN</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'dragon' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'dragon' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1807,10 +1826,10 @@ result.should.equal(&quot;UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'&
               <h1>is not NaN</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'dragon' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'dragon' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1818,10 +1837,10 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>is !NaN</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: '12' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: '12' });
 result.should.equal(&quot;UPDATE Names  SET Name = '12'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if false</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 'dragon' });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 'dragon' });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1829,19 +1848,19 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>&gt;&lt;</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 15 });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 15 });
 result.should.equal(&quot;UPDATE Names  SET Name = '15'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal to the low number</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 10 });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 10 });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal to the high number</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 20 });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 20 });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if below the low number</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 5 });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 5 });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if above the high number</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 25 });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 25 });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1849,19 +1868,19 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
               <h1>&gt;!&lt;</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 15 });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 15 });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal to the low number</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 10 });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 10 });
 result.should.equal(&quot;UPDATE Names  SET Name = '10'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal to the high number</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 20 });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 20 });
 result.should.equal(&quot;UPDATE Names  SET Name = '20'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if below the low number</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 5 });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 5 });
 result.should.equal(&quot;UPDATE Names  SET Name = '5'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if above the high number</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 25 });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 25 });
 result.should.equal(&quot;UPDATE Names  SET Name = '25'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
               </dl>
             </section>
@@ -1869,20 +1888,51 @@ result.should.equal(&quot;UPDATE Names  SET Name = '25'  WHERE Name = 'Awesome'&
               <h1>&gt;=&lt;</h1>
               <dl>
                 <dt>should provide a correct result if true</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 15 });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 15 });
 result.should.equal(&quot;UPDATE Names  SET Name = '15'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal to the low number</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 10 });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 10 });
 result.should.equal(&quot;UPDATE Names  SET Name = '10'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if equal to the high number</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 20 });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 20 });
 result.should.equal(&quot;UPDATE Names  SET Name = '20'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if below the low number</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 5 });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 5 });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
                 <dt>should provide a correct result if above the high number</dt>
-                <dd><pre><code>var result = SQiggL.invoke(query, { example: 25 });
+                <dd><pre><code>var result = SQiggL.parse(query, { example: 25 });
 result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'&quot;);</code></pre></dd>
+              </dl>
+            </section>
+          </dl>
+        </section>
+        <section class="suite">
+          <h1>Ternaries</h1>
+          <dl>
+            <section class="suite">
+              <h1>Verbose Ternary</h1>
+              <dl>
+                <dt>should return the first value if true</dt>
+                <dd><pre><code>var query = &quot;SELECT * FROM {if (13 &gt; 12) then 'Dev' else 'Prod'}&quot;;
+var result = SQiggL.parse(query);
+result.should.equal(&quot;SELECT * FROM Dev&quot;);</code></pre></dd>
+                <dt>should return the last value if false</dt>
+                <dd><pre><code>var query = &quot;SELECT * FROM {if (12 &gt; 13) then 'Dev' else 'Prod'}&quot;;
+var result = SQiggL.parse(query);
+result.should.equal(&quot;SELECT * FROM Prod&quot;);</code></pre></dd>
+              </dl>
+            </section>
+            <section class="suite">
+              <h1>Ternary</h1>
+              <dl>
+                <dt>should return the first value if true</dt>
+                <dd><pre><code>var query = &quot;SELECT * FROM {(13 &gt; 12) ? 'Dev' : 'Prod'}&quot;;
+var result = SQiggL.parse(query);
+result.should.equal(&quot;SELECT * FROM Dev&quot;);</code></pre></dd>
+                <dt>should return the last value if false</dt>
+                <dd><pre><code>var query = &quot;SELECT * FROM {(12 &gt; 13) ? 'Dev' : 'Prod'}&quot;;
+var result = SQiggL.parse(query);
+result.should.equal(&quot;SELECT * FROM Prod&quot;);</code></pre></dd>
               </dl>
             </section>
           </dl>
@@ -1893,7 +1943,7 @@ result.should.equal(&quot;UPDATE Names  SET Name = 'Cow'  WHERE Name = 'Awesome'
             <dt>should accept newlines in queries</dt>
             <dd><pre><code>var sql = &quot;UPDATE Names\n{% if example is not null }\nSET Name = '{example}'\n{% else } SET Name = 'Cow'\n{% endif }\nWHERE Name = 'Awesome'&quot;;
 var result = &quot;UPDATE Names\n\nSET Name = 'Dragon'\n\nWHERE Name = 'Awesome'&quot;;
-var actual = SQiggL.invoke(sql, { example: 'Dragon' });
+var actual = SQiggL.parse(sql, { example: 'Dragon' });
 actual.should.equal(result);</code></pre></dd>
           </dl>
         </section>

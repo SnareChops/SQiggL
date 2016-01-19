@@ -12,7 +12,7 @@ describe('Scenarios', () => {
     });
 
     it('should correctly output a SQiggL query containing a comment (export true)', () => {
-        const result = SQiggL.parse('SELECT * FROM Table {# this is the client\'s table}', null, {exportComments: true});
+        const result = SQiggL.parse('SELECT * FROM Table {# this is the client\'s table}', void 0, {exportComments: true});
         result.should.equal('SELECT * FROM Table /* this is the client\'s table */');
     });
 
